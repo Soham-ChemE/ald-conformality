@@ -1,0 +1,26 @@
+FoamFile { version 2.0; format ascii; class volScalarField; object T; }
+// T is the TMA mole fraction normalised to its showerhead value during the pulse (dimensionless carrier).
+// Same BCs as reactor/showerhead_pulse_patterned_AR100_long on the full 3D chamber with a one-sided port.
+dimensions [0 0 0 1 0 0 0];
+internalField   uniform 0;
+boundaryField
+{
+    // 16 s pulse at unit concentration, then purge to 17 s
+    // Danckwerts total-flux inlet: U (c_face - c0(t)) = D (c_face - c_cell)/delta, so the TMA entering the chamber is
+    // exactly U*c0*A during the pulse. As a mixed BC: value fraction f = U/(U + D/delta) with delta = 0.625 mm (first cell
+    // centre of this mesh, 12 cells over the 15 mm gap): f = 0.05/(0.05 + 13.44) = 0.00370645.
+    showerhead
+    {
+        type                 uniformMixed;
+        uniformValue         table ((0 1) (16 1) (16.0001 0) (100 0));
+        uniformGradient      constant 0;
+        uniformValueFraction constant 0.00370645;
+    }
+    topWall    { type zeroGradient; }
+    // self-limiting ALD surface: s on open sites, coverage theta integrated per face (reactor/lib/aldWallKinetics)
+    // TMA: vbar 410 m/s at 573 K; N0 4e18 sites/m2; c0 = TMA number density in the feed at T = 1 (3 Pa at 573 K -> 3.79e20 1/m3).
+    wafer      { type patternedSurface; s 5e-3; r 0; vbar 410; N0 4e18; c0 3.79e20; d 100e-9; AR 100; holeDensity 1.78e13; nCells 200; value uniform 0; }
+    floor      { type zeroGradient; }
+    sideWall   { type zeroGradient; }
+    outlet     { type inletOutlet; inletValue uniform 0; value uniform 0; }
+}

@@ -1,0 +1,83 @@
+{
+ "TMA": {
+  "params": {
+   "s": 0.005,
+   "vbar": 410.0,
+   "N0": 4e+18,
+   "c0": 3.79e+20,
+   "d": 1e-07,
+   "AR": 100.0,
+   "holeDensity": 17800000000000.0,
+   "nCells": 200.0
+  },
+  "pulse_s": 20.0,
+  "bottom_t90_centre": 14.05,
+  "flat_t90_centre": 1.95,
+  "bottom_t90_worst": 14.1,
+  "bottom_t90_edge": 13.5,
+  "flat_t90_edge": 2.0,
+  "surface_density_rel_at_5s": 0.084475249,
+  "bottom_theta_end_of_pulse": 1.0,
+  "rule_s": 14.384719321488936,
+  "ratio_to_rule": 0.9767309104885413
+ },
+ "TDMAH": {
+  "params": {
+   "s": 0.007,
+   "vbar": 185.0,
+   "N0": 2.77e+18,
+   "c0": 3.79e+20,
+   "d": 1e-07,
+   "AR": 100.0,
+   "holeDensity": 17800000000000.0,
+   "nCells": 200.0
+  },
+  "pulse_s": 20.0,
+  "bottom_t90_centre": 11.6,
+  "flat_t90_centre": 1.3,
+  "bottom_t90_worst": 11.6,
+  "bottom_t90_edge": 11.1,
+  "flat_t90_edge": 1.3,
+  "surface_density_rel_at_5s": 0.19694024,
+  "bottom_theta_end_of_pulse": 1.0,
+  "rule_s": 9.959469191124391,
+  "ratio_to_rule": 1.164720707237852
+ },
+ "TDMAH_Dtma": {
+  "params": {
+   "s": 0.007,
+   "vbar": 185.0,
+   "N0": 2.77e+18,
+   "c0": 3.79e+20,
+   "d": 1e-07,
+   "AR": 100.0,
+   "holeDensity": 17800000000000.0,
+   "nCells": 200.0
+  },
+  "pulse_s": 20.0,
+  "bottom_t90_centre": 11.1,
+  "flat_t90_centre": 1.2,
+  "bottom_t90_worst": 11.15,
+  "bottom_t90_edge": 10.95,
+  "flat_t90_edge": 1.25,
+  "surface_density_rel_at_5s": 0.21297741,
+  "bottom_theta_end_of_pulse": 1.0,
+  "rule_s": 9.959469191124391,
+  "ratio_to_rule": 1.1145172284776
+ },
+ "parameters": {
+  "vbar_tma": 410.28324832546144,
+  "vbar_tdmah": 184.96548850685787,
+  "sigma_tdmah": 1.0080988234703312e-09,
+  "D_tma_ce": 0.008140055115126187,
+  "D_tdmah_ce": 0.003510674817889073,
+  "D_tdmah": 0.0036227848648677195,
+  "N0": 2.769458052962136e+18,
+  "f": 0.0034453734249847105,
+  "s": 0.007,
+  "c0": 3.7911387155403925e+20,
+  "rule_s": 9.959469191124391,
+  "rule_tma_s": 14.384719321488936,
+  "supply_time_s": 0.14581002701100104
+ }
+}

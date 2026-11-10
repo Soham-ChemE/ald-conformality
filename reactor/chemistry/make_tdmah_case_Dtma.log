@@ -1,0 +1,4 @@
+run showerhead_pulse_patterned_AR100_tdmah_Dtma: exit 0, 3.1 min
+TMA: bottom t90 centre 14.05 s (worst 14.10, edge 13.50), flat t90 1.95 s, rule 14.38 s, ratio 0.977; surface density at 5 s 0.0845 c0
+TDMAH: bottom t90 centre 11.60 s (worst 11.60, edge 11.10), flat t90 1.30 s, rule 9.96 s, ratio 1.165; surface density at 5 s 0.1969 c0
+TDMAH_Dtma: bottom t90 centre 11.10 s (worst 11.15, edge 10.95), flat t90 1.20 s, rule 9.96 s, ratio 1.115; surface density at 5 s 0.2130 c0

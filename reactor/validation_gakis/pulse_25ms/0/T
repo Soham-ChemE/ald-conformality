@@ -1,0 +1,31 @@
+FoamFile { version 2.0; format ascii; class volScalarField; object T; }
+// T = TMA number density / c0, c0 the inlet value at the peak of the pulse shape.
+// 1 x the 25 ms valve amount (0.63 mg = 8.739e-06 mol): 8.739e-06 mol = 5.263e+18 molecules,
+// = 40.9 monolayer-equivalents of the 200 mm wafer at N0 = 4.1e+18.
+// c0 = 3.371e+21 /m3 (TMA partial pressure 26.7 Pa at shape = 1 against 9.6 Pa of Ar: the real pulse is a
+// slug of nearly pure TMA; the passive-scalar, frozen-flow treatment is an approximation stated in the deliverable).
+// Danckwerts inlet U (c_face - c0 shape(t)) = D (c_face - c_cell)/delta: f = U/(U + D/delta) = 48/(48 + 128) = 0.2725
+dimensions [0 0 0 1 0 0 0];
+internalField   uniform 0;
+boundaryField
+{
+    inlet
+    {
+        type                 uniformMixed;
+        uniformValue         table ((0 0) (0.005 0.3) (0.012 1) (0.02 0.9) (0.03 0.45) (0.04 0.15) (0.05 0.05) (0.06 0.02) (0.1 0.01) (0.3 0.003) (0.3001 0) (10 0));
+        uniformGradient      constant 0;
+        uniformValueFraction constant 0.27251;
+    }
+    wafer       { type langmuirSticking; s 0.00344; r 0; vbar 410; N0 4.1e+18; c0 3.371e+21; value uniform 0; }
+    chuckSide   { type zeroGradient; }
+    chuckBottom { type zeroGradient; }
+    ceiling     { type zeroGradient; }
+    tubeWall    { type zeroGradient; }
+    sideWall    { type zeroGradient; }
+    stepFloor   { type zeroGradient; }
+    ductWall    { type zeroGradient; }
+    outlet      { type inletOutlet; inletValue uniform 0; value uniform 0; }
+    axis        { type empty; }
+    front       { type wedge; }
+    back        { type wedge; }
+}

@@ -1,0 +1,46 @@
+case reactor/chamber3d/pulse: 6144 wafer faces, 171 write times 0..17 s (every 0.1 s), pulse 16 s; face radii 2.43..148.86 mm
+wedge reference (showerhead_pulse_patterned_AR100_long, writes every 0.05 s, pulse 20 s): hole-bottom t90 centre 14.007 s interpolated / 14.05 s first write; worst 14.051 s at r = 130.5 mm (first write 14.10 s); flat centre 1.923 / 1.95 s, flat edge 1.539 s
+3D: hole-bottom t90 at the innermost face (r = 2.4 mm, phi = -135 deg): 14.044 s interpolated, 14.1 s first write; wedge centre 14.007 s (+0.26 %)
+3D: worst hole-bottom t90 on the wafer 14.168 s (first write 14.2 s) at r = 132.7 mm, phi = -160 deg; wedge worst 14.051 s (+0.83 %); wafer min 13.544 s at r = 148.9 mm; wafer-wide spread 4.44 % of the mean 14.059 s
+3D: flat-surface t90 innermost face 1.929 s (wedge 1.923), wafer range 1.670..2.011 s; faces never reaching 0.9: bottoms 0, flat 0
+3D minus wedge at the same radius, hole-bottom t90: mean +0.44 %, range -0.09..+1.37 %
+
+Azimuthal statistics of the hole-bottom t90 (faces within +-2.5 mm of the radius; azimuth bins of 15 deg; port at phi = 0):
+| r (mm) | faces | mean (s) | min (s) | max (s) | peak-to-peak (% of mean) | 15-deg bin means p2p (%) | detrended to r exactly: p2p (%) | port side - far side (%) | wedge t90 at r (s) | 3D mean / wedge |
+|---|---|---|---|---|---|---|---|---|---|---|
+| 50 | 140 | 14.048 | 14.042 | 14.055 | 0.09 | 0.09 | 0.09 | -0.08 | 14.009 | 1.0028 |
+    detrended profile at r = 50 mm: port bins 14.042 s, far bins 14.054 s, min 14.042 at -8 deg, max 14.054 at 172 deg
+| 100 | 308 | 14.075 | 14.041 | 14.098 | 0.40 | 0.37 | 0.37 | -0.36 | 14.021 | 1.0038 |
+    detrended profile at r = 100 mm: port bins 14.044 s, far bins 14.094 s, min 14.042 at -8 deg, max 14.095 at 172 deg
+| 140 | 360 | 14.089 | 13.975 | 14.156 | 1.29 | 0.95 | 0.96 | -0.90 | 14.006 | 1.0060 |
+    detrended profile at r = 140 mm: port bins 14.004 s, far bins 14.130 s, min 13.996 at 8 deg, max 14.131 at 158 deg
+Flat-surface t90, same bands:
+| r (mm) | mean (s) | min (s) | max (s) | peak-to-peak (%) | port - far (%) | wedge flat t90 at r (s) |
+|---|---|---|---|---|---|---|
+| 50 | 1.929 | 1.929 | 1.929 | 0.02 | -0.02 | 1.924 |
+| 100 | 1.934 | 1.929 | 1.938 | 0.46 | -0.38 | 1.926 |
+| 140 | 1.983 | 1.917 | 2.011 | 4.75 | -3.82 | 1.969 |
+Outermost row of wafer faces (r = 148.9 mm, 248 faces): hole-bottom t90 mean 13.687, min 13.544, max 13.931 s, p2p 2.83 %, port side 13.588 s, far side 13.684 s (-0.70 %); wedge outermost face (r = 149.5 mm) 13.280 s interpolated / 13.30 s first write
+  wedge radial variation of the bottom t90 across the r = 50 +- 2.5 mm band: 0.00 % (the part of the 3D band spread that is radial, not azimuthal)
+  wedge radial variation of the bottom t90 across the r = 100 +- 2.5 mm band: 0.02 % (the part of the 3D band spread that is radial, not azimuthal)
+  wedge radial variation of the bottom t90 across the r = 140 +- 2.5 mm band: 0.58 % (the part of the 3D band spread that is radial, not azimuthal)
+
+Surface TMA density value/c0 on the wafer faces and coverages at fixed times, r = 140 mm band, port side (|phi| <= 30 deg) vs far side (|phi| >= 150 deg):
+  t = 0.3 s, TMA at the surface / c0: r 140 mm port 0.01861, far 0.01717, p2p 9.24 % of mean 0.01759; r 50 mm p2p 0.01 % of mean 0.0187
+  t = 0.3 s, flat coverage: r 140 mm port 0.2131, far 0.1914, p2p 12.83 % of mean 0.1977; r 50 mm p2p 0.01 % of mean 0.2156
+  t = 0.3 s, hole-bottom coverage: r 140 mm port 2.397e-06, far 2.114e-06, p2p 14.97 % of mean 2.196e-06; r 50 mm p2p 0.01 % of mean 2.43e-06
+  t = 8 s, TMA at the surface / c0: r 140 mm port 0.128, far 0.1259, p2p 2.54 % of mean 0.1265; r 50 mm p2p 0.16 % of mean 0.1272
+  t = 8 s, flat coverage: r 140 mm port 1, far 1, p2p 0.00 % of mean 1; r 50 mm p2p 0.00 % of mean 1
+  t = 8 s, hole-bottom coverage: r 140 mm port 0.008372, far 0.007545, p2p 15.11 % of mean 0.007782; r 50 mm p2p 0.45 % of mean 0.008155
+  t = 14 s, TMA at the surface / c0: r 140 mm port 0.2527, far 0.2374, p2p 8.35 % of mean 0.2423; r 50 mm p2p 1.52 % of mean 0.2438
+  t = 14 s, flat coverage: r 140 mm port 1, far 1, p2p 0.00 % of mean 1; r 50 mm p2p 0.00 % of mean 1
+  t = 14 s, hole-bottom coverage: r 140 mm port 0.8994, far 0.8353, p2p 10.78 % of mean 0.855; r 50 mm p2p 0.72 % of mean 0.8767
+
+Steady carrier flow (gap-averaged radial velocity u_r, positive outward, from the frozen 3D U field; axisymmetric value Q/(2 pi r g)):
+  r = 100 mm: port side +0.6720 m/s, 90 deg +0.0480 m/s, far side -0.0807 m/s; axisymmetric 0.3749 m/s
+  r = 140 mm: port side +0.8542 m/s, 90 deg +0.0729 m/s, far side +0.0126 m/s; axisymmetric 0.2678 m/s
+  r = 148 mm: port side +0.8642 m/s, 90 deg +0.0856 m/s, far side +0.0319 m/s; axisymmetric 0.2533 m/s
+  r = 175 mm: port side +0.9605 m/s, 90 deg +0.0313 m/s, far side +0.0126 m/s; axisymmetric 0.2142 m/s
+  r = 199 mm: port side +1.1220 m/s, 90 deg +0.0003 m/s, far side +0.0001 m/s; axisymmetric 0.1884 m/s
+  |U| in the outer 15 mm: port sector mean 1.131 m/s, far sector 0.0193 m/s; port face mean speed from the flow rate 3.5337e-3 m3/s / 3.1415e-3 m2 = 1.125 m/s
+  gap Peclet number U g / D = 0.089; radial Peclet at the wafer edge u_r g / D (axisymmetric) = 0.45; lateral diffusion time over the wafer radius R^2/D = 2.68 s

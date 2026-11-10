@@ -1,0 +1,4 @@
+FoamFile { version 2.0; format ascii; class dictionary; object transportProperties; }
+// Ar at 9.6 Pa, 573 K: rho = 8.048e-05 kg/m3, mu = 3.60e-05 Pa s -> nu = 0.4473 m2/s
+transportModel  Newtonian;
+nu              0.44732;

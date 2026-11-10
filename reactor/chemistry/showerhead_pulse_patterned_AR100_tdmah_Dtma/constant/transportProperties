@@ -1,0 +1,4 @@
+FoamFile { version 2.0; format ascii; class dictionary; object transportProperties; }
+// TDMAH in N2 at 300 Pa, 573 K: the TMA value 8.4e-3 m2/s scaled by the ratio of hard-sphere Chapman-Enskog
+// estimates (TDMAH diameter 1008 pm from its liquid density, TMA 591 pm): 0.0084 m2/s. See reactor/chemistry/make_tdmah_case.py.
+DT              0.0084;

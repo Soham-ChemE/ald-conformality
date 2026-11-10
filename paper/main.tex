@@ -6,6 +6,8 @@
 \usepackage{amsmath}
 \usepackage{graphicx}
 \usepackage{booktabs}
+\usepackage{array}
+\newcolumntype{P}[1]{>{\raggedright\arraybackslash}p{#1}}
 \usepackage{microtype}
 \usepackage{xcolor}
 \PassOptionsToPackage{hyphens}{url}
@@ -24,7 +26,7 @@
 \newcommand{\degC}{$^{\circ}$C}
 \newcommand{\Awall}{A_{\mathrm{wall}}/A_{\mathrm{wafer}}}
 
-\title{Every blanket-wafer ALD recipe hides a 40$\times$ under-dose: a chamber-to-feature model of supply-limited atomic layer deposition\thanks{Draft 0.9 (public), 10 November 2026. Every number is from a run documented in the repository run log, \texttt{paper/assumptions.md}.}}
+\title{Every blanket-wafer ALD recipe hides a 40$\times$ under-dose: a chamber-to-feature model of supply-limited atomic layer deposition\thanks{Draft 0.9.2 (public), 10 November 2026. Every number is from a run documented in the repository run log, \texttt{paper/assumptions.md}.}}
 
 \author{Soham Kavathekar\\[2pt]
 \small Department of Chemical and Biomolecular Engineering, University of Pennsylvania,\\
@@ -37,14 +39,14 @@
 \maketitle
 
 \begin{abstract}
-ALD recipes are tuned on blanket wafers. Product wafers are not blank: a 3D-NAND array of 100\,nm holes at aspect ratio 100 carries 56 times the surface area of the wafer under it, and all of it has to saturate in one pulse. We built a model of a 300\,mm showerhead ALD chamber in which every point on the wafer runs its own feature-scale model of a hole, coupled both ways to the chamber gas, and asked how long the pulse must be. The answer is a single rule: the saturating pulse equals 1.2 times (1 + patterned area ratio) times the time the showerhead needs to deliver one monolayer of precursor. It held within 25\,\% across aspect ratios 20 to 100 and a twenty-fold range of precursor feed; on non-uniform layouts the local wall-area ratio of the densest region sets the pulse, not the wafer average. At a typical operating point the blanket wafer saturates in 0.35\,s and the product wafer in 14\,s. Chamber pressure, showerhead gap and carrier flow do not move that number; precursor delivery rate does. The water half-cycle, fifty times less reactive, needs the same pulse on the product wafer and coats it more evenly. The feature model agrees with an independent Argonne code to 7\,\% and fits published thickness profiles from lateral test structures, and the rule itself reproduces the measured saturation time of a fluidized-bed ALD run on 940\,m$^2$ of silica gel to 7\,\%. The rule turns a day of recipe transfer into arithmetic, and says where a tool's throughput actually comes from.
+ALD recipes are tuned on blanket wafers. Product wafers are not blank: a 3D-NAND array of 100\,nm holes at aspect ratio 100 carries 56 times the surface area of the wafer under it, and all of it has to saturate in one pulse. We built a model of a 300\,mm showerhead ALD chamber in which every point on the wafer runs its own feature-scale model of a hole, coupled both ways to the chamber gas, and asked how long the pulse must be. The answer is a single rule: the saturating pulse equals 1.2 times (1 + patterned area ratio) times the time the showerhead needs to deliver one monolayer of precursor. It held within 25\,\% across aspect ratios 20 to 100 and a twenty-fold range of precursor feed; on non-uniform layouts the local wall-area ratio of the densest region sets the pulse, not the wafer average. At a typical operating point the blanket wafer saturates in 0.35\,s and the product wafer in 14\,s. Chamber pressure, showerhead gap and carrier flow do not move that number; precursor delivery rate does. Nor does the sticking coefficient across its published range; only the blanket pulse does, threefold. The water half-cycle, fifty times less reactive, needs the same pulse on the product wafer and coats it more evenly. The feature model agrees with an independent Argonne code to 7\,\% and fits published thickness profiles from lateral test structures, and the rule itself reproduces the measured saturation time of a fluidized-bed ALD run on 940\,m$^2$ of silica gel to 7\,\%. The rule turns a day of recipe transfer into arithmetic, and says where a tool's throughput actually comes from.
 \end{abstract}
 
 \begin{center}
 \fbox{\begin{minipage}{0.94\linewidth}
 \vspace{4pt}
 \textbf{What this means for a tool (one paragraph for the process engineer).}
-If your recipe was saturated on a monitor wafer, multiply the pulse by one plus the product wafer's wall-area ratio before you trust it on product. Size the pulse on the densest or deepest region's own wall-area ratio; the wafer average under-doses it. Pressure, gap and carrier flow are uniformity knobs; they buy no time. Time comes from precursor molecules per second: vapour pressure, bubbler flow, injector design, or an architecture that exposes the wafer to a denser zone (spatial ALD wins by the same factor the rule predicts). Low-sticking reactants are not the bottleneck on patterned wafers; their cost is on blanket wafers only. And when the deepest feature saturates, the chamber shows it: the precursor stops being consumed and appears downstream.
+If your recipe was saturated on a monitor wafer, multiply the pulse by one plus the product wafer's wall-area ratio before you trust it on product. Size the pulse on the densest or deepest region's own wall-area ratio; the wafer average under-doses it. Pressure, gap and carrier flow are uniformity knobs; they buy no time. Time comes from precursor molecules per second: vapour pressure, bubbler flow, injector design, or an architecture that exposes the wafer to a denser zone (spatial ALD wins by the same factor the rule predicts). Low-sticking reactants are not the bottleneck on patterned wafers; their cost is on blanket wafers only. And when the deepest feature saturates, the chamber shows it: the precursor stops being consumed and appears downstream. On a 3D-NAND wafer the pulses are three quarters of the cycle and the purges a quarter, the reverse of the blanket wafer, so the throughput lever is precursor delivery and the purge lever is water desorption, not chamber flow.
 \vspace{4pt}
 \end{minipage}}
 \end{center}
@@ -105,6 +107,75 @@ A patterned wafer with tens of wafer-areas of holes is, to the chamber, a powder
 \caption{The supply-limit rule against measurements. Left: saturation time divided by the supply-limit time $t_0$ versus Damk\"ohler number for the blanket and patterned chamber runs of this work, the plug-flow theory of Lu et al.\ \cite{lu2022}, and the measured Argonne fluidized-bed Al$_2$O$_3$ run on 940\,m$^2$ of silica gel. Right: precursor utilization up to saturation ($= 1/\tau_{\mathrm{sat}}$) versus total reactive surface area in the reactor, from a 0.07\,m$^2$ blanket wafer to 1500\,m$^2$ of powder, with the fluidized-bed point \cite{lu2022} and the rotary-drum loadings of Coile et al.\ \cite{coile2020}.}
 \label{fig:validation}
 \end{figure}
+
+\subsection{Chamber-scale checks}
+\label{sec:chamberchecks}
+The blanket-wafer pulse of Section~\ref{sec:blanket} can be compared with published saturation data once the exposure is defined with care. The recipe sets a feed exposure, 3\,Pa of TMA for 0.345\,s, 1.03\,Pa\,s or 7,800 Langmuir; the surface sees the time integral of its own TMA partial pressure, 0.146\,Pa\,s or 1,100 Langmuir, because the wafer draws the gas down to 0.14 of the feed value on average while it saturates, and that surface exposure equals the Langmuir value $\ln(10)\,N_0/(s F_1)$ at $s = 5\times10^{-3}$, as it must. Seven independent sources give either the exposure they applied or a sticking coefficient or reaction cross-section from which the planar saturating exposure follows (Fig.~\ref{fig:litexposure}, Table~\ref{tab:litexposure}). The kinetic values span 0.05 to 1.3\,Pa\,s: 0.27\,Pa\,s from the sum-frequency cross-section of Vandalon and Kessels \cite{vandalon2019,vandalon2017}, 0.21 from the reactor-fitted sticking coefficient of Gakis et al.\ \cite{gakis2019}, 0.16 from the PillarHall fit of Ylilammi et al.\ \cite{ylilammi2018}, 0.33 to 1.3 from Arts et al.\ \cite{arts2019jvsta} at 220\,\degC, 0.05 at room temperature in vacuum (Soto and Tysoe \cite{soto1991}, as summarised by Puurunen \cite{puurunen2005}), 0.08 from our own PillarHall fit. Our 0.146\,Pa\,s sits in the middle of the 300\,\degC\ cluster, within a factor 1.8 of each of the three sources that state a sticking coefficient at that temperature; the applied exposures (0.56 to 160\,Pa\,s) are upper bounds that recipes choose to over-dose and say nothing sharper. Exposure scales as $1/s$ in this regime, so the model would reproduce the individual sources at $s$ between $2.7\times10^{-3}$ and $8.7\times10^{-3}$.
+
+\begin{figure}[tbp]
+\centering
+\includegraphics[width=\linewidth]{blanket_saturation_literature.png}
+\caption{TMA exposure for saturation against temperature. Open squares: exposures the experiments applied (feed or reactor pressure times time); filled circles: planar 90\,\% exposure implied by each source's sticking coefficient or cross-section; diamond: the Gakis et al.\ 25\,ms impingement exposure that gave at least 97\,\% saturation; crosses: the PillarHall fit of this work; stars: this chamber model, feed exposure (1.03\,Pa\,s, 7,760\,L) and surface exposure (0.146\,Pa\,s, 1,090\,L); grey lines: Langmuir $E_{90}$ at $N_0 = 4\times10^{18}$\,m$^{-2}$ for $s = 10^{-3}$, $5\times10^{-3}$ and $10^{-2}$. Right axis in Langmuir.}
+\label{fig:litexposure}
+\end{figure}
+
+\begin{table}[tbp]
+\centering
+\caption{Blanket saturation exposures: this chamber model against published data. ``Applied'' exposures are what the experiment delivered (feed or reactor pressure times time); ``kinetic $E_{90}$'' is the planar 90\,\% exposure implied by the source's sticking coefficient or cross-section. Values read from figures are noted in \texttt{figures/blanket\_saturation\_literature.csv}.}
+\label{tab:litexposure}
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{P{2.15in}cP{0.9in}P{0.65in}P{0.7in}P{0.85in}}
+\toprule
+Source & $T$ (\degC) & Kind of exposure & Exposure (Pa\,s) & Langmuir & $s$ this model would need \\
+\midrule
+This work, chamber model, centre: feed $p \times t_{90}$ & 300 & applied & 1.03 & 7,760 & $5\times10^{-3}$ (as run) \\
+This work, centre: surface integral of $p_s\,dt$ to $\theta = 0.9$ & 300 & kinetic & 0.146 & 1,090 & $5\times10^{-3}$ (as run) \\
+Ylilammi et al.\ 2018 \cite{ylilammi2018}, Picosun R-150, 300\,Pa, 0.1\,s pulse: fitted entrance pressure 147\,Pa $\times$ 0.1\,s (flat region saturated) & 300 & applied & 14.7 & 110,000 & upper bound only \\
+same, implied by their fitted $\gamma = 5.72\times10^{-3}$ ($q = 5\times10^{18}$\,m$^{-2}$) & 300 & kinetic $E_{90}$ & 0.155 & 1,160 & $4.7\times10^{-3}$ \\
+Arts et al.\ 2019 \cite{arts2019jvsta}, Oxford OpAL, set-point 275\,\degC: 190\,mTorr\,s TMA dose, planar surface saturated & $\sim$220 & applied & 25.3 & 190,000 & upper bound only \\
+same, 1200\,mTorr\,s (H$_2$O-limited profile) & $\sim$220 & applied & 160 & 1,200,000 & upper bound only \\
+same, implied by $s_0 = 2\times10^{-3}$ / $5\times10^{-4}$ (Table I range; $N_0 = 4\times10^{18}$ assumed) & $\sim$220 & kinetic $E_{90}$ & 0.33 / 1.32 & 2,470 / 9,890 & $2.2\times10^{-3}$ / $5.5\times10^{-4}$ \\
+Vandalon and Kessels 2019 \cite{vandalon2019}, SFG, $\sigma_{\mathrm{TMA}} = (6.5 \pm 0.6)\times10^{-18}$\,cm$^2$; temperature-independent 100--300\,\degC\ \cite{vandalon2017} & 300 (100) & kinetic $E_{90}$ from $\sigma$, no site density needed & 0.273 (0.221) & 2,050 (1,650) & $2.7\times10^{-3}$ ($3.3\times10^{-3}$) \\
+Gakis et al.\ 2018 \cite{gakis2018}, Fiji F200, 9.6\,Pa, 25\,ms valve: wafer impingement 0.0118--0.0130\,mol/m$^2$ ($\pm$0.0002) $\times$ 46.45\,Pa\,s per mol/m$^2$; GPC 0.975--0.998\,\AA/cycle, i.e.\ $\geq 97$\,\% saturated & 300 & applied (their CFD) & 0.55--0.60 & 4,100--4,500 & upper bound only \\
+Gakis et al.\ 2019 \cite{gakis2019}, implied by fitted $s_0 = 0.004 \times 86$\,\% reaction probability, $N_0 = 4.1\times10^{18}$ from GPC 1.0\,\AA/cycle at 3500\,kg/m$^3$ & 300 & kinetic $E_{90}$ & 0.212 & 1,590 & $3.4\times10^{-3}$ \\
+PillarHall record (Zenodo 3974438 \cite{zenodo3974438}), this work's fit: mouth exposure 75\,Pa $\times$ 0.1\,s & 300 & applied & 7.5 & 56,000 & upper bound only \\
+same, implied by the fitted $s = 8.5\times10^{-3}$ & 300 & kinetic $E_{90}$ & 0.084 & 630 & $8.7\times10^{-3}$ \\
+Soto and Tysoe 1991 \cite{soto1991}, UHV, as summarised by Puurunen 2005 \cite{puurunen2005}: reaction probability 0.01 & 25 & kinetic $E_{90}$ ($N_0 = 4\times10^{18}$ assumed) & 0.051 & 380 & $1.4\times10^{-2}$ \\
+Dillon et al.\ 1995 \cite{dillon1995}, porous alumina FTIR, as summarised by Puurunen 2005: $k_a = 0.0076$\,s$^{-1}$ at 0.01\,Torr & 227 & first-order rate on a porous membrane: transport, not planar kinetics & 404 & 3,000,000 & ($1.8\times10^{-6}$, not meaningful) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+A second check uses the one published case that combines reactor-scale CFD with a measured thickness map in a commercial tool: the Ultratech Fiji F200 of Gakis et al.\ \cite{gakis2018,gakis2019} (200\,mm wafer, 9.6\,Pa Ar, 180\,sccm, 300\,\degC, 0.63\,mg of TMA per 25\,ms valve opening, measured growth per cycle 0.975 to 0.998\,\AA/cycle along the diameter against 1.00 at 60\,ms, non-uniformity 2.4\,\% falling to 0.58\,\%). We rebuilt the chamber as an axisymmetric wedge with dimensions read off their cross-section (the papers give none), a single axial inlet standing in for their three, the carrier flow frozen, their computed pulse amount and shape, and their kinetic model reduced to an irreversible sticking coefficient $s = 0.004 \times 0.86 = 3.4\times10^{-3}$ and $N_0 = 4.1\times10^{18}$\,m$^{-2}$ from their growth per cycle (Fig.~\ref{fig:gakis}, Table~\ref{tab:gakis}). The model delivers 0.67\,Pa\,s of TMA impingement to the wafer against 0.55 to 0.60\,Pa\,s in their three-dimensional CFD and saturates the wafer with the 25\,ms pulse (coverage 0.9994, 90\,\% at 70\,ms) and completely with the 60\,ms pulse, as the measurement does to within 2.5\,\%. It does not reproduce the 2.4\,\% non-uniformity: their exposure field is 10.7\,\% non-uniform because the pulse momentum through an off-axis inlet drives a recirculation over the wafer and the loading-door purge sweeps one side, ours is 0.3\,\% because an axisymmetric inlet into a diffusive gap smooths everything; and with irreversible Langmuir kinetics even their exposure variation would move coverage by under 0.5\,\%, so the remainder is their reversible, softer kinetics and the 21\,\degC\ temperature gradient and cold loading door they document. The chamber-scale transport that this paper's conclusions rest on, how much of the injected precursor the wafer takes before the pump does, is reproduced to the accuracy of the dimensions; the within-wafer uniformity of a particular injector is not a claim of this paper.
+
+\begin{figure}[tbp]
+\centering
+\includegraphics[width=\linewidth]{validation_gakis.png}
+\caption{Axisymmetric approximation of the Fiji F200 against Gakis et al.\ \cite{gakis2018,gakis2019}. Left: coverage after the cycle across the 200\,mm wafer for the four cases, with the measured 25\,ms growth-per-cycle profile (their 2019 Fig.~10, digitised, divided by the 1.00\,\AA/cycle of the 60\,ms pulse; filled squares the side away from the loading door, open circles the loading-door side, $\pm$0.003). Middle: coverage against time at the centre (solid) and edge (dashed). Right: TMA partial pressure at the wafer centre; the shaded band is the 9.6\,Pa of Ar.}
+\label{fig:gakis}
+\end{figure}
+
+\begin{table}[tbp]
+\centering
+\caption{Fiji F200 reproduction against Gakis et al.\ \cite{gakis2018,gakis2019}: coverage after the cycle over $|r| \leq 95$\,mm, within-wafer non-uniformity $(\max - \min)/\min$, time to 90\,\% after valve opening, TMA impingement exposure on the wafer, TMA captured by the wafer, and peak surface TMA partial pressure.}
+\label{tab:gakis}
+\scriptsize
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{P{1.25in}P{0.7in}P{0.55in}P{0.55in}P{0.65in}P{0.55in}P{0.85in}P{0.6in}}
+\toprule
+Case & $\theta$ after the cycle, centre / min / max & Non-uniformity & $t_{90}$ centre / worst & Wafer exposure (Pa\,s) & Exposure non-uniformity & TMA captured & Peak surface TMA (Pa) \\
+\midrule
+25\,ms valve, 0.63\,mg, $s = 3.44\times10^{-3}$ & 0.9994 / 0.9994 / 0.9994 & 0.0007\,\% & 0.07 / 0.08\,s & 0.671--0.673 & 0.28\,\% & 2.4\,\% of $5.26\times10^{18}$ (41 monolayer-equivalents delivered) & 5.6 \\
+60\,ms, 1.5$\times$ amount & 1.0000 / 1.0000 / 1.0000 & 0.00001\,\% & 0.06 / 0.06\,s & 1.017--1.019 & 0.18\,\% & 1.6\,\% & 8.5 \\
+60\,ms, 2.4$\times$ amount & 1.0000 / 1.0000 / 1.0000 & 0.0000\,\% & 0.05 / 0.05\,s & 1.639--1.640 & 0.11\,\% & 1.0\,\% & 13.7 \\
+25\,ms, $s = 5\times10^{-3}$ & 1.0000 / 1.0000 / 1.0000 & 0.00003\,\% & 0.06 / 0.07\,s & 0.671--0.673 & 0.28\,\% & 2.4\,\% & 5.6 \\
+Measured, 25\,ms (2019 Fig.~10, digitised, / 1.00\,\AA\ per cycle at 60\,ms) & 0.996 / 0.975 / 0.998 & 2.37\,\% (2.40\,\% stated) & & & & & \\
+Measured, 60\,ms (stated) & 1.00 & 0.58\,\% & & & & & \\
+Their CFD + kinetics, 25 / 60\,ms & & 2.45\,\% / 0.83\,\% & & 0.55--0.60 (2018 Fig.~12) & 10.7\,\% & & 0.7--3.7 at 25\,ms (2019 Fig.~7b) \\
+\bottomrule
+\end{tabular}
+\end{table}
 
 \section{Results}
 
@@ -224,17 +295,208 @@ The patterned-surface boundary condition takes hole density and aspect ratio as 
 \label{fig:layout}
 \end{figure}
 
+\subsection{Step coverage, purge and throughput}
+\label{sec:fabunits}
+In fab units the rule reads as follows. Step coverage, the hole-bottom coverage over the flat top, follows the supply integral: at 1\,\% TMA the bottoms of AR 20, 50 and 100 holes reach 90\,\% at 2.7, 6.7 and 14.1\,s (worst face), 95\,\% at 2.8, 6.8 and 14.2\,s and 99\,\% at 2.9, 7.0 and 14.3\,s (Fig.~\ref{fig:stepcov}, Table~\ref{tab:stepcov}). The front is sharp, $t_{99} - t_{90}$ is 0.25 to 0.3\,s at every aspect ratio, so the rule's pulse (3.1, 7.3, 14.4\,s) covers 99\,\% step coverage as well as 90\,\% ($t_{99}$/rule 0.95 to 1.00). The flat top between the holes saturates at 1.8 to 2.0\,s regardless of aspect ratio. Converted to film at 0.103\,nm per cycle (the PillarHall record's 51.5\,nm after 500 cycles; the review value is about 0.1\,nm per cycle \cite{puurunen2005}), 50 cycles of the blanket recipe (0.345\,s) leave 1.4\,nm of a 5.15\,nm target on the top of an AR-100 array and nothing at the bottom, and a 20\,\% step coverage on an AR-20 array; 50 cycles of the rule's pulse leave 5.15\,nm top and bottom on all three (Table~\ref{tab:film}).
+
+\begin{figure}[tbp]
+\centering
+\includegraphics[width=\linewidth]{step_coverage_vs_pulse.png}
+\caption{Left: step coverage (hole bottom over flat top, wafer centre) against pulse time for AR 20, 50 and 100 at 1\,\% TMA, with the 90, 95 and 99\,\% levels and the rule's pulse for each aspect ratio as dotted verticals (3.1, 7.3, 14.4\,s); the 20\,s AR-100 run is overlaid as the thin line. Right: Al$_2$O$_3$ thickness at the hole bottom after 50 cycles of that pulse (0.103\,nm per cycle), with the flat top of the array as the dotted black line and the saturated 5.15\,nm marked.}
+\label{fig:stepcov}
+\end{figure}
+
+\begin{table}[tbp]
+\centering
+\caption{Pulse for 90, 95 and 99\,\% bottom coverage at 1\,\% TMA, 300\,sccm, 300\,Pa, 15\,mm gap (step coverage $= \theta_{\mathrm{bottom}}/\theta_{\mathrm{flat}}$); ``map'' rows are the pulse-time-map runs, the last row the 20\,s AR-100 run with 0.05\,s writes. The rule is $1.2\,(1 + \Awall)\,N_0/(U c_0)$.}
+\label{tab:stepcov}
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{P{0.95in}ccP{0.7in}P{0.7in}P{0.7in}P{0.88in}c}
+\toprule
+Wafer (run) & $\Awall$ & Rule (s) & $t_{90}$ centre / worst (s) & $t_{95}$ centre / worst (s) & $t_{99}$ centre / worst (s) & Flat top $t_{90}$ / $t_{95}$ / $t_{99}$ (s) & $t_{99}$ / rule \\
+\midrule
+AR 20 (map, 4.61\,s pulse) & 11.2 & 3.08 & 2.67 / 2.71 & 2.78 / 2.81 & 2.92 / 2.94 & 1.84 / 2.14 / 2.60 & 0.96 \\
+AR 50 (map, 10.26\,s) & 28.0 & 7.32 & 6.73 / 6.73 & 6.83 / 6.83 & 6.94 / 6.99 & 1.94 / 2.35 / 3.06 & 0.95 \\
+AR 100 (map, 19.68\,s) & 55.9 & 14.38 & 14.01 / 14.11 & 14.21 / 14.21 & 14.31 / 14.31 & 1.96 / 2.35 / 3.04 & 1.00 \\
+AR 100 (20\,s run) & 55.9 & 14.38 & 14.05 / 14.10 & 14.15 / 14.20 & 14.25 / 14.30 & 1.95 / 2.30 / 3.05 & 0.99 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[tbp]
+\centering
+\caption{Al$_2$O$_3$ after 50 cycles of a given pulse (0.103\,nm per cycle; saturated film 5.15\,nm), wafer centre: step coverage and bottom / top thickness.}
+\label{tab:film}
+\footnotesize
+\begin{tabular}{lccc}
+\toprule
+Pulse & AR 20 & AR 50 & AR 100 \\
+\midrule
+0.345\,s (blanket $t_{90}$) & 20\,\%, 0.26 / 1.29\,nm & 0.5\,\%, 0.01 / 1.32\,nm & 0\,\%, 0.00 / 1.44\,nm \\
+1\,s & 29\,\%, 0.95 / 3.23\,nm & 0.8\,\%, 0.03 / 3.25\,nm & 0\,\%, 0.00 / 3.16\,nm \\
+2\,s & 58\,\%, 2.76 / 4.79\,nm & 1.7\,\%, 0.08 / 4.69\,nm & 0\,\%, 0.00 / 4.67\,nm \\
+5\,s & 100\,\%, 5.15 / 5.15\,nm & 25\,\%, 1.27 / 5.15\,nm & 0.1\,\%, 0.00 / 5.15\,nm \\
+10\,s & 100\,\%, 5.15 / 5.15\,nm & 100\,\%, 5.15 / 5.15\,nm & 4.5\,\%, 0.23 / 5.15\,nm \\
+Rule (3.08 / 7.32 / 14.38\,s) & 100\,\% & 100\,\% & 100\,\% \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The purge has three parts and only one of them is set by the chamber (Table~\ref{tab:purge}). The hole itself empties by Knudsen diffusion in microseconds: for 100\,nm $\times$ 10\,$\mu$m and TMA at 573\,K, $D_K = 1.4\times10^{-5}$\,m$^2$/s, $L^2/D_K = 7$\,$\mu$s, and a transient solution with the mouth density set to zero puts the bottom density at 1\,\% after 14\,$\mu$s. The chamber outlet signal falls with a time constant of 0.36 to 0.39\,s for TMA and 0.46\,s for water, between the gap transit (0.3\,s) and the chamber volume over the flow (0.53\,s): a decade costs about 1\,s, 1\,\% of the pulse-end level takes 1.9\,s (TMA) and 2.2\,s (water), 0.1\,\% about 2.7 and 3.2\,s. Desorbing water is the long part: at $k_{\mathrm{des}} = 0.1$\,s$^{-1}$ the exhaust is held at 1.6\,\% of the feed level by the surface 3\,s after the pulse and reaches 1\,\% only after about 8\,s; at 1\,s$^{-1}$, 4.3\,s; at 10\,s$^{-1}$ the surface empties within 0.3\,s and the purge is gas clearing again (2.4\,s). $k_{\mathrm{des}}$ is a parameter, not a measurement, and the water purge in the cycle below is the $k_{\mathrm{des}} = 0.1$\,s$^{-1}$ value by choice.
+
+\begin{table}[tbp]
+\centering
+\caption{Purge times. (a) The hole, 100\,nm $\times$ 10\,$\mu$m, TMA at 573\,K ($\bar{v} = 410$\,m/s, $D_K = d\bar{v}/3 = 1.37\times10^{-5}$\,m$^2$/s), walls saturated, mouth density zero. (b) Chamber outlet signal after the pulse ends, as a fraction of the pulse-end outlet value; ``extr.'' = extrapolated with the exponential tail fitted over the last 40\,\% of the written purge window. (c) Reversible water on the blanket wafer, 5\,s pulse at 1\,\%, outlet to 1\,\% of the pulse-end value.}
+\label{tab:purge}
+\footnotesize
+\setlength{\tabcolsep}{3pt}
+(a)\par\medskip
+\begin{tabular}{lc}
+\toprule
+Quantity & Value \\
+\midrule
+$L^2/D_K$ & 7.3\,$\mu$s \\
+Slowest eigenmode $4L^2/(\pi^2 D_K)$ (Dirichlet mouth, Neumann bottom) & 3.0\,$\mu$s \\
+Bottom density to 1\,\%, first mode $(4/\pi)\exp(-t/\tau_1)$ & 14.4\,$\mu$s \\
+Numeric: bottom density to $1/e$ & 3.7\,$\mu$s \\
+Numeric: bottom density to 1\,\% & 14.4\,$\mu$s \\
+Numeric: hole-mean density to 1\,\% & 13.1\,$\mu$s \\
+\bottomrule
+\end{tabular}
+\par\medskip (b)\par\medskip
+\begin{tabular}{P{1.7in}cP{0.85in}cccP{0.9in}}
+\toprule
+Run & Pulse & Outlet at pulse end & To 10\,\% & To 1\,\% & To 0.1\,\% & Tail decay rate (time constant) \\
+\midrule
+TMA, patterned AR 100, 20\,s pulse, purge to 22\,s & 20\,s & 1.000\,$c_0$ & 1.10\,s & 1.90\,s & 2.73\,s (extr.) & 2.75\,s$^{-1}$ (0.36\,s) \\
+TMA, blanket, 0.5\,s pulse, purge to 1.5\,s & 0.5\,s & 0.297\,$c_0$ (peak 0.367 at +0.11\,s) & 1.25\,s (extr.) & 2.14\,s (extr.) & 3.04\,s (extr.) & 2.57\,s$^{-1}$ (0.39\,s) \\
+TMA, blanket, 1.26\,s pulse, purge to 2.26\,s (map) & 1.26\,s & 0.888\,$c_0$ & 1.07\,s (extr.) & 1.95\,s (extr.) & 2.83\,s (extr.) & 2.63\,s$^{-1}$ (0.38\,s) \\
+H$_2$O, blanket, $k_{\mathrm{des}} = 0$, 5\,s pulse, purge to 8\,s & 5\,s & 0.999\,$c_0$ & 1.14\,s & 2.20\,s & 3.25\,s (extr.) & 2.18\,s$^{-1}$ (0.46\,s) \\
+Reference: gap transit 0.015\,m / 0.050\,m/s & & & & 0.30\,s & & \\
+Reference: chamber volume / flow, $\pi\,0.2^2 \times 0.015$\,m$^3$ / $3.54\times10^{-3}$\,m$^3$/s & & & & 0.53\,s & & \\
+\bottomrule
+\end{tabular}
+\par\medskip (c)\par\medskip
+\begin{tabular}{lP{0.85in}P{1.05in}cP{1.7in}}
+\toprule
+$k_{\mathrm{des}}$ (s$^{-1}$) & Coverage at pulse end / 3\,s after & Outlet 3\,s after the pulse & Purge to 1\,\% & Basis \\
+\midrule
+0 & 1.000 / 1.000 & 0.0017\,$c_0$ & 2.20\,s & run (gas clearing) \\
+0.1 & 0.951 / 0.755 & 0.0167\,$c_0$ (tail model 0.0159) & 8.26\,s & extrapolated: tail $k_{\mathrm{des}}\theta N_0 A/(Q c_0)$, $\theta$ decaying at 0.088\,s$^{-1}$ \\
+1 & 0.660 / 0.113 & 0.0254\,$c_0$ (tail model 0.0238) & 4.33\,s & extrapolated, $\theta$ decaying at 0.654\,s$^{-1}$ \\
+10 & 0.163 / 0.001 & 0.0030\,$c_0$ & 2.40\,s & run (surface empties within 0.3\,s; gas clearing again) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The full Al$_2$O$_3$ cycle, TMA pulse, purge to 1\,\%, water pulse, purge \cite{george2010}, is 12.2\,s on the blanket wafer (0.35 + 1.9 + 1.7 + 8.3\,s), 37.6\,s on the AR-100 wafer (14.05 + 1.9 + 13.4 + 8.3\,s) and 29.4\,s at the same-supply optimum of Section~\ref{sec:doe} (9.8 + 1.9 + 9.4 + 8.3\,s, the water pulse scaled by the TMA ratio since the water half-cycle was not in the design, and the purges held at the baseline values; the optimum's lower carrier flow raises the chamber residence time 2.8-fold, so its TMA purge would scale to about 5\,s and its cycle to about 33\,s, a scaling estimate rather than a run). At 0.103\,nm per cycle, 5\,nm is 49 cycles: 10\,min per wafer and 5.5 wafers per hour with 60\,s of handling on the blanket wafer, 31\,min and 1.9 wafers per hour on the AR-100 wafer, 24\,min and 2.4 at the optimum; 10\,nm doubles the minutes (Fig.~\ref{fig:wph}, Table~\ref{tab:cycle}). With gas clearing only for water ($k_{\mathrm{des}} = 0$, 2.2\,s) the three cycles are 6.2, 31.6 and 23.3\,s. The rule turns this into a throughput formula,
+\begin{equation}
+\mathrm{WPH} = \frac{3600}{N\,[\,2 \times 1.2\,(1 + \Awall)\,N_0/(U c_0) + \text{purges}\,] + \text{handling}},
+\end{equation}
+with $N$ the number of cycles: below a wall-area ratio of about 10 the purges set the cycle and precursor fraction buys little; above it throughput falls as $1/(1 + \Awall)$, and tripling the TMA fraction doubles the AR-100 throughput (1.8 to 3.5 wafers per hour) while leaving the blanket wafer where it was (5.9 to 6.3), Table~\ref{tab:wph}. The chamber run at AR 100 sits on the 1\,\% curve within 2\,\%.
+
+\begin{figure}[tbp]
+\centering
+\includegraphics[width=\linewidth]{cycle_time_wph.png}
+\caption{Left: the four segments of the Al$_2$O$_3$ cycle (TMA pulse, chamber purge to 1\,\%, H$_2$O pulse, purge at $k_{\mathrm{des}} = 0.1$\,s$^{-1}$) stacked for the blanket baseline, the patterned AR-100 baseline and the same-supply optimum, with the cycle time and the 5\,nm throughput (60\,s handling) over each bar. Right: wafers per hour for 5\,nm against wall-area ratio from the rule at 1\,\% and 3\,\% TMA, with and without 60\,s handling, and the AR-100 chamber run as the point.}
+\label{fig:wph}
+\end{figure}
+
+\begin{table}[tbp]
+\centering
+\caption{Al$_2$O$_3$ cycle time and throughput (GPC 0.103\,nm per cycle; 49 cycles for 5\,nm, 98 for 10\,nm). Purges: TMA 1.90\,s (chamber outlet to 1\,\%, 20\,s patterned run); H$_2$O 8.26\,s ($k_{\mathrm{des}} = 0.1$\,s$^{-1}$, a stated choice). In brackets: the same cycle with gas clearing only for water ($k_{\mathrm{des}} = 0$, 2.20\,s). WPH = wafers per hour.}
+\label{tab:cycle}
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{P{1.4in}P{1.15in}P{0.65in}P{1.3in}P{1.3in}}
+\toprule
+Recipe & TMA + purge + H$_2$O + purge & Cycle & 5\,nm: min per wafer, WPH, WPH with 60\,s handling & 10\,nm: min per wafer, WPH, WPH with 60\,s handling \\
+\midrule
+Blanket wafer, baseline (1\,\%, 300\,sccm, 300\,Pa, 15\,mm) & 0.345 + 1.90 + 1.74 + 8.26\,s & 12.2\,s (6.2\,s) & 10.0\,min, 6.0, 5.5 (5.1\,min, 11.9, 9.9) & 20.0\,min, 3.0, 2.9 (10.1\,min, 5.9, 5.4) \\
+Patterned AR 100, baseline & 14.05 + 1.90 + 13.4 + 8.26\,s & 37.6\,s (31.6\,s) & 30.7\,min, 1.95, 1.9 (25.8\,min, 2.3, 2.2) & 61.4\,min, 0.98, 0.96 (51.5\,min, 1.2, 1.1) \\
+Patterned AR 100, same-supply optimum (2.51\,\%, 150\,sccm, 631\,Pa, 10\,mm) & 9.83 + 1.90 + 9.38 + 8.26\,s & 29.4\,s (23.3\,s) & 24.0\,min, 2.5, 2.4 (19.0\,min, 3.2, 3.0) & 48.0\,min, 1.25, 1.2 (38.1\,min, 1.6, 1.5) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[tbp]
+\centering
+\caption{The rule as throughput: wafers per hour for 5\,nm (49 cycles) against wall-area ratio, both half-cycles at the same supply flux, purges 1.90 + 8.26\,s. Each cell gives cycle, WPH, WPH with 60\,s handling, and in brackets the WPH with 60\,s handling and the $k_{\mathrm{des}} = 0$ water purge.}
+\label{tab:wph}
+\footnotesize
+\begin{tabular}{lcc}
+\toprule
+$\Awall$ & 1\,\% TMA & 3\,\% TMA \\
+\midrule
+1 & 11.2\,s, 6.6, 5.9 (11.6) & 10.5\,s, 7.0, 6.3 (13.0) \\
+11.2 (AR 20) & 16.3\,s, 4.5, 4.2 (6.4) & 12.2\,s, 6.0, 5.5 (10.0) \\
+28.0 (AR 50) & 25.1\,s, 2.9, 2.8 (3.6) & 15.1\,s, 4.9, 4.5 (7.1) \\
+55.9 (AR 100) & 39.3\,s, 1.9, 1.8 (2.1) & 19.9\,s, 3.7, 3.5 (4.9) \\
+112 & 67.6\,s, 1.1, 1.1 (1.2) & 29.3\,s, 2.5, 2.4 (3.0) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{A full 3D chamber with a one-sided pump}
+\label{sec:chamber3d}
+The wedge is axisymmetric by construction. To test what a real pumping arrangement does to the saturation map, the same chamber was meshed in full 3D (\texttt{blockMesh} O-grid, 106,000 hexahedra, non-orthogonality below 31$^{\circ}$, 12 cells across the 15\,mm gap) with the outlet reduced from the full annulus to a 60$^{\circ}$ sector of the side wall at $r = 200$\,mm, the rest of the side wall a no-slip wall; showerhead, wafer condition, operating point and TMA fraction are those of Section~\ref{sec:loading} (uniform AR-100 wafer, 1\,\% TMA, 16\,s pulse). The steady carrier flow ($\mathrm{Re} = 0.045$) is strongly one-sided: the gap-averaged outward velocity at $r = 140$\,mm is 0.85\,m/s in the port-side quadrant and 0.01\,m/s on the far side, against 0.27\,m/s in the axisymmetric chamber, so gas over the far half of the wafer crosses the wafer toward the port instead of leaving radially (Fig.~\ref{fig:3dmap}).
+
+\begin{figure}[tbp]
+\centering
+\includegraphics[width=\linewidth]{chamber3d_t90_map.png}
+\caption{Full 3D chamber with a one-sided 60$^{\circ}$ pumping port: polar map of the hole-bottom $t_{90}$ over the AR-100 wafer at the 6144 face centres (left, absolute; right, deviation from the wedge value at the same radius in \%), the port marked in red at $r = 200$\,mm, the wafer edge dashed.}
+\label{fig:3dmap}
+\end{figure}
+
+The gas phase sees the asymmetry, the saturation time hardly does. At $r = 140$\,mm the surface TMA density is 9\,\% higher on the port side than on the far side at 0.3\,s and 8\,\% higher at 14\,s, and the hole-bottom coverage at 14\,s is 0.90 against 0.84; but the hole bottoms fill in a steep late wave fed by the integrated supply, so this 6\,\% coverage lead is a 0.13\,s lead in saturation time. The azimuthal peak-to-peak of the hole-bottom $t_{90}$ is 0.09\,\% at $r = 50$\,mm, 0.37\,\% at 100\,mm and 0.96\,\% at 140\,mm, in every case a single smooth lobe earliest at the port and latest opposite it (Fig.~\ref{fig:3daz}, Table~\ref{tab:3d}). The slowest point on the wafer moves from the edge ring of the wedge to the far side at $r = 133$\,mm, 160$^{\circ}$ from the port, at 14.17\,s against 14.05\,s in the wedge, and 0.3\,\% of that 0.8\,\% is the coarser 3D gap resolution, which shifts the centre value by the same amount. The flat surface between the holes, which saturates at 2\,s while the gas phase is still drawn down to $0.02\,c_0$, is the more sensitive indicator: 1.92\,s on the port side against 2.01\,s on the far side at $r = 140$\,mm, a 4.8\,\% spread.
+
+\begin{figure}[tbp]
+\centering
+\includegraphics[width=\linewidth]{chamber3d_azimuthal.png}
+\caption{Hole-bottom (left) and flat-surface (right) $t_{90}$ against azimuth from the port at $r = 50$, 100 and 140\,mm in the 3D chamber: faces within $\pm$2.5\,mm as dots, 15$^{\circ}$ bin values at the exact radius as lines, the wedge value at that radius dashed.}
+\label{fig:3daz}
+\end{figure}
+
+\begin{table}[tbp]
+\centering
+\caption{Hole-bottom $t_{90}$ in the 3D chamber by radius (0.9 crossing interpolated between 0.1\,s writes; wedge values from the same interpolation on the 20\,s AR-100 run; port at azimuth 0).}
+\label{tab:3d}
+\scriptsize
+\setlength{\tabcolsep}{2.5pt}
+\begin{tabular}{P{0.7in}P{0.35in}P{0.45in}P{0.45in}P{0.45in}P{0.6in}P{0.7in}P{0.55in}P{0.7in}P{0.5in}}
+\toprule
+Radius (mm) & Faces & Mean (s) & Min (s) & Max (s) & Peak-to-peak, raw band (\% of mean) & Peak-to-peak, 15$^{\circ}$ bins at the exact radius (\%) & Port side $-$ far side (\%) & Wedge $t_{90}$ at $r$ (s) & 3D mean / wedge \\
+\midrule
+50 & 140 & 14.048 & 14.042 & 14.055 & 0.09 & 0.09 & $-0.08$ & 14.009 & 1.0028 \\
+100 & 308 & 14.075 & 14.041 & 14.098 & 0.40 & 0.37 & $-0.36$ & 14.021 & 1.0038 \\
+140 & 360 & 14.089 & 13.975 & 14.156 & 1.29 & 0.96 & $-0.90$ & 14.006 & 1.0060 \\
+148.9 (outermost row) & 248 & 13.687 & 13.544 & 13.931 & 2.83 & -- & $-0.70$ & 13.280 ($r = 149.5$\,mm) & 1.031 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The reason is the one behind the whole paper. At gap P\'eclet 0.09 the precursor reaches the wafer by diffusion across the gap from the showerhead directly above each point, the patterned wafer captures almost all of what arrives, and the saturation time is the time to deliver $(1 + \Awall)\,N_0$ per unit area at the showerhead's own rate. The cross-flow toward the port can redistribute only the few per cent that escape capture, and it does so over a lateral diffusion time ($R^2/D = 2.7$\,s) short against the 14\,s pulse. A one-sided pump therefore costs about 1\,\% of pulse time on this wafer; the recipe margin of the design rule (the factor 1.2) covers it, and the azimuthal lag would need a convective gap (P\'eclet of order 1, i.e.\ ten times the flow or pressure) before it mattered. The same ordering holds in the wedge's radial direction, where the edge lag is 0.4\,\%.
+
 \section{Discussion}
 \label{sec:discussion}
 \begin{itemize}
 \item Throughput on patterned wafers is bought with precursor delivery rate (vapour pressure, bubbler carrier flow, injector design), not with chamber pressure, gap or carrier flow; those knobs move uniformity.
 \item Recipe transfer: the blanket-to-product factor is the wall-area ratio, 11 to 56 here; monitor-wafer recipes under-dose product wafers by that factor at the same supply.
 \item Precursor utilization: 60\,\% (TMA) and 50\,\% (H$_2$O) over the saturating pulse on the patterned wafer; the remainder is pumped after saturation. Shorter pulses with feedback (end-point on surface density) would recover it.
-\item Low sticking is a conformality asset and a throughput cost only on blanket wafers.
+\item The TMA sticking coefficient is the least certain input of the chamber model: the published values at or near this temperature span 0.5--2$\times10^{-3}$ (Arts et al.\ \cite{arts2019jvsta}, lateral-high-aspect-ratio front slope at a 275\,\degC\ set-point), $(4 \pm 1)\times10^{-3}$ (Vandalon and Kessels \cite{vandalon2016}, sum-frequency generation at 300\,\degC), $5.72\times10^{-3}$ (Ylilammi et al.\ \cite{ylilammi2018}, fit to a lateral channel profile at 300\,\degC) and $8.5\times10^{-3}$ (this work, fit to the Zenodo 3974438 profiles \cite{zenodo3974438} at 300\,\degC, factor 1.5 sheet-to-sheet). We reran the baseline operating point (1\,\% TMA, 300\,sccm, 300\,Pa, 573\,K) at $s = 5\times10^{-4}$, $10^{-3}$, $2\times10^{-3}$, $5\times10^{-3}$ and $8.5\times10^{-3}$ for the blanket wafer and the AR-100 patterned wafer (Fig.~\ref{fig:sticking}). On the patterned wafer the hole bottoms reach 90\,\% coverage at 14.00--14.15\,s (centre) and 14.05--14.20\,s (worst face) for every value, 1.17--1.18 times the supply-limit time of 11.99\,s, with 84--85\,\% precursor utilization: a seventeen-fold change in $s$ moves the saturating pulse by three write intervals. Low sticking changes the order of events inside the hole (at 10\,s the bottom coverage is 0.38 at $s = 5\times10^{-4}$ and 0.02 at $8.5\times10^{-3}$) but not the finish, because the last tenth of the bottom coverage waits for molecules that the showerhead has not yet delivered. The design rule, the blanket-to-product transfer factor and the pulse-time map are therefore independent of which published value is right.
+\item The blanket wafer is not: low sticking is a conformality asset and a throughput cost only on blanket wafers. Its saturation time runs from 0.33\,s at $s = 8.5\times10^{-3}$ to 1.01\,s at $5\times10^{-4}$, about $s^{-0.4}$ rather than $1/s$, because the TMA density at the wafer rises as the uptake slows ($0.065\,c_0$ against $0.23\,c_0$ at the centre 0.1\,s into the pulse) and partly compensates; the flat surface between the holes of the patterned wafer behaves the same way (1.55 to 6.00\,s). Every blanket-wafer time in this paper therefore carries a factor-3 uncertainty from the sticking coefficient, whereas the patterned-wafer times carry only the site-density uncertainty of the supply limit. The $8.5\times10^{-3}$ of our PillarHall fit is a slope-constrained value: the front slope fixes $s$ and the penetration depth fixes the exposure per site, so the unknown TMA partial pressure trades against the assumed site density, not against $s$. It sits a factor 1.5 to 2 above the two other 300\,\degC\ values and a factor 4 above the upper bound of the 275\,\degC\ set-point data, a spread that also reflects three different kinetic definitions (initial sticking probability, lumped Langmuir coefficient with an equilibrium constant, irreversible first-order Langmuir on $4\times10^{18}$ sites). A profile grown at a known TMA partial pressure at 300\,\degC, with the site density taken from the measured growth per cycle, would remove the trade-off and fix $s$ to the sheet-to-sheet scatter.
 \item Robustness checks: replacing the bare floor by a 25\,mm edge ring with pumping below the wafer plane changes no saturation time by more than one write interval and leaves the within-wafer spread within 3\,\% (blanket 9--11\,\%, patterned 4\,\%), Fig.~\ref{fig:edgering}; the pulse-time results do not depend on the chamber outboard of the wafer at this P\'eclet number.
 \item Robustness checks continued: 200, 300 and 400\,\degC\ at fixed sccm and feed fraction give the same pulse times within one write interval (the supply $U c_0$ is temperature-independent; temperature acts through the chemistry, held fixed here); 50, 100 and 200\,nm holes at fixed open area and aspect ratio saturate within 1\,\% of each other, so the wall-area ratio is the rule's only geometric input.
-\item Limitations: isothermal gas (temperature enters only through properties); frozen carrier flow; irreversible Langmuir in the main runs; a first-order desorption term was added for water and shows the purge-tail mechanism (desorbing water holds the exhaust above 1\,\% for seconds at $k_{\mathrm{des}} = 0.1$ to 1\,s$^{-1}$) and the equilibrium-coverage limit (above $\sim$0.3\,s$^{-1}$ at 1\,\% H$_2$O the surface never reaches 90\,\%), Fig.~\ref{fig:desorption}, but $k_{\mathrm{des}}$ is a parameter, not a measurement, and a two-site chemisorbed/physisorbed model is the next step; single pattern density (14\,\% open area, half the wafer patterned); Knudsen $D_K = d\bar{v}/3$ without Clausing correction; $s$ and $N_0$ are literature-range inputs (PillarHall fit $8.5\times10^{-3}$; Arts et al.\ \cite{arts2019jvsta} 0.5--2$\times10^{-3}$).
+\item Limitations: isothermal gas (temperature enters only through properties); frozen carrier flow; irreversible Langmuir in the main runs; a first-order desorption term was added for water and shows the purge-tail mechanism (desorbing water holds the exhaust above 1\,\% for seconds at $k_{\mathrm{des}} = 0.1$ to 1\,s$^{-1}$) and the equilibrium-coverage limit (above $\sim$0.3\,s$^{-1}$ at 1\,\% H$_2$O the surface never reaches 90\,\%), Fig.~\ref{fig:desorption}, but $k_{\mathrm{des}}$ is a parameter, not a measurement, and a two-site chemisorbed/physisorbed model is the next step; single pattern density (14\,\% open area, half the wafer patterned); Knudsen $D_K = d\bar{v}/3$ without Clausing correction; $s$ and $N_0$ are literature-range inputs (the sensitivity to $s$ is quantified above; the patterned-wafer times carry only the site-density uncertainty).
 \end{itemize}
+
+\begin{figure}[tbp]
+\centering
+\includegraphics[width=\linewidth]{sticking_sensitivity.png}
+\caption{Sensitivity of the saturating TMA pulse to the sticking coefficient at the baseline operating point (1\,\% TMA, 300\,sccm, 300\,Pa, 573\,K, 15\,mm gap). Left: time to 90\,\% coverage against $s$ for the blanket wafer (worst face), the flat surface between the holes of the AR-100 patterned wafer, and the hole bottoms of the patterned wafer (centre and worst face); dash-dotted horizontal lines are the supply-limit times $(1 + 55.9)\,N_0/(U c_0) = 11.99$\,s and $N_0/(U c_0) = 0.211$\,s. Right: the same times divided by their supply-limit time; the blue band is the 1.05--1.27 range of the twelve patterned cases of the pulse-time map at $s = 5\times10^{-3}$. In both panels the green band is the Arts et al.\ \cite{arts2019jvsta} range (0.5--2$\times10^{-3}$, set-point 275\,\degC), and the vertical lines are the Ylilammi et al.\ \cite{ylilammi2018} fit ($5.72\times10^{-3}$, 300\,\degC), the Vandalon and Kessels \cite{vandalon2016} sum-frequency-generation value ($4\times10^{-3}$, 300\,\degC), the PillarHall fit of this work ($8.5\times10^{-3}$, 300\,\degC) and the value used in the chamber runs ($5\times10^{-3}$).}
+\label{fig:sticking}
+\end{figure}
 
 \begin{figure}[tbp]
 \centering
@@ -250,12 +512,14 @@ The patterned-surface boundary condition takes hole density and aspect ratio as 
 \begin{equation}
 t_{\mathrm{pulse}} = 1.2\,\bigl(1 + \Awall\bigr)\,\frac{N_0}{U c_0},
 \end{equation}
-within 25\,\% over aspect ratios 20--100 and a twenty-fold range of feed fraction, and independent of hole diameter at fixed wall area, of temperature at fixed sccm and fraction, and of the chamber geometry outboard of the wafer.
+within 25\,\% over aspect ratios 20--100 and a twenty-fold range of feed fraction, and independent of hole diameter at fixed wall area, of temperature at fixed sccm and fraction, of the chamber geometry outboard of the wafer, of the TMA sticking coefficient across its published range ($5\times10^{-4}$ to $8.5\times10^{-3}$: 1.17 to 1.18 supply-limit times, three write intervals of movement) and, in a full 3D chamber with a one-sided pump, of the pumping arrangement (azimuthal spread of the saturation time under 1\,\%, within the rule's factor 1.2).
 \item The same normalisation puts a measured fluidized-bed ALD run at 1.12 supply-limit times and orders the measured utilization of a rotary-drum reactor with loading; wafers and powders sit on one curve of utilization against surface area spanning five orders of magnitude.
+\item The chamber model reproduces the published Fiji F200 case where that case can be represented: the TMA exposure delivered to the wafer per pulse agrees with the authors' three-dimensional CFD to 12 to 22\,\% and the saturation state of the 25 and 60\,ms pulses with the measured growth per cycle; the 2.4\,\% measured non-uniformity, which comes from an off-axis pulse recirculation, a cold loading door and softer-than-Langmuir kinetics, is not reproduced by an axisymmetric frozen-flow model. The blanket saturation exposure, 0.146\,Pa\,s at the surface, sits inside the 0.05 to 1.3\,Pa\,s spread of kinetic saturation exposures from seven independent sources.
 \item A recipe saturated on a blanket wafer under-doses a product wafer by the wall-area ratio, 11 to 56 here. Blanket wafers are the kinetics-limited exception to the rule, not the norm.
 \item On a non-uniform layout the pulse is set by the local wall-area ratio of the most demanding region, not by the wafer average: the average under-predicts by 2.3$\times$ (dense centre) and 1.2$\times$ (aspect-ratio ramp), the local ratio is conservative by 15 to 21\,\%, and a pattern boundary puts a 26\,\% saturation gradient inside the array.
 \item Second-order knobs: pressure up and carrier flow down raise precursor utilization from about 55\,\% to 95\,\% at fixed precursor flow; gap and pressure set within-wafer edge lag (5 to 18\,\%) but not time.
 \item The water half-cycle needs the same pulse as TMA on patterned wafers despite a 50$\times$ lower sticking coefficient, and coats deep features more evenly; reversible adsorption, not chamber flushing, governs its purge.
+\item In fab units the rule's pulse gives 99\,\% step coverage as well as 90\,\%, because the saturation front is 0.25 to 0.3\,s wide at every aspect ratio; 50 cycles of the blanket recipe leave 1.4\,nm of a 5.15\,nm film on top of an AR-100 array and nothing at the bottom. The Al$_2$O$_3$ cycle on the AR-100 wafer is 3.1 times the blanket cycle (37.6 against 12.2\,s; 1.9 against 5.5 wafers per hour for 5\,nm), its pulses are three quarters of the cycle, and above a wall-area ratio of about 10 throughput falls as $1/(1 + \Awall)$; the purge is set by water desorption, not by the chamber, which clears to 1\,\% in 2\,s while a 10\,$\mu$m hole empties in microseconds.
 \item Plasma ALD adds a hard ceiling: above a wall recombination probability of about $3\times10^{-3}$, aspect ratio 100 is unreachable by dose. Separated-chemistry (spatial) architectures beat temporal pulsing by the same wall-area factor the rule predicts.
 \item All of this runs on a laptop in open-source tools, with the feature model verified against an independent code and fitted to public measurements, and every number traceable to a script in the repository.
 \end{enumerate}
@@ -264,7 +528,7 @@ within 25\,\% over aspect ratios 20--100 and a twenty-fold range of feed fractio
 Validation data by R.~L. Puurunen and O.~M.~E. Ylivaara (Aalto University, Zenodo 3974438, CC BY 4.0). Machball by A.~Yanguas-Gil and J.~W. Elam (Argonne). OpenFOAM v2606 (OpenCFD) via the gerlero/openfoam-app build.
 
 \section*{Code and data availability}
-OpenFOAM v2606 cases, the \texttt{aldWallKinetics} boundary-condition library, the Python \texttt{aldconf} solver and its command line (\texttt{python -m aldconf} evaluates the rule, the surrogate and the Pareto front), tests and all figures: \url{https://github.com/Soham-ChemE/ald-conformality}. Validation data: Zenodo 3974438 (CC BY 4.0).
+OpenFOAM v2606 cases, the \texttt{aldWallKinetics} boundary-condition library, the Python \texttt{aldconf} solver and its command line (\texttt{python -m aldconf} evaluates the rule, the surrogate and the Pareto front), tests and all figures: \url{https://github.com/Soham-ChemE/ald-conformality}. The repository also ships a layout-to-recipe tool on its live page (pattern zones in, per-zone local rule and recipe pulse out, calibrated on the two non-uniform runs of Section~\ref{sec:layout}) and continuous integration that rebuilds the boundary conditions and reruns a regression case in an OpenFOAM container (77 tests). Validation data: Zenodo 3974438 (CC BY 4.0).
 
 \begingroup
 \small
@@ -371,6 +635,60 @@ N.~Li, V.~Nguyen, M.~Balseanu, L.-Q. Xia, S.~D. Marcus, H.~Yang and K.~Tanaka (A
 
 \bibitem{openfoam}
 OpenCFD Ltd., \emph{OpenFOAM v2606}, June 2026, \url{https://www.openfoam.com}; built for macOS with the gerlero/openfoam-app distribution, \url{https://github.com/gerlero/openfoam-app} (accessed November 2026).
+
+\bibitem{gakis2018}
+G.~P. Gakis, H.~Vergnes, E.~Scheid, C.~Vahlas, B.~Caussat and A.~G. Boudouvis,
+``Computational fluid dynamics simulation of the ALD of alumina from TMA and H$_2$O in a commercial reactor,''
+\emph{Chem. Eng. Res. Des.} \textbf{132}, 795--811 (2018).
+\href{https://doi.org/10.1016/j.cherd.2018.02.031}{doi:10.1016/j.cherd.2018.02.031}.
+
+\bibitem{gakis2019}
+G.~P. Gakis, H.~Vergnes, E.~Scheid, C.~Vahlas, A.~G. Boudouvis and B.~Caussat,
+``Detailed investigation of the surface mechanisms and their interplay with transport phenomena in alumina atomic layer deposition from TMA and water,''
+\emph{Chem. Eng. Sci.} \textbf{195}, 399--412 (2019).
+\href{https://doi.org/10.1016/j.ces.2018.09.037}{doi:10.1016/j.ces.2018.09.037}.
+
+\bibitem{vandalon2016}
+V.~Vandalon and W.~M.~M. Kessels,
+``What is limiting low-temperature atomic layer deposition of Al$_2$O$_3$? A vibrational sum-frequency generation study,''
+\emph{Appl. Phys. Lett.} \textbf{108}, 011607 (2016).
+\href{https://doi.org/10.1063/1.4939654}{doi:10.1063/1.4939654}.
+
+\bibitem{vandalon2017}
+V.~Vandalon and W.~M.~M. Kessels,
+``Revisiting the growth mechanism of atomic layer deposition of Al$_2$O$_3$: a vibrational sum-frequency generation study,''
+\emph{J. Vac. Sci. Technol. A} \textbf{35}, 05C313 (2017).
+\href{https://doi.org/10.1116/1.4993597}{doi:10.1116/1.4993597}.
+
+\bibitem{vandalon2019}
+V.~Vandalon and W.~M.~M. Kessels,
+``Initial growth study of atomic-layer deposition of Al$_2$O$_3$ by vibrational sum-frequency generation,''
+\emph{Langmuir} \textbf{35}(32), 10374--10382 (2019).
+\href{https://doi.org/10.1021/acs.langmuir.9b01600}{doi:10.1021/acs.langmuir.9b01600}.
+
+\bibitem{puurunen2005}
+R.~L. Puurunen,
+``Surface chemistry of atomic layer deposition: a case study for the trimethylaluminum/water process,''
+\emph{J. Appl. Phys.} \textbf{97}, 121301 (2005).
+\href{https://doi.org/10.1063/1.1940727}{doi:10.1063/1.1940727}.
+
+\bibitem{soto1991}
+C.~Soto and W.~T. Tysoe,
+``The reaction pathway for the growth of alumina on high surface area alumina and in ultrahigh vacuum by a reaction between trimethyl aluminum and water,''
+\emph{J. Vac. Sci. Technol. A} \textbf{9}, 2686--2695 (1991).
+\href{https://doi.org/10.1116/1.577226}{doi:10.1116/1.577226}.
+
+\bibitem{dillon1995}
+A.~C. Dillon, A.~W. Ott, J.~D. Way and S.~M. George,
+``Surface chemistry of Al$_2$O$_3$ deposition using Al(CH$_3$)$_3$ and H$_2$O in a binary reaction sequence,''
+\emph{Surf. Sci.} \textbf{322}, 230--242 (1995).
+\href{https://doi.org/10.1016/0039-6028(95)90033-0}{doi:10.1016/0039-6028(95)90033-0}.
+
+\bibitem{george2010}
+S.~M. George,
+``Atomic layer deposition: an overview,''
+\emph{Chem. Rev.} \textbf{110}(1), 111--131 (2010).
+\href{https://doi.org/10.1021/cr900056b}{doi:10.1021/cr900056b}.
 
 \end{thebibliography}
 \endgroup

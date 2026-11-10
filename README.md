@@ -29,6 +29,17 @@ published PillarHall thickness profiles.
 | ![water](figures/h2o_desorption.png) | ![peald](figures/peald_ceiling.png) |
 | Water half-cycle with reversible adsorption: desorbing water sets the purge | Plasma ALD: radical recombination caps the reachable aspect ratio |
 
+## Night three: the reviewer's questions
+
+Seven follow-ups, each answered with runs rather than argument (details in `paper/wp/`, run logs in `paper/assumptions.md`, every number in `CLAIMS.md`):
+
+- **Sticking coefficient.** Nine new chamber runs from s = 5 × 10⁻⁴ to 8.5 × 10⁻³ (the published TMA range plus this repository's PillarHall fit): the AR-100 wafer saturates in 14.00 to 14.20 s in every case, 1.17 to 1.18× the supply limit; the blanket wafer moves from 1.01 to 0.33 s. The rule and the map do not depend on s (`figures/sticking_sensitivity.png`).
+- **Fab units.** The rule's pulse gives 99 % step coverage, not just 90 % (the front is 0.3 s wide). A 10 µm hole purges in 14 µs; the chamber reaches 1 % in 1.9 s; desorbing water can hold the exhaust up for 8 s. An Al₂O₃ cycle is 12 s on a blanket wafer and 38 s on the product wafer: 5.5 against 1.9 wafers per hour for 5 nm (`figures/cycle_time_wph.png`).
+- **Chamber-scale checks.** The blanket surface exposure (1,090 L) sits within a factor 1.8 of the three published 300 °C kinetic values; an axisymmetric approximation of the Fiji F200 of Gakis et al. reproduces their CFD's delivered exposure to 12 to 22 % and the measured saturation state, but not their 2.4 % non-uniformity, which comes from asymmetries the wedge cannot carry (`figures/validation_gakis.png`).
+- **A full 3D chamber with a one-sided pump** (106,000 cells): azimuthal spread of the saturation time 0.96 % at r = 140 mm, worst point 14.17 s against 14.05 s in the wedge. A one-sided pump costs about 1 % of pulse time (`figures/chamber3d_t90_map.png`).
+- **Layout-to-recipe tool** on the live page: zones in, per-zone local rule and recipe pulse out, with the lateral-feed margin calibrated on the two non-uniform runs.
+- **Continuous integration and Docker**: 77 tests, the boundary conditions rebuilt and a regression pulse rerun in an OpenFOAM container on every push.
+
 ## What is in the box
 
 | Piece | Where | What it does |
@@ -52,7 +63,7 @@ Apple Silicon Mac; everything open source except MATLAB and JMP, which are used 
 # Python side (feature solver, tests, figures)
 ~/.local/bin/python3.12 -m venv .venv && .venv/bin/pip install -e . viennaps machball pytest
 sh scripts/fix_viennaps_libomp.sh .venv          # macOS: ViennaPS and ViennaLS each bundle an OpenMP runtime
-PYTHONPATH=src .venv/bin/python -m pytest -q      # 7 tests
+PYTHONPATH=src .venv/bin/python -m pytest -q      # 77 tests
 
 # OpenFOAM side (chamber + multiscale wall): native build from github.com/gerlero/openfoam-app
 OF=~/Applications/OpenFOAM-v2606.app/Contents/Resources/etc/openfoam
@@ -78,6 +89,29 @@ The scikit-learn GP reproduces the MATLAB fitrgp leave-one-out R^2: 0.999 / 0.98
 0.988 / 0.780 (MATLAB) for log10 pulse time / utilization / edge lag (`figures/doe_gp_python_report.txt`). The Pareto
 front of pulse time against precursor use (`figures/doe_pareto.png`) cuts the TMA per wafer pass by 12 % at the
 centre point's pulse time.
+
+### Continuous integration and Docker
+
+![CI](https://github.com/Soham-ChemE/ald-conformality/actions/workflows/ci.yml/badge.svg)
+
+Every push runs three jobs: the Python feature solver and its 77 tests on Python 3.12; the OpenFOAM chain in
+OpenCFD's `opencfd/openfoam-default:2512` container (the two boundary conditions compiled with wmake, the steady
+chamber flow, a 2 s TMA pulse over a patterned wafer, and a regression test of the wafer coverage against a stored
+reference to 1e-6); and a check that the live page ships every asset it references.
+
+The same chain runs anywhere Docker runs, no OpenFOAM or Python install needed:
+
+```bash
+docker build -t ald-conformality . && docker run --rm ald-conformality        # the test suite, ~1 min after the build
+docker run --rm ald-conformality --quick                                      # + steady flow, regression pulse and
+                                                                              #   the Python analyses, 10-20 min
+```
+
+`docker run --rm ald-conformality --full` reruns every chamber study (hours). `reproduce.sh` in the repository root is
+the entry point the image uses; it also runs natively inside the OpenFOAM launcher.
+```
+
+Also update the test count in the existing Reproduce block: `PYTHONPATH=src .venv/bin/python -m pytest -q      # 77 tests` -> `# 77 tests`.
 
 ## Method in one paragraph
 

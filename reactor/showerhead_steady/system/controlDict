@@ -3,7 +3,7 @@ application     simpleFoam;
 startFrom       startTime;
 startTime       0;
 stopAt          endTime;
-endTime         2000;
+endTime         ${ALD_STEADY_END_TIME:-2000};   // 2000 iterations; the environment variable shortens exploratory runs
 deltaT          1;
 writeControl    timeStep;
 writeInterval   500;

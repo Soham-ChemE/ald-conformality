@@ -1,0 +1,3 @@
+blockMesh exit 0, 3 s
+checkMesh exit 0, 1 s (13020 cells, max non-orthogonality 56 deg, max skewness 2.5, Mesh OK)
+simpleFoam exit 0, 2000 iterations, ClockTime 77 s (first attempt with the showerhead template fvSolution diverged at iteration 98)

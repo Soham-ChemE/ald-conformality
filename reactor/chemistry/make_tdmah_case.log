@@ -1,0 +1,5 @@
+parameters: {'vbar_tma': '410.3', 'vbar_tdmah': '185', 'sigma_tdmah': '1.008e-09', 'D_tma_ce': '0.00814', 'D_tdmah_ce': '0.003511', 'D_tdmah': '0.003623', 'N0': '2.769e+18', 'f': '0.003445', 's': '0.007', 'c0': '3.791e+20', 'rule_s': '9.959', 'rule_tma_s': '14.38', 'supply_time_s': '0.1458'}
+built showerhead_pulse_patterned_AR100_tdmah
+run: exit 0, 2.2 min
+TMA: bottom t90 centre 14.05 s (worst 14.10, edge 13.50), flat t90 1.95 s, rule 14.38 s, ratio 0.977; surface density at 5 s 0.0845 c0
+TDMAH: bottom t90 centre 11.60 s (worst 11.60, edge 11.10), flat t90 1.30 s, rule 9.96 s, ratio 1.165; surface density at 5 s 0.1969 c0

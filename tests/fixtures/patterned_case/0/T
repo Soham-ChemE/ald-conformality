@@ -1,0 +1,21 @@
+FoamFile { version 2.0; format ascii; class volScalarField; object T; }
+// fixture for tests/test_patterned_lib.py: a 1.5 s pulse on a wafer with a hole-density profile
+dimensions [0 0 0 1 0 0 0];
+internalField   uniform 0;
+boundaryField
+{
+    showerhead
+    {
+        type                 uniformMixed;
+        uniformValue         table ((0 1) (1.5 1) (1.5001 0) (10 0));
+        uniformGradient      constant 0;
+        uniformValueFraction constant 0.00148978;
+    }
+    topWall    { type zeroGradient; }
+    wafer      { type patternedSurface; s 5e-3; r 0; vbar 410; N0 4e18; c0 3.79e20; d 100e-9; AR 100; holeDensity 1.78e13; nCells 200; holeDensityProfile table ((0 1.78e13) (0.075 1.78e13) (0.1 0) (0.15 0)); value uniform 0; }
+    floor      { type zeroGradient; }
+    outlet     { type inletOutlet; inletValue uniform 0; value uniform 0; }
+    axis       { type empty; }
+    front      { type wedge; }
+    back       { type wedge; }
+}

@@ -413,3 +413,187 @@ Reading:
 Caveats: 16 s pulse (all faces saturate before 12.6 s, so the shortened pulse does not truncate anything); t90
 resolution 0.05 s; the face radius uses the wedge face centroid; the chamber floor outside the wafer is a
 non-absorbing zeroGradient wall in both layouts as in all earlier runs.
+
+## Night 3, part 2: sticking-coefficient sensitivity (reactor/sweep_sticking_sensitivity.py; figures/sticking_sensitivity.png, .csv)
+Nine new runs at the baseline point (300 Pa, 573 K, 300 sccm, 1 % TMA, 15 mm gap, N0 4e18, c0 3.79e20, frozen flow)
+with s = 5e-4, 1e-3, 2e-3, 8.5e-3 on the AR-100 patterned wafer (24 s pulse, endTime 26 s, writes 0.05 s; the 20 s
+long case is the 5e-3 point) and s = 5e-4, 1e-3, 2e-3, 5e-3, 8.5e-3 on the blanket wafer (8 s pulse, endTime 9 s,
+writes 0.01 s). Cases are copies of showerhead_pulse_patterned_AR100_long and showerhead_pulse_langmuir_p0.5 with the
+wafer BC line, pulse table and endTime/writeInterval substituted (each regex asserted to hit once), under
+reactor/sticking/. Wall time 84-96 s per blanket case, 197-206 s per patterned case, 21 min in all.
+| s | blanket t90 centre / worst | patterned flat t90 | patterned bottom t90 centre / worst | bottom t90 / 11.99 s (worst) | utilization patterned / blanket |
+| 5e-4 | 0.92 / 1.01 s | 6.00 s | 14.15 / 14.20 s | 1.184 | 84.4 % / 20.9 % |
+| 1e-3 | 0.64 / 0.71 | 4.25 | 14.05 / 14.10 | 1.176 | 85.0 / 29.7 |
+| 2e-3 | 0.47 / 0.53 | 3.00 | 14.00 / 14.05 | 1.172 | 85.3 / 39.7 |
+| 5e-3 | 0.35 / 0.39 | 1.95 | 14.05 / 14.10 | 1.176 | 85.0 / 54.0 |
+| 8.5e-3 | 0.30 / 0.33 | 1.55 | 14.05 / 14.10 | 1.176 | 85.0 / 63.8 |
+Reading:
+- The patterned-wafer pulse is independent of s across the whole published range: 0.15 s (three write intervals)
+  of movement for a seventeen-fold change, tau_sat 1.17-1.18 throughout, utilization 84-85 %. The surface density over
+  the wafer at 10 s is 0.154-0.162 c0 for all five values: once the wafer takes essentially the whole feed, the gas
+  phase does not know the sticking coefficient. Inside the holes the bottoms fill earlier at low s (coverage at 10 s:
+  0.384 at 5e-4, 0.017 at 8.5e-3) and the flat-to-bottom lag shrinks from 12.5 to 8.15 s, but the last tenth waits for
+  the supply in every case.
+- The blanket wafer scales as about s^-0.4 (worst 1.01 to 0.33 s) and the flat surface of the patterned wafer as
+  about s^-0.5 (6.00 to 1.55 s), weaker than 1/s because the TMA density at the wafer rises as the uptake slows
+  (centre, 0.1 s: 0.229 c0 at 5e-4, 0.065 c0 at 8.5e-3). At s = 5e-4 the uptake coefficient s vbar/4 = 0.051 m/s
+  equals the inlet speed, so the surface sees about half the feed and the first-order time ln(10) N0/(s vbar/4 c0)
+  = 0.47 s becomes 0.92 s. The 1/s extrapolation (3.5 s at 5e-4) was wrong by a factor 3.5; the 8 s pulse was
+  longer than needed by a factor 8.
+- Blanket 5e-3 with 0.01 s writes gives 0.35 / 0.39 s against 0.345 / 0.385 s with 0.005 s writes: one write interval.
+- Literature check (full texts of Arts 2019 JVST A and Ylilammi 2018 JAP): Arts give TMA s0 = (0.5-2)e-3 at a 275 C
+  set-point (about 220 C substrate) from the front slope, and tabulate the 300 C values 2-7e-3 (Ylilammi data, slope
+  relation), 5.72e-3 (Ylilammi fit; their fitted partial pressure 147 Pa, K = 219 1/Pa) and 4 +/- 1e-3 (Vandalon and
+  Kessels 2016, SFG). Our PillarHall fit (8.5e-3 x/÷ 1.5 at 300 C) is a factor 1.5-2 above the 300 C values, not
+  4x above the field; the front slope fixes s and the penetration depth fixes exposure per site, so the unknown TMA
+  pressure trades against N0, not against s. Arts' J. Phys. Chem. C papers (2019, 2021) are on O-atom recombination
+  and give no TMA value.
+Caveats: single operating point (the DOE showed tau_sat 1.03-1.25 at p >= 316 Pa and up to 1.96 at 100 Pa with
+600 sccm, where carrier bypass, not sticking, is the cause); s held constant with coverage (first-order Langmuir);
+t90 resolution 0.05 s patterned, 0.01 s blanket; the Cremers 2019 review and Yim 2020 full texts were not readable
+through the tools available, so no numbers were taken from them.
+
+## Night 3, part 3: fab units, purge and throughput (coupling/fab_units.py; figures/step_coverage_vs_pulse.png, .csv, step_coverage_table.csv, purge_times.csv, cycle_time_wph.png, .csv, wph_vs_wall_ratio.csv)
+No new chamber runs. Inputs: the 1 % map runs at AR 20 / 50 / 100 (pulses 4.61 / 10.26 / 19.68 s, writes 0.023 /
+0.051 / 0.098 s), the 20 s AR-100 run (0.05 s writes, purge to 22 s), the blanket TMA runs (0.5 s pulse to 1.5 s;
+1.26 s pulse to 2.26 s), the water kdes 0 / 0.1 / 1 / 10 runs (5 s pulse to 8 s), `figures/pulse_time_map.csv`
+(t_supply column, already (1 + A_wall/A_wafer) N0/(U c0)) and `figures/doe_gp_report.txt` (same-supply optimum
+9.83 s). GPC 0.103 nm per cycle from the PillarHall plateau (night 1 part 10).
+Step coverage SC = thetaBottom/thetaFlat at a face during the pulse, read as the coverage a pulse of that length
+leaves (irreversible Langmuir; the chamber holds 0.019 c0 over the patterned wafer at the valve close, so the
+post-pulse addition is negligible; the long run's 14.05 s and the map's 14.01 s agree to one write). Worst face over
+faces 0-148 as in the map.
+| AR | rule | t90 centre / worst | t95 | t99 | flat t90 / t95 / t99 | t99 / rule |
+| 20 | 3.08 s | 2.67 / 2.71 | 2.78 / 2.81 | 2.92 / 2.94 | 1.84 / 2.14 / 2.60 | 0.96 |
+| 50 | 7.32 s | 6.73 / 6.73 | 6.83 / 6.83 | 6.94 / 6.99 | 1.94 / 2.35 / 3.06 | 0.95 |
+| 100 (map) | 14.38 s | 14.01 / 14.11 | 14.21 / 14.21 | 14.31 / 14.31 | 1.96 / 2.35 / 3.04 | 1.00 |
+| 100 (20 s run) | 14.38 s | 14.05 / 14.10 | 14.15 / 14.20 | 14.25 / 14.30 | 1.95 / 2.30 / 3.05 | 0.99 |
+Thickness after 50 cycles at the blanket pulse 0.345 s, bottom / top: AR 20 0.26 / 1.29 nm (SC 20 %), AR 50
+0.01 / 1.32 nm, AR 100 0.00 / 1.44 nm; saturated 5.15 nm.
+Purge (a), hole 100 nm x 10 um, TMA 573 K, vbar 410 m/s, D_K = d vbar/3 = 1.368e-5 m2/s: L^2/D_K 7.31 us; slowest
+eigenmode 4 L^2/(pi^2 D_K) 2.96 us; bottom to 1 % by the first mode (4/pi) exp(-t/tau1): 14.36 us. Implicit 1D
+transient (200 cells, 20 ns steps, n = 1 at t = 0, n(0) = 0, dn/dx(L) = 0): bottom to 1/e 3.70 us, to 1 % 14.42 us,
+hole mean to 1 % 13.08 us. Hole clearing is 1.3e5 times faster than the chamber's 1 % time.
+Purge (b), outlet patch mean after the pulse, fraction of the pulse-end value; tails fitted log-linearly over the
+last 40 % of the written purge, extrapolated where the window ends first:
+| run | outlet at pulse end | 10 % | 1 % | 0.1 % | tail decay (time constant) |
+| TMA patterned AR 100, 20 s | 1.000 c0 | 1.10 s | 1.90 s | 2.73 s extr. | 2.75 1/s (0.36 s) |
+| TMA blanket 0.5 s (1 s window; outlet still rising at pulse end, peak 0.367 c0 at +0.11 s) | 0.297 c0 | 1.25 extr. | 2.14 extr. | 3.04 extr. | 2.57 1/s (0.39 s) |
+| TMA blanket 1.26 s (map, 1 s window) | 0.888 c0 | 1.07 extr. | 1.95 extr. | 2.83 extr. | 2.63 1/s (0.38 s) |
+| H2O blanket kdes 0, 5 s | 0.999 c0 | 1.14 s | 2.20 s | 3.25 extr. | 2.18 1/s (0.46 s) |
+References: gap transit 0.015 / 0.050 = 0.30 s; V/Q = pi 0.2^2 x 0.015 / 3.54e-3 = 0.53 s. The outlet time constant
+sits between the two; the wafer flux itself clears within 0.05 s (part 1).
+Purge (c), water outlet to 1 % of the pulse-end level (metric of coupling/postprocess_desorption.py): kdes 0 2.20 s
+(run); 0.1 1/s 8.26 s and 1 1/s 4.33 s, extrapolated beyond the 3 s window as the desorption-fed level kdes theta
+N0 A_wafer/(Q c0) (checked against the simulated outlet at 3 s: 0.0159 vs 0.0167 c0 and 0.0238 vs 0.0254 c0) with
+theta decaying at the simulated rate over the last 2 s (0.088 and 0.654 1/s, below kdes because of re-adsorption);
+10 1/s 2.40 s (run).
+Cycle (TMA, purge 1.90 s, H2O, purge 8.26 s at kdes 0.1; in brackets kdes 0, 2.20 s): blanket 0.345 + 1.74 s pulses,
+12.2 s (6.2); patterned AR 100 14.05 + 13.4 s, 37.6 s (31.6); same-supply optimum 9.83 + 9.38 s (H2O scaled by
+9.83/14.05, not in the DOE; purges kept at baseline), 29.4 s (23.3). Caveat on the optimum: at 150 sccm, 631 Pa,
+10 mm the volumetric flow is 8.4e-4 m3/s, the showerhead speed 0.012 m/s, gap transit 0.84 s and V/Q 1.5 s, 2.8
+times the baseline; a TMA purge scaling with those would be about 5.3 s and the cycle about 32.8 s (estimate, not
+run); the desorption-fed water purge scales with the precursor supply, held within 25 % of the baseline.
+5 nm = 49 cycles, 10 nm = 98 at 0.103 nm per cycle. Minutes per wafer, 5 / 10 nm: 10.0 / 20.0, 30.7 / 61.4,
+24.0 / 48.0. Wafers per hour at 5 nm, no overhead / 60 s handling: 6.0 / 5.5, 1.95 / 1.9, 2.5 / 2.4; at 10 nm
+3.0 / 2.9, 0.98 / 0.96, 1.25 / 1.2.
+Rule as throughput, 5 nm, both half-cycles at the same supply flux (constants of coupling/temporal_vs_spatial.py),
+purges 1.90 + 8.26 s, 60 s handling: 1 % TMA 5.9 WPH at wall ratio 1, 4.2 at 11.2, 2.8 at 28, 1.8 at 55.9, 1.1 at
+112; 3 % TMA 6.3, 5.5, 4.5, 3.5, 2.4. The AR-100 chamber run (37.6 s, 1.9 WPH) lies on the 1 % curve (39.3 s,
+1.8 WPH).
+Caveats: the purge criterion is 1 % of the pulse-end outlet level, a choice; kdes is a parameter; the blanket TMA
+purge numbers are extrapolations from 1 s windows; the DOE optimum's purges are taken from the baseline chamber;
+the time resolution of the step-coverage table is one write interval; no gas-phase reaction, no dead volumes, no
+downstream plumbing, which in a real tool lengthen the purge.
+
+## Night 3, part 4: chamber-scale validation (reactor/validation_gakis, analysis/blanket_saturation_literature.py; figures/blanket_saturation_literature.png, .csv, figures/validation_gakis.png, .csv)
+(a) Blanket saturation against published data. No new chamber run. From reactor/showerhead_pulse_langmuir_p0.5:
+feed exposure p_feed t90 = 3.00 Pa x 0.345 s = 1.03 Pa s (7,760 L) at the centre, 1.16 Pa s at r = 149 mm; surface
+exposure (integral of the face TMA partial pressure to theta = 0.9) 0.146 Pa s (1,090 L) at the centre and 0.146 at
+the edge, equal to ln(10) N0/(s F1) = 0.142 Pa s (F1 = 1.30e22 /m2/s/Pa at 573 K). Literature exposures compiled with
+their DOIs in the csv: applied exposures 0.56 (Gakis, impingement from their CFD), 7.5 (our PillarHall fit), 14.7
+(Ylilammi, fitted entrance pressure), 25 and 160 Pa s (Arts, stated doses); kinetic E90 implied by stated s or sigma:
+0.05 (Soto and Tysoe, 25 C, via Puurunen 2005), 0.08 (PillarHall fit, s = 8.5e-3), 0.16 (Ylilammi, gamma = 5.72e-3,
+q = 5e18), 0.21 (Gakis, s0 = 0.004 x 0.86), 0.27 (Vandalon and Kessels, sigma = 6.5e-18 cm2, 300 C; 0.22 at 100 C),
+0.33 to 1.3 (Arts, s0 = 2e-3 to 5e-4, 220 C); Dillon 1995 via Puurunen (k = 0.0076 /s at 0.01 Torr, 227 C) gives
+404 Pa s on a porous membrane and is transport-limited, listed but excluded. Values read from figures: Gakis 2018
+Fig. 12 colour scale (0.0118-0.0130 mol/m2, +/- 0.0002), Gakis 2019 Fig. 10 squares (digitised by marker centroids,
++/- 0.003 A/cycle; digitised non-uniformity 2.37 % vs 2.40 % stated), Gakis 2018 Fig. 8 pulse shape (+/- 20 % per
+ordinate, integral renormalised). Not obtained: Ott 1997, Groner 2004, Elam 2002 full texts (not open; secondary
+sources give pulse times without partial pressures). Reading: our surface exposure sits in the middle of the 300 C
+cluster (0.08-0.27 Pa s), within a factor 1.8 of each explicit-sticking source; the feed exposure is 7x larger because
+the blanket wafer draws the surface density down to 0.14 c0 while it saturates (the supply-limited chamber), and
+literature feed exposures overstate surface exposures for the same reason. s needed to match each source: 2.7e-3
+(Vandalon), 3.4e-3 (Gakis), 4.7e-3 (Ylilammi), 2.2e-3 to 5.5e-4 (Arts), 8.7e-3 (PillarHall fit); s = 5e-3 stays.
+(b) Gakis et al. Fiji F200. Geometry measured on the 2018 Fig. 5a cross-section (1.65 px/mm on the 200 mm chuck top,
++/- 3 mm): inlet tube r = 20 mm, cone from r = 20 mm at +199 mm to r = 128 mm at +35 mm, wide chamber r = 128 mm to
+-50 mm, chuck cylinder r = 100 mm to -50 mm (real dome 124 mm deep), duct r = 106 mm to -205 mm, outlet on its floor.
+One axial inlet for their three (top 100, door 50, side 30 sccm), no loading-door box, carrier flow frozen, TMA a
+passive scalar (its inlet partial pressure peaks at 11.5 Pa against 9.6 Pa of Ar: the real pulse is a slug of
+nearly pure TMA; their outlet pressure rises 18 %), isothermal 573 K, D = 0.263 m2/s (N2 value scaled 1/p),
+lambda = 1.4 mm with 2 mm first cells. Q = 0.0603 m3/s (180 sccm at 24 C, 1 bar -> 9.6 Pa, 573 K), U_in = 48 m/s,
+Re 4.3, nu = 0.447 m2/s, residence 0.23 s. Mesh 13,020 cells, max non-orthogonality 56 deg, max skewness 2.5
+(checkMesh OK). simpleFoam: the showerhead template's consistent SIMPLE at relaxation 0.9 diverged at iteration 98
+(11 s); standard SIMPLE with one non-orthogonal corrector, p 0.3 / U 0.7, converged in 2000 iterations (Ux residual
+3.8e-7, p 2.5e-8, ClockTime 77 s); inlet and outlet flux 0.0602 m3/s. Pulses: s = 3.44e-3 (their s0 = 0.004 times
+the 86 % reaction probability of adsorbed TMA at 300 C), N0 = 4.1e18 /m2 (their 1.0 A/cycle at 3500 kg/m3), vbar
+410 m/s; 25 ms amount 8.74e-6 mol (their 0.63 mg) with their Fig. 8 shape (peak at 12 ms, 5 % by 50 ms, tail to
+0.3 s), 60 ms at 1.5x and 2.4x (not quantified in the paper), one case at s = 5e-3; Danckwerts inlet fraction
+f = 48/(48 + 128) = 0.27; dt 0.4 ms to 1.0 s, writes every 10 ms; 104 to 117 s wall time each (1.7 to 1.9 min,
+sharing the CPU with another solver; a first attempt at dt 0.2 ms to 1.5 s was stopped at 0.25 s after 3 min).
+| case | theta after the cycle (centre / min / max over |r| <= 95 mm) | non-uniformity | t90 centre / worst | wafer impingement exposure | exposure non-uniformity | captured | peak surface TMA |
+| 25 ms, s = 3.44e-3 | 0.9994 / 0.9994 / 0.9994 | 0.0007 % | 0.07 / 0.08 s | 0.671-0.673 Pa s | 0.28 % | 2.4 % | 5.6 Pa at 50 ms |
+| 60 ms x1.5 | 1.0000 | 0.00001 % | 0.06 / 0.06 s | 1.017-1.019 | 0.18 % | 1.6 % | 8.5 Pa |
+| 60 ms x2.4 | 1.0000 | 0 % | 0.05 / 0.05 s | 1.639-1.640 | 0.11 % | 1.0 % | 13.7 Pa |
+| 25 ms, s = 5e-3 | 1.0000 | 0.00003 % | 0.06 / 0.07 s | 0.671-0.673 | 0.28 % | 2.4 % | 5.6 Pa |
+| measured (2019 Fig. 10 / stated) | 25 ms: 0.996 / 0.975 / 0.998 of the 60 ms value; 60 ms: 1.00 | 2.40 % / 0.58 % | | their CFD 0.55-0.60 Pa s | 10.7 % | | 0.7-3.7 Pa at 25 ms (2019 Fig. 7b) |
+Reading: exposure to the wafer per pulse agrees with their 3D CFD to 12-22 %; saturation state agrees (25 ms at the
+knee, 60 ms past it); non-uniformity not reproduced (0.0007 % vs 2.4 %): their recirculating off-axis injection and
+cold loading door give a 10.7 % exposure spread we cannot carry axisymmetrically, and irreversible Langmuir turns even
+that into < 0.5 % at 3.2 E90, so their reversible kinetics, the 21 C wafer gradient and the H2O purge residue (the
+0.58 % at 60 ms is a saturated-TMA value) carry the rest. By 1/s, s_eff = 1.7e-3 to 3.0e-3 would put the 25 ms pulse
+at the measured 0.975 to 0.998. Caveats: dimensions from a figure; frozen flow during a pulse that is 50 % of the
+gas inventory; passive-scalar TMA above the carrier pressure; isothermal; chuck dome truncated; 60 ms amount assumed.
+
+## Night 3, part 6: 3D chamber (reactor/chamber3d/make_and_run.py, coupling/postprocess_chamber3d.py; figures/chamber3d_t90_map.png, chamber3d_azimuthal.png, chamber3d_t90.csv, chamber3d_summary.txt)
+Full 3D cylinder, r 0-200 mm, gap 15 mm, axis along x as in the wedge so the patternedSurface face radius
+sqrt(y^2 + z^2) and the wedge conventions carry over. blockMesh O-grid, nine blocks (central square of half side
+75 mm with its edges bulged to r = 82 mm, four curved blocks to r = 150 mm, four ring blocks to 200 mm, arc edges on
+both circles): 48 cells per quarter arc, 20 + 14 radial cells, 12 across the gap; 105,984 hexahedra, max
+non-orthogonality 30.7 deg (average 5.1), max skewness 0.794, max aspect ratio 5.04, checkMesh OK. Patches:
+showerhead and wafer (r < 150 mm, 6144 faces each, the wafer as one patch), topWall and floor (2688 each), sideWall
+(1920), and outlet = the 60 deg sector of the side wall centred on +y, 384 faces, carved with topoSet (patchToFace
+sideWall, subset boxToFace |z| < 100 mm, y > 170 mm; the sector boundary falls on face edges with 1.875 deg cells) and
+createPatch -overwrite. Steady flow: simpleFoam with the wedge's settings and BCs (uniform -0.050 m/s inflow, noSlip
+walls, totalPressure 0 at the port), converged by the residual controls in 93 iterations, 18 s wall (last initial
+residuals Ux 9.6e-8, Uy 1.0e-9, Uz 8.6e-9, p 4.1e-8); showerhead in 3.53366094e-3 m3/s, port out 3.53366097e-3 m3/s;
+mean port speed 1.125 m/s. Gap-averaged outward velocity at r = 140 mm: port side +0.854 m/s, 90 deg +0.073, far
+side +0.013 (axisymmetric 0.268); at r = 100 mm the far side flows inward, -0.081 m/s. Pulse: scalarTransportFoam on
+the frozen flow, 0/T as showerhead_pulse_patterned_AR100_long (uniformMixed Danckwerts inlet with f recomputed for
+delta 0.625 mm: 3.706e-3; patternedSurface wafer, s 5e-3, N0 4e18, c0 3.79e20, d 100 nm, AR 100, 1.78e13 /m2, 200
+hole cells; inletOutlet port; zeroGradient elsewhere), 16 s pulse, 17 s run, dt 1 ms, writes every 0.1 s (25 MB
+each, 3.4 GB; the wedge wrote every 0.05 s), 1939 s wall serial (a 0.2 s timing copy took 26 s). Face centres from
+postProcess -func writeCellCentres -time 0 (boundary values of C). t90 = 0.9 crossing interpolated between writes
+(first-write values kept in the csv); the wedge reread the same way gives 14.007 s centre (14.05 first write),
+14.051 s worst at r = 130.5 mm (14.10), 13.28 s outermost face, flat 1.923 s.
+Hole-bottom t90 by radius (faces within +-2.5 mm; 15 deg bins detrended to the exact radius):
+| r (mm) | mean (s) | min / max (s) | azimuthal p2p (%) | port - far (%) | wedge (s) | 3D / wedge |
+| 50 | 14.048 | 14.042 / 14.055 | 0.09 | -0.08 | 14.009 | 1.0028 |
+| 100 | 14.075 | 14.041 / 14.098 | 0.37 | -0.36 | 14.021 | 1.0038 |
+| 140 | 14.089 | 13.975 / 14.156 | 0.96 (raw band 1.29, of which 0.58 is radial) | -0.90 | 14.006 | 1.0060 |
+| 148.9, outermost row | 13.687 | 13.544 / 13.931 | 2.83 | -0.70 | 13.280 (149.5 mm) | 1.031 |
+Innermost face 14.044 s (first write 14.1) vs wedge 14.007 (+0.26 %, the 12-cell gap); worst face 14.168 s (14.2) at
+r = 132.7 mm, azimuth -160 deg, vs wedge worst 14.051 (+0.83 %); wafer-wide spread 4.44 % of 14.059 s; face-by-face
+3D minus wedge at the same radius +0.44 % mean, -0.09 to +1.37 %; faint O-grid block imprint of about 0.1 % in the
+deviation map. Flat t90: 1.929 s at r = 50 mm (p2p 0.02 %), 1.934 at 100 mm (0.46 %), 1.983 at 140 mm (4.75 %:
+1.917 port side, 2.011 far side; wedge 1.969). Gas side at r = 140 mm, port vs far: value/c0 0.0186 vs 0.0172 at
+0.3 s (p2p 9.2 %), 0.128 vs 0.126 at 8 s, 0.253 vs 0.237 at 14 s; flat coverage at 0.3 s 0.213 vs 0.191; bottom
+coverage 0.0084 vs 0.0075 at 8 s, 0.899 vs 0.835 at 14 s (p2p 10.8 %; 0.7 % at r = 50 mm). Reading: the one-sided
+pump moves the gas (three times the axisymmetric outward speed on the port side, almost none on the far side) and
+the instantaneous surface density and coverage follow it at the 10 % level, but the hole-bottom saturation time is
+the integral of a locally delivered, locally captured supply across a Pe 0.09 gap, so the azimuthal lag is 1 % at
+r = 140 mm and the worst point moves to the far side (r 133 mm, 160 deg from the port) at +0.8 % of the wedge value,
+0.3 % of it mesh. The flat surface, saturating at 2 s under a strongly drawn-down gas phase, is the more sensitive
+indicator (4.8 % spread at r = 140 mm). Caveats: 12 gap cells; writes 0.1 s apart (interpolated); frozen flow; a plain
+sector port at uniform pressure; non-absorbing floor and side wall; Stokes flow, so only the Peclet numbers change
+the result with operating point.

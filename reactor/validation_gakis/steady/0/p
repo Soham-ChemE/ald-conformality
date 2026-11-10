@@ -1,0 +1,19 @@
+FoamFile { version 2.0; format ascii; class volScalarField; object p; }
+dimensions [0 2 -2 0 0 0 0];
+internalField   uniform 0;
+boundaryField
+{
+    inlet       { type zeroGradient; }
+    wafer       { type zeroGradient; }
+    chuckSide   { type zeroGradient; }
+    chuckBottom { type zeroGradient; }
+    ceiling     { type zeroGradient; }
+    tubeWall    { type zeroGradient; }
+    sideWall    { type zeroGradient; }
+    stepFloor   { type zeroGradient; }
+    ductWall    { type zeroGradient; }
+    outlet      { type totalPressure; p0 uniform 0; }
+    axis        { type empty; }
+    front       { type wedge; }
+    back        { type wedge; }
+}

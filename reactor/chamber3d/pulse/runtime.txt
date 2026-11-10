@@ -1,0 +1,1 @@
+scalarTransportFoam to 17 s: exit 0, wall time 1939 s

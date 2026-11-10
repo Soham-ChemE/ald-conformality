@@ -1,0 +1,59 @@
+<section class="story alt" id="layout-tool"><div class="wrap">
+<style>
+#layout-tool .calc>div{min-width:0}
+#layout-tool .lt-btns{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 12px}
+#layout-tool .lt-btn{border:1px solid var(--line);background:var(--card);color:var(--ink);font:inherit;font-size:13px;font-weight:600;padding:6px 12px;border-radius:999px;cursor:pointer}#layout-tool .lt-btn:hover{border-color:var(--acc)}#layout-tool .lt-btn.pri{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+#layout-tool .lt-zones table{font-size:13px}#layout-tool .lt-zones th,#layout-tool .lt-zones td{padding:5px 4px}#layout-tool .lt-zones input{width:100%;min-width:62px;padding:5px 6px;border-radius:7px;border:1px solid var(--line);background:var(--bg);color:var(--ink);font-size:13px;font-variant-numeric:tabular-nums}#layout-tool .lt-zones input[data-k=density]{min-width:84px}
+#layout-tool .lt-idx{color:var(--muted);font-size:12px}#layout-tool .lt-x{border:0;background:transparent;color:var(--muted);font-size:18px;line-height:1;cursor:pointer;padding:2px 6px}#layout-tool .lt-x:hover{color:var(--c-rose)}
+#layout-tool .lt-sub{font-size:13px;color:var(--muted);margin:14px 0 6px;font-weight:600}
+#layout-tool textarea{width:100%;min-height:118px;resize:vertical;padding:8px 10px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink);font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12.5px;line-height:1.5}
+#layout-tool .lt-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:8px}#layout-tool .lt-msg{font-size:12.5px;color:var(--muted)}
+#layout-tool .lt-map{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:12px;box-shadow:var(--shadow);margin-bottom:14px}#layout-tool .lt-map .lt-svg{width:100%;max-width:480px;aspect-ratio:4/3;margin:0 auto}#layout-tool .lt-map svg{width:100%;height:100%;display:block}
+#layout-tool .lt-results{margin-top:14px;min-height:150px}#layout-tool .lt-results table{font-size:13.5px}#layout-tool .lt-results td,#layout-tool .lt-results th{white-space:nowrap}#layout-tool .lt-muted{color:var(--muted)}
+#layout-tool .calc .out b{font-size:24px}#layout-tool .calc .out div.rose{border-left:4px solid var(--c-rose)}
+#layout-tool .lt-foot{margin-top:10px}#layout-tool .lt-foot sup{color:var(--acc2)}
+</style>
+<div class="eyebrow reveal">10 · Layout to recipe</div>
+<h2 class="reveal">Give it your die map; it gives you the pulse.</h2>
+<p class="lead reveal">Describe the wafer as concentric zones (hole diameter, aspect ratio, hole density) and the chamber as the showerhead supply. The tool runs the supply rule on each zone, sizes the recipe on the most demanding one, and shows how far the wafer-average rule would have under-dosed it. The expected band under the recipe is the lateral-feed margin measured in the two non-uniform chamber runs, not a model.</p>
+<div class="calc reveal">
+<div>
+<div class="lt-btns" role="group" aria-label="Layout presets">
+<button type="button" class="lt-btn pri" data-preset="dense">Dense centre, bare edge</button>
+<button type="button" class="lt-btn" data-preset="uniform">Uniform AR-100 wafer</button>
+<button type="button" class="lt-btn" data-preset="ramp">AR 100 → 60 ramp, 5 zones</button>
+</div>
+<div class="tablewrap lt-zones" data-lenis-prevent><table aria-label="Zone table">
+<thead><tr><th>#</th><th>r in, mm</th><th>r out, mm</th><th>d, nm</th><th>AR</th><th>holes / m²</th><th></th></tr></thead>
+<tbody data-lt="zones"></tbody>
+</table></div>
+<div class="lt-row"><button type="button" class="lt-btn" data-lt="add">+ add zone</button><span class="lt-msg">density 0 or AR 0 = bare field. Zones are axisymmetric rings; the wafer is 300 mm.</span></div>
+<div class="lt-sub">Chamber</div>
+<label><span><b>TMA fraction</b>, %</span><input data-lt="x" type="number" value="1" step="0.1" min="0.05"></label>
+<label><span><b>Carrier flow</b>, sccm</span><input data-lt="Q" type="number" value="300" step="10" min="10"></label>
+<label><span><b>Pressure</b>, Pa</span><input data-lt="p" type="number" value="300" step="10" min="10"></label>
+<label><span><b>Temperature</b>, °C</span><input data-lt="T" type="number" value="300" step="10" min="50"></label>
+<label><span><b>Site density</b> N₀, 10¹⁸ per m²</span><input data-lt="N0" type="number" value="4" step="0.5" min="0.5"></label>
+<div class="lt-sub">Die-density map as CSV</div>
+<textarea data-lt="csv" spellcheck="false" aria-label="Zones as CSV: r_in_mm, r_out_mm, d_nm, AR, density_per_m2" placeholder="r_in_mm, r_out_mm, d_nm, AR, density_per_m2&#10;0, 75, 100, 100, 1.78e13"></textarea>
+<div class="lt-row"><button type="button" class="lt-btn pri" data-lt="load">Load CSV</button><button type="button" class="lt-btn" data-lt="export">Table → CSV</button><span class="lt-msg" data-lt="csvmsg"></span></div>
+</div>
+<div>
+<div class="lt-map"><div class="lt-svg" data-lt="map" aria-live="off"></div></div>
+<div class="out">
+<div class="wide" style="border-left:4px solid var(--acc2)"><b data-lt="recipe">—</b><span data-lt="recipeSub">recipe pulse: local rule of the governing zone</span></div>
+<div class="wide"><b data-lt="expected">—</b><span data-lt="expectedSub">expected saturation with the lateral-feed margin</span></div>
+<div class="rose"><b data-lt="avg">—</b><span data-lt="avgSub">wafer-average rule · under-dose</span></div>
+<div><b data-lt="under">—</b><span data-lt="underSub">under-dose factor, local / average</span></div>
+</div>
+<p class="note" data-lt="spread" style="margin:10px 0 0;min-height:1.4em"></p>
+<div class="warn" data-lt="warn" style="color:var(--c-warm)"></div>
+<div class="tablewrap lt-results" data-lenis-prevent><table aria-label="Per-zone results">
+<thead><tr><th>zone</th><th class="num">r, mm</th><th>pattern</th><th class="num">wall ratio</th><th class="num">local rule, s</th><th class="num">expected, s</th></tr></thead>
+<tbody data-lt="results"></tbody>
+</table></div>
+<p class="note lt-foot"><sup>a</sup> the rule is a supply limit and under-predicts a blanket surface (kinetics set the time there); <sup>b</sup> measured flat saturation of the bare field next to the dense array in the chamber run, 0.40–0.50 s against 0.35 s on a blanket wafer; <sup>c</sup> a zone next to a denser neighbour is starved, not fed (the ramp's last holes took 5.1 s against a 0.6 s local rule), so its own rule is not a prediction; it is covered by the recipe pulse.</p>
+<p class="note">Calibration and limits. The recipe pulse is the supply rule <code>t = 1.2 (1 + A_wall/A_wafer) N₀ / (U c₀)</code> evaluated with the wall-area ratio of the most demanding zone, the same arithmetic as the calculator above. The expected band multiplies it by 0.82–0.87, the ratio of measured saturation to local rule in the two non-uniform chamber runs (dense centre 11.85 / 14.39 s; AR ramp 12.50 / 14.36 s), and by 0.98 for a uniform wafer (14.05 / 14.39 s): a calibration on two runs, not a model of lateral transport. Zones are axisymmetric rings in a wedge chamber; azimuthal layout is not represented. The rule is validated for AR 20–100 and TMA 0.5–10 %; the tool warns outside that range but still computes. Files: <code>paper/assumptions.md</code> (Night 3, part 1), <code>figures/pattern_layout.csv</code>, <code>assets/layout-tool.js</code>.</p>
+</div>
+</div>
+</div></section>

@@ -40,3 +40,14 @@ reactor/**/0/U
 reactor/**/0/phi
 !reactor/showerhead_steady/0/U
 !reactor/edgering_steady/0/U
+
+# library built by reproduce.sh (CI and Docker) into the workspace
+.openfoam-user/
+
+# derived 3D-case files: cell-centre fields written by postProcess, the pulse timing copy, and the wafer-field cache
+reactor/**/0/C
+reactor/**/0/Cx
+reactor/**/0/Cy
+reactor/**/0/Cz
+reactor/chamber3d/pulse_timing/
+reactor/**/*.npz

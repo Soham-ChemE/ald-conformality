@@ -1,0 +1,10 @@
+FoamFile { version 2.0; format ascii; class dictionary; object topoSetDict; }
+// Pumping port: the 60 degree sector of the side wall centred on +y (azimuth 0), -30 .. +30 deg.
+// With nArc = 48 cells per quarter arc (1.875 deg each) the sector boundary falls on face edges (8 cells in from each
+// diagonal); face centres lie at |z| <= 97.1 mm inside the port and |z| >= 102.8 mm outside, so a box |z| < 100 mm
+// selects exactly the 32 x nG port faces.
+actions
+(
+    { name portFaces; type faceSet; action new;    source patchToFace; patch sideWall; }
+    { name portFaces; type faceSet; action subset; source boxToFace;   box (-0.001 0.170 -0.100) (0.016 0.210 0.100); }
+);

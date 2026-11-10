@@ -274,10 +274,25 @@ def qa_readme():
     (DOCS / "qa" / "README.md").write_text("\n".join(lines).replace("\u00a0", " ") + "\n", encoding="utf-8"); print("wrote qa/README.md")
 
 
+FIGS_ON_PAGE = ["sticking_sensitivity", "step_coverage_vs_pulse", "cycle_time_wph", "blanket_saturation_literature", "validation_gakis", "chamber3d_t90_map", "tapered_hole", "wordline_recess"]
+
+
+def copy_figures():
+    """The night-three result figures shown as static cards on the page: copied from figures/ and quantised (Pages serves docs/ only)."""
+    from PIL import Image
+    for f in FIGS_ON_PAGE:
+        src = FIG / f"{f}.png"
+        if not src.exists(): continue
+        im = Image.open(src).convert("RGB")
+        if im.width > 1600: im = im.resize((1600, round(im.height * 1600 / im.width)), Image.LANCZOS)
+        im.quantize(colors=256, method=Image.Quantize.MEDIANCUT, dither=Image.Dither.FLOYDSTEINBERG).save(OUT / f"fig_{f}.png", optimize=True); print("copied", f)
+
+
 def main(argv):
     only = [a for a in argv if a.startswith("--")]; do_all = not only
     if do_all or "--data" in only: build_data()
     if do_all or "--preview" in only: build_preview()
+    if do_all or "--figs" in only: copy_figures()
     tool = [sys.executable, str(DOCS / "tools" / "page_qa.py"), "--docs", str(DOCS)]
     if do_all or "--hero-png" in only: subprocess.run(tool + ["--hero-png"], check=True); quantise([OUT / "hero.png"], max_w=1600)
     if do_all or "--snap" in only: subprocess.run(tool + ["--snap"], check=True); quantise(sorted(OUT.glob("viz_*_*.png")))

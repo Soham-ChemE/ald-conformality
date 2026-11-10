@@ -1,0 +1,41 @@
+running blanket_s0.0005 ...
+blanket_s0.0005: exit 0, 84 s
+blanket s=0.0005: t90 centre 0.920 s, worst 1.010 s (r = 146.5 mm), tau_sat 4.79, utilization 20.9 %, theta(end) centre 1.0000
+running blanket_s0.001 ...
+blanket_s0.001: exit 0, 84 s
+blanket s=0.001: t90 centre 0.640 s, worst 0.710 s (r = 145.5 mm), tau_sat 3.37, utilization 29.7 %, theta(end) centre 1.0000
+running blanket_s0.002 ...
+blanket_s0.002: exit 0, 94 s
+blanket s=0.002: t90 centre 0.470 s, worst 0.530 s (r = 146.5 mm), tau_sat 2.52, utilization 39.7 %, theta(end) centre 1.0000
+running blanket_s0.005 ...
+blanket_s0.005: exit 0, 90 s
+blanket s=0.005: t90 centre 0.350 s, worst 0.390 s (r = 147.5 mm), tau_sat 1.85, utilization 54.0 %, theta(end) centre 1.0000
+running blanket_s0.0085 ...
+blanket_s0.0085: exit 0, 96 s
+blanket s=0.0085: t90 centre 0.300 s, worst 0.330 s (r = 138.5 mm), tau_sat 1.57, utilization 63.8 %, theta(end) centre 1.0000
+patterned s=0.005: bottom t90 centre 14.05 s, worst 14.10 s (r = 128.5 mm), flat 1.95 s (worst 2.00), tau_sat 1.176, utilization 85.0 %, bottom theta(end) centre 1.0000
+running patterned_AR100_s0.0005 ...
+patterned_AR100_s0.0005: exit 0, 3.4 min
+patterned s=0.0005: bottom t90 centre 14.15 s, worst 14.20 s (r = 101.5 mm), flat 6.00 s (worst 6.05), tau_sat 1.184, utilization 84.4 %, bottom theta(end) centre 1.0000
+running patterned_AR100_s0.001 ...
+patterned_AR100_s0.001: exit 0, 3.4 min
+patterned s=0.001: bottom t90 centre 14.05 s, worst 14.10 s (r = 114.5 mm), flat 4.25 s (worst 4.30), tau_sat 1.176, utilization 85.0 %, bottom theta(end) centre 1.0000
+running patterned_AR100_s0.002 ...
+patterned_AR100_s0.002: exit 0, 3.3 min
+patterned s=0.002: bottom t90 centre 14.00 s, worst 14.05 s (r = 67.5 mm), flat 3.00 s (worst 3.05), tau_sat 1.172, utilization 85.3 %, bottom theta(end) centre 1.0000
+running patterned_AR100_s0.0085 ...
+patterned_AR100_s0.0085: exit 0, 3.3 min
+patterned s=0.0085: bottom t90 centre 14.05 s, worst 14.10 s (r = 117.5 mm), flat 1.55 s (worst 1.60), tau_sat 1.176, utilization 85.0 %, bottom theta(end) centre 1.0000
+        kind       s                                           case  pulse  end_time   t_supply  wall_ratio  t90_centre  t90_worst  t90_worst_face_mm  t90_flat_centre  t90_flat_worst  theta_end_centre  theta_min_end  wall_time_s   tau_sat  utilization  saturated_in_pulse  t90_centre_over_supply  t90_worst_over_supply  t90_flat_centre_over_supply
+0    blanket  0.0005               reactor/sticking/blanket_s0.0005    8.0       9.0   0.210660    0.000000        0.92       1.01              146.5              NaN             NaN               1.0            1.0        84.00  4.794445     0.208575                True                4.367217               4.794445                          NaN
+1    blanket  0.0010                reactor/sticking/blanket_s0.001    8.0       9.0   0.210660    0.000000        0.64       0.71              145.5              NaN             NaN               1.0            1.0        84.00  3.370352     0.296705                True                3.038064               3.370352                          NaN
+2    blanket  0.0020                reactor/sticking/blanket_s0.002    8.0       9.0   0.210660    0.000000        0.47       0.53              146.5              NaN             NaN               1.0            1.0        94.00  2.515897     0.397473                True                2.231078               2.515897                          NaN
+3    blanket  0.0050                reactor/sticking/blanket_s0.005    8.0       9.0   0.210660    0.000000        0.35       0.39              147.5              NaN             NaN               1.0            1.0        90.00  1.851320     0.540155                True                1.661441               1.851320                          NaN
+4    blanket  0.0085               reactor/sticking/blanket_s0.0085    8.0       9.0   0.210660    0.000000        0.30       0.33              138.5              NaN             NaN               1.0            1.0        96.00  1.566502     0.638365                True                1.424092               1.566502                          NaN
+5  patterned  0.0005       reactor/sticking/patterned_AR100_s0.0005   24.0      26.0  11.990868   55.920349       14.15      14.20              101.5             6.00            6.05               1.0            1.0       206.00  1.184235     0.844427                True                1.180065               1.184235                     0.500381
+6  patterned  0.0010        reactor/sticking/patterned_AR100_s0.001   24.0      26.0  11.990868   55.920349       14.05      14.10              114.5             4.25            4.30               1.0            1.0       202.00  1.175895     0.850416                True                1.171725               1.175895                     0.354436
+7  patterned  0.0020        reactor/sticking/patterned_AR100_s0.002   24.0      26.0  11.990868   55.920349       14.00      14.05               67.5             3.00            3.05               1.0            1.0       200.00  1.171725     0.853443                True                1.167555               1.171725                     0.250190
+8  patterned  0.0050  reactor/showerhead_pulse_patterned_AR100_long   20.0      22.0  11.990868   55.920349       14.05      14.10              128.5             1.95            2.00               1.0            1.0       171.45  1.175895     0.850416                True                1.171725               1.175895                     0.162624
+9  patterned  0.0085       reactor/sticking/patterned_AR100_s0.0085   24.0      26.0  11.990868   55.920349       14.05      14.10              117.5             1.55            1.60               1.0            1.0       197.00  1.175895     0.850416                True                1.171725               1.175895                     0.129265
+saved /Users/thegreat/Documents/MATLAB/ald-conformality/figures/sticking_sensitivity.png
+exit 0

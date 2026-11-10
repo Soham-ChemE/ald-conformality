@@ -1,0 +1,16 @@
+FoamFile { version 2.0; format ascii; class dictionary; object fvSolution; }
+// Sloped-ceiling wedge mesh (non-orthogonality up to 56 deg) with a 48 m/s inlet: standard (non-consistent) SIMPLE
+// with one non-orthogonal corrector and conservative relaxation; the showerhead template's consistent SIMPLE at 0.9
+// diverged at iteration 98 on this mesh.
+solvers
+{
+    p { solver GAMG; smoother GaussSeidel; tolerance 1e-8; relTol 0.01; }
+    U { solver smoothSolver; smoother symGaussSeidel; tolerance 1e-9; relTol 0.1; nSweeps 2; }
+}
+SIMPLE
+{
+    nNonOrthogonalCorrectors 1;
+    consistent no;
+    residualControl { p 1e-6; U 1e-7; }
+}
+relaxationFactors { fields { p 0.3; } equations { U 0.7; } }

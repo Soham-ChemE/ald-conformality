@@ -1,0 +1,84 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| Full 3D single-wafer showerhead chamber with a one-sided pumping port.      |
+| Same conventions as the wedge (reactor/showerhead_steady): axis along x,    |
+| wafer at x = 0, showerhead at x = G = 15 mm, radius r = sqrt(y^2 + z^2).     |
+| O-grid: one central square block + 4 curved blocks to r = Rw (wafer /        |
+| showerhead), + 4 ring blocks from Rw to Rc (floor / topWall / side wall).    |
+| The 60 degree pumping port is carved out of sideWall around +y (azimuth 0)   |
+| by system/topoSetDict + system/createPatchDict after meshing.               |
+\*---------------------------------------------------------------------------*/
+FoamFile { version 2.0; format ascii; class dictionary; object blockMeshDict; }
+
+scale 0.001;   // mm -> m
+
+Rw 150;        // wafer / showerhead radius
+Rc 200;        // chamber radius (side wall; port is a 60 deg sector of it)
+G  15;         // showerhead-to-wafer gap (along x)
+a  75;         // half side of the central square block (corner at r = 106 mm)
+ab 82;         // radius of the bulged square edge at its mid point (rounds the O-grid corners)
+
+nArc 48;       // cells along each quarter arc and across the square (1.875 deg per cell at the side wall)
+nR1  20;       // radial cells, square edge -> Rw
+nR2  14;       // radial cells, Rw -> Rc
+nG   12;       // cells across the gap (1.25 mm)
+
+b #eval{ $Rw*cos(degToRad(45)) };   // ring-1 corner coordinate
+c #eval{ $Rc*cos(degToRad(45)) };   // ring-2 corner coordinate
+
+vertices
+(
+    // x = 0 (wafer plane)
+    (0  #eval{-$a} #eval{-$a})  (0  $a #eval{-$a})  (0  $a $a)  (0  #eval{-$a} $a)     // 0-3  square
+    (0  #eval{-$b} #eval{-$b})  (0  $b #eval{-$b})  (0  $b $b)  (0  #eval{-$b} $b)     // 4-7  ring 1 (r = Rw)
+    (0  #eval{-$c} #eval{-$c})  (0  $c #eval{-$c})  (0  $c $c)  (0  #eval{-$c} $c)     // 8-11 ring 2 (r = Rc)
+    // x = G (showerhead plane)
+    ($G #eval{-$a} #eval{-$a})  ($G $a #eval{-$a})  ($G $a $a)  ($G #eval{-$a} $a)     // 12-15
+    ($G #eval{-$b} #eval{-$b})  ($G $b #eval{-$b})  ($G $b $b)  ($G #eval{-$b} $b)     // 16-19
+    ($G #eval{-$c} #eval{-$c})  ($G $c #eval{-$c})  ($G $c $c)  ($G #eval{-$c} $c)     // 20-23
+);
+
+blocks
+(
+    // central square (local x = +y, local y = +z, local z = +x)
+    hex (0 1 2 3 12 13 14 15)      ($nArc $nArc $nG) simpleGrading (1 1 1)
+    // ring 1: +y (local x radial), +z (local x azimuthal), -y (radial), -z (azimuthal)
+    hex (1 5 6 2 13 17 18 14)      ($nR1 $nArc $nG) simpleGrading (1 1 1)
+    hex (3 2 6 7 15 14 18 19)      ($nArc $nR1 $nG) simpleGrading (1 1 1)
+    hex (4 0 3 7 16 12 15 19)      ($nR1 $nArc $nG) simpleGrading (1 1 1)
+    hex (4 5 1 0 16 17 13 12)      ($nArc $nR1 $nG) simpleGrading (1 1 1)
+    // ring 2
+    hex (5 9 10 6 17 21 22 18)     ($nR2 $nArc $nG) simpleGrading (1 1 1)
+    hex (7 6 10 11 19 18 22 23)    ($nArc $nR2 $nG) simpleGrading (1 1 1)
+    hex (8 4 7 11 20 16 19 23)     ($nR2 $nArc $nG) simpleGrading (1 1 1)
+    hex (8 9 5 4 20 21 17 16)      ($nArc $nR2 $nG) simpleGrading (1 1 1)
+);
+
+edges
+(
+    // bulged square edges (through r = ab on the axes)
+    arc 1 2   (0  $ab 0)             arc 13 14 ($G  $ab 0)
+    arc 2 3   (0  0  $ab)            arc 14 15 ($G  0  $ab)
+    arc 3 0   (0  #eval{-$ab} 0)     arc 15 12 ($G  #eval{-$ab} 0)
+    arc 0 1   (0  0  #eval{-$ab})    arc 12 13 ($G  0  #eval{-$ab})
+    // ring 1, r = Rw
+    arc 5 6   (0  $Rw 0)             arc 17 18 ($G  $Rw 0)
+    arc 6 7   (0  0  $Rw)            arc 18 19 ($G  0  $Rw)
+    arc 7 4   (0  #eval{-$Rw} 0)     arc 19 16 ($G  #eval{-$Rw} 0)
+    arc 4 5   (0  0  #eval{-$Rw})    arc 16 17 ($G  0  #eval{-$Rw})
+    // ring 2, r = Rc
+    arc 9 10  (0  $Rc 0)             arc 21 22 ($G  $Rc 0)
+    arc 10 11 (0  0  $Rc)            arc 22 23 ($G  0  $Rc)
+    arc 11 8  (0  #eval{-$Rc} 0)     arc 23 20 ($G  #eval{-$Rc} 0)
+    arc 8 9   (0  0  #eval{-$Rc})    arc 20 21 ($G  0  #eval{-$Rc})
+);
+
+boundary
+(
+    showerhead { type patch; faces ((12 13 14 15) (13 17 18 14) (15 14 18 19) (16 12 15 19) (16 17 13 12)); }  // x = G, r < Rw
+    topWall    { type wall;  faces ((17 21 22 18) (19 18 22 23) (20 16 19 23) (20 21 17 16)); }               // x = G, Rw < r < Rc
+    wafer      { type wall;  faces ((0 1 2 3) (1 5 6 2) (3 2 6 7) (4 0 3 7) (4 5 1 0)); }                      // x = 0, r < Rw (one patch)
+    floor      { type wall;  faces ((5 9 10 6) (7 6 10 11) (8 4 7 11) (8 9 5 4)); }                           // x = 0, Rw < r < Rc
+    sideWall   { type wall;  faces ((9 10 22 21) (10 11 23 22) (11 8 20 23) (8 9 21 20)); }                    // r = Rc; the port is cut from it
+);
+
+mergePatchPairs ();

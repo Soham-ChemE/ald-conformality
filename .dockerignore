@@ -1,0 +1,36 @@
+# Docker build context for ald-conformality: sources, cases and figures, not results or local environments.
+.git
+.gitignore
+.venv
+.venv*
+.pytest_cache
+**/__pycache__
+**/*.pyc
+**/*.egg-info
+.DS_Store
+**/.DS_Store
+private
+notebooks/*.ipynb_checkpoints
+
+# OpenFOAM results at any depth under reactor/: time directories other than 0/, logs, meshes, post-processing,
+# runtime-compiled code and the frozen-flow fields copied into derived cases (the steady cases' 0/U are inputs)
+reactor/**/[1-9]*
+reactor/**/0.[0-9]*
+reactor/**/log.*
+reactor/**/postProcessing
+reactor/**/polyMesh
+reactor/**/dynamicCode
+reactor/**/runtime.txt
+reactor/**/0/U
+reactor/**/0/phi
+!reactor/showerhead_steady/0/U
+!reactor/edgering_steady/0/U
+reactor/lib/*/Make/darwin*
+reactor/lib/*/Make/linux*
+reactor/lib/*/lnInclude
+reactor/lib/*/log.wmake
+.openfoam-user
+
+# large derived files
+figures/*.vtp
+docs/qa

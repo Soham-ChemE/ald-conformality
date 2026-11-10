@@ -1,0 +1,77 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    arch        "LSB;label=32;scalar=64";
+    class       volScalarField;
+    location    "0.5";
+    object      T;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+dimensions      [0 0 0 1 0 0 0];
+
+internalField   uniform 0.25;
+
+boundaryField
+{
+    showerhead
+    {
+        type            uniformMixed;
+        uniformValue    table ((0 1) (1.5 1) (1.5001 0) (10 0));
+        uniformGradient constant 0;
+        uniformValueFraction constant 0.00148978;
+        value           uniform 0.3;
+    }
+    topWall
+    {
+        type            zeroGradient;
+    }
+    wafer
+    {
+        type            patternedSurface;
+        s               0.005;
+        r               0;
+        vbar            410;
+        N0              4e+18;
+        c0              3.79e+20;
+        d               1e-07;
+        AR              100;
+        holeDensity     1.78e+13;
+        nCells          200;
+        thetaFlat       uniform 0.25;
+        thetaBottom     uniform 0.0625;
+        thetaMid        uniform 0.125;
+        Keff            uniform 0.01;
+        value           uniform 0.5;
+    }
+    floor
+    {
+        type            zeroGradient;
+    }
+    outlet
+    {
+        type            inletOutlet;
+        inletValue      uniform 0;
+        value           uniform 0.1;
+    }
+    axis
+    {
+        type            empty;
+    }
+    front
+    {
+        type            wedge;
+    }
+    back
+    {
+        type            wedge;
+    }
+}
+
+
+// ************************************************************************* //

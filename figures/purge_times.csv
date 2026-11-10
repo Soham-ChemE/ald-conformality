@@ -1,0 +1,29 @@
+part,case,quantity,value_s,note
+hole,analytic,"L^2/D_K, 100 nm x 10 um, TMA 573 K",7.312021662347292e-06,"D_K = d vbar/3 = 1.368e-05 m2/s, vbar 410 m/s"
+hole,analytic,slowest eigenmode time constant 4 L^2/(pi^2 D_K),2.9634507585897674e-06,"Dirichlet mouth, Neumann bottom"
+hole,analytic,"bottom density to 1 %, first mode",1.4363059508590063e-05,(4/pi) exp(-t/tau1) = 0.01
+hole,numeric,bottom density to 1/e,3.6999999999999845e-06,"implicit 1D transient, 200 cells, dt 20 ns"
+hole,numeric,bottom density to 1 %,1.4419999999999882e-05,same
+hole,numeric,hole-mean density to 1 %,1.3079999999999895e-05,same
+chamber,"TMA patterned AR-100, 20 s pulse",outlet to 10 % of pulse-end value,1.1000000000000014,run
+chamber,"TMA patterned AR-100, 20 s pulse",outlet to 1 % of pulse-end value,1.8999999999999986,run
+chamber,"TMA patterned AR-100, 20 s pulse",outlet to 0.1 % of pulse-end value,2.7305716554090242,extrapolated (exp tail fitted 1.20-2.00 s after the pulse)
+chamber,"TMA patterned AR-100, 20 s pulse",outlet tail time constant,0.36404550698781085,decay rate 2.75 1/s
+chamber,"TMA blanket, 0.5 s pulse",outlet to 10 % of pulse-end value,1.2469907118109251,extrapolated (exp tail fitted 0.60-1.00 s after the pulse)
+chamber,"TMA blanket, 0.5 s pulse",outlet to 1 % of pulse-end value,2.141839077865494,extrapolated (exp tail fitted 0.60-1.00 s after the pulse)
+chamber,"TMA blanket, 0.5 s pulse",outlet to 0.1 % of pulse-end value,3.036687443920064,extrapolated (exp tail fitted 0.60-1.00 s after the pulse)
+chamber,"TMA blanket, 0.5 s pulse",outlet tail time constant,0.3886277075176406,decay rate 2.57 1/s
+chamber,"TMA blanket, 1.26 s pulse (map)",outlet to 10 % of pulse-end value,1.0744729894548737,extrapolated (exp tail fitted 0.60-1.00 s after the pulse)
+chamber,"TMA blanket, 1.26 s pulse (map)",outlet to 1 % of pulse-end value,1.9498624854219389,extrapolated (exp tail fitted 0.60-1.00 s after the pulse)
+chamber,"TMA blanket, 1.26 s pulse (map)",outlet to 0.1 % of pulse-end value,2.825251981389004,extrapolated (exp tail fitted 0.60-1.00 s after the pulse)
+chamber,"TMA blanket, 1.26 s pulse (map)",outlet tail time constant,0.3801768276145653,decay rate 2.63 1/s
+chamber,"H2O blanket kdes 0, 5 s pulse",outlet to 10 % of pulse-end value,1.1399999999999997,run
+chamber,"H2O blanket kdes 0, 5 s pulse",outlet to 1 % of pulse-end value,2.2,run
+chamber,"H2O blanket kdes 0, 5 s pulse",outlet to 0.1 % of pulse-end value,3.2487070757523995,extrapolated (exp tail fitted 1.80-3.00 s after the pulse)
+chamber,"H2O blanket kdes 0, 5 s pulse",outlet tail time constant,0.45829210299265566,decay rate 2.18 1/s
+chamber,reference,gap transit 0.015 m / 0.050 m/s,0.3,showerhead face speed
+chamber,reference,chamber volume / volumetric flow,0.5324733311169141,"V 1.885e-03 m3 (r 200 mm, 15 mm gap), Q 3.54e-03 m3/s"
+desorption,H2O blanket kdes 0 1/s,outlet to 1 % of pulse-end value,2.2,run
+desorption,H2O blanket kdes 0.1 1/s,outlet to 1 % of pulse-end value,8.260352673594964,extrapolated: desorption-limited tail kdes theta N0 A/(Q c0) with theta decaying at 0.088 1/s (fitted 1-3 s after the pulse)
+desorption,H2O blanket kdes 1 1/s,outlet to 1 % of pulse-end value,4.327135638659927,extrapolated: desorption-limited tail kdes theta N0 A/(Q c0) with theta decaying at 0.654 1/s (fitted 1-3 s after the pulse)
+desorption,H2O blanket kdes 10 1/s,outlet to 1 % of pulse-end value,2.4000000000000004,run

@@ -1,0 +1,80 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  python:
+    name: Python feature solver and tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Install the package with its test extras
+        run: python -m pip install -e '.[test,crosscheck]'
+      - name: Console script works
+        run: aldconf rule --x 0.01 --Q 300 --p 300 --T 573.15 --AR 100 --d 100e-9 --density 1.78e13
+      - name: Tests (the OpenFOAM regression test skips here; the openfoam job runs it)
+        run: python -m pytest -q tests
+
+  openfoam:
+    name: OpenFOAM chamber chain and regression
+    runs-on: ubuntu-latest
+    # OpenCFD's image. Docker Hub has 2512 as its newest tag (no 2606 image); see paper/wp/wp7_ci_docker.md.
+    # The image sets no USER (the entrypoint script switches users only when run with -u), so steps run as root,
+    # which apt needs; the user library is still placed inside the workspace, not under a home directory.
+    container:
+      image: opencfd/openfoam-default:2512
+      options: --user root
+    env:
+      ALDCONF_FOAM_USER_DIR: ${{ github.workspace }}/.openfoam-user
+      ALDCONF_PYTHON: ${{ github.workspace }}/.venv/bin/python
+      MPLBACKEND: Agg
+    steps:
+      - uses: actions/checkout@v4
+      - name: Python 3.12 from Ubuntu 24.04
+        run: |
+          apt-get update
+          apt-get install -y --no-install-recommends python3 python3-venv python3-pip
+          python3 -m venv .venv
+          .venv/bin/pip install --upgrade pip
+          .venv/bin/pip install -e '.[test,crosscheck]'
+      - name: Compile the boundary-condition library (wmake)
+        run: bash ./reproduce.sh --build
+      - name: Steady flow, regression pulse, regression test
+        run: bash ./reproduce.sh --regress
+      - name: Full test suite with the regression test active
+        run: .venv/bin/python -m pytest -q tests -rs
+      - name: Upload solver logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: openfoam-logs
+          path: |
+            reactor/showerhead_pulse_layout_regress/log.scalarTransportFoam
+            reactor/showerhead_steady/log.blockMesh
+            reactor/showerhead_steady/log.checkMesh
+            reactor/showerhead_steady/log.simpleFoam
+            reactor/lib/aldWallKinetics/log.wmake
+          if-no-files-found: warn
+
+  pages-check:
+    name: Live page assets
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: docs/index.html exists and every local asset it references is present
+        run: python tests/test_docs_assets.py

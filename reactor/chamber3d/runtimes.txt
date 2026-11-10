@@ -1,0 +1,4 @@
+2026-11-10 13:32:15  pulse_timing   postProcess -func writeCellCentres -time 0                   exit 0       2.4 s
+2026-11-10 13:32:40  pulse_timing   scalarTransportFoam                                          exit 0      25.7 s
+2026-11-10 13:34:05  pulse          postProcess -func writeCellCentres -time 0                   exit 0       1.7 s
+2026-11-10 14:06:23  pulse          scalarTransportFoam                                          exit 0    1938.7 s

@@ -18,7 +18,7 @@ import numpy as np
 from scipy.linalg import solve_banded
 from scipy.optimize import brentq
 
-from .geometry import Slit, Hole
+from .geometry import Slit, Hole, TaperedHole
 from .transport import mean_speed, knudsen_diffusivity, gas_diffusivity, bosanquet
 from .kinetics import Precursor, number_density
 
@@ -57,15 +57,21 @@ class Result:
         return self.x / self.process.geometry.gap
 
 
-def _solve_gas(x, D_face, k, n0):
+def _solve_gas(x, D_face, k, n0, A_face=None, A_cell=None):
     """Steady diffusion with first-order sink k(x) [1/s]; Dirichlet at x=0, Neumann at x=L.
 
-    Cell-centred finite volumes, D on faces, tridiagonal solve."""
+    Cell-centred finite volumes, D on faces, tridiagonal solve. With `A_face` / `A_cell` (cross-section on the
+    N+1 faces and in the N cells) the conservative form (1/A) d/dx (A D dn/dx) = k n is solved, which is the 1D
+    equation for a channel of varying cross-section (tapered hole); without them the cross-section is uniform."""
     N = len(x)
     dx = x[1] - x[0]
     # Faces: D_face has N+1 entries; face 0 is the mouth, face N is the closed end.
-    aW = D_face[:-1] / dx ** 2
-    aE = D_face[1:] / dx ** 2
+    if A_face is None:
+        aW = D_face[:-1] / dx ** 2
+        aE = D_face[1:] / dx ** 2
+    else:
+        aW = A_face[:-1] * D_face[:-1] / (A_cell * dx ** 2)
+        aE = A_face[1:] * D_face[1:] / (A_cell * dx ** 2)
     aE[-1] = 0.0  # zero flux at closed end
     diag = aW + aE + k
     lower = -aW[1:]
@@ -81,13 +87,33 @@ def _solve_gas(x, D_face, k, n0):
     return solve_banded((1, 1), ab, rhs)
 
 
+def _initial_opening(g, x):
+    """Opening before any film: the geometry's profile if it has one, else uniform `gap` (older geometry objects)."""
+    if hasattr(g, "initial_opening"):
+        return np.array(g.initial_opening(x), dtype=float)
+    return np.full(len(x), g.gap, dtype=float)
+
+
+def _area_terms(g, opening):
+    """Face and cell cross-sections for the conservative form; None (uniform-area form) unless the geometry is
+    tapered. Film narrowing keeps the uniform-area form so that earlier fits and runs are reproduced unchanged."""
+    if not getattr(g, "tapered", False):
+        return None, None
+    A_cell = g.cross_section(opening)
+    A_face = np.empty(len(opening) + 1)
+    A_face[1:-1] = 0.5 * (A_cell[:-1] + A_cell[1:])
+    A_face[0] = A_cell[0] + 0.5 * (A_cell[0] - A_cell[1])
+    A_face[-1] = A_cell[-1] - 0.5 * (A_cell[-2] - A_cell[-1])
+    return A_face, A_cell
+
+
 def simulate(proc: Process) -> Result:
     g = proc.geometry
     pr = proc.precursor
     L = g.length
     N = proc.n_cells
     x = (np.arange(N) + 0.5) * L / N
-    opening = np.full(N, g.gap, dtype=float)
+    opening = _initial_opening(g, x)
     thickness = np.zeros(N)
     theta = np.zeros(N)
     vbar = mean_speed(proc.T, pr.mass_amu)
@@ -107,12 +133,13 @@ def simulate(proc: Process) -> Result:
             D_face[0] = D[0]
             D_face[-1] = D[-1]
             k = g.surface_to_volume(opening) * (vbar / 4.0) * (pr.sticking * (1.0 - theta) + pr.recombination)
-            n = _solve_gas(x, D_face, k, n0)
+            A_face, A_cell = _area_terms(g, opening)
+            n = _solve_gas(x, D_face, k, n0, A_face, A_cell)
             theta = 1.0 - (1.0 - theta) * np.exp(-pr.sticking * (vbar / 4.0) * n * dt / pr.site_density)
         growth = pr.gpc * theta
         thickness += growth
         if proc.narrowing:
-            opening = np.maximum(opening - g.walls() * growth, 0.05 * g.gap)
+            opening = np.maximum(opening - g.walls() * growth, 0.05 * _initial_opening(g, x))
     return Result(x=x, theta=theta, thickness=thickness, opening=opening, n_last=n, process=proc)
 
 
@@ -165,7 +192,7 @@ def simulate_driven(proc: Process, t_series, n0_series, substeps_per_sample: int
     L = g.length
     N = proc.n_cells
     x = (np.arange(N) + 0.5) * L / N
-    opening = np.full(N, g.gap, dtype=float)
+    opening = _initial_opening(g, x)
     theta = np.zeros(N)
     vbar = mean_speed(proc.T, pr.mass_amu)
     t_series = np.asarray(t_series, float); n0_series = np.asarray(n0_series, float)
@@ -177,13 +204,14 @@ def simulate_driven(proc: Process, t_series, n0_series, substeps_per_sample: int
         D = bosanquet(D, gas_diffusivity(proc.T, proc.p_total, pr.mass_amu, pr.sigma))
     D_face = np.empty(N + 1); D_face[1:-1] = 2.0 * D[:-1] * D[1:] / (D[:-1] + D[1:]); D_face[0] = D[0]; D_face[-1] = D[-1]
     sv = g.surface_to_volume(opening)
+    A_face, A_cell = _area_terms(g, opening)
     for i in range(1, len(t_series)):
         dt = (t_series[i] - t_series[i - 1]) / substeps_per_sample
         for k in range(substeps_per_sample):
             tt = t_series[i - 1] + (k + 0.5) * dt
             n0 = float(np.interp(tt, t_series, n0_series))
             kx = sv * (vbar / 4.0) * (pr.sticking * (1.0 - theta) + pr.recombination)
-            n = _solve_gas(x, D_face, kx, n0) if n0 > 0 else np.zeros(N)
+            n = _solve_gas(x, D_face, kx, n0, A_face, A_cell) if n0 > 0 else np.zeros(N)
             theta = 1.0 - (1.0 - theta) * np.exp(-pr.sticking * (vbar / 4.0) * n * dt / pr.site_density)
         hist_t.append(t_series[i]); hist.append(theta[idx].copy())
     return x, theta, np.array(hist_t), np.array(hist)

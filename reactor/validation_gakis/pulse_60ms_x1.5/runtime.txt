@@ -1,0 +1,1 @@
+scalarTransportFoam exit 0, wall time 117 s, steady iteration 2000

@@ -1,0 +1,16 @@
+FoamFile { version 2.0; format ascii; class dictionary; object controlDict; }
+application     scalarTransportFoam;
+libs            ("libaldWallKinetics.dylib");
+startFrom       startTime;
+startTime       0;
+stopAt          endTime;
+endTime         1;   // pulse tail ends at 0.3 s, residence time 0.23 s, three residence times later the gas has cleared
+deltaT          0.0004;
+writeControl    runTime;
+writeInterval   0.01;
+writeFormat     ascii;
+writePrecision  8;
+timeFormat      general;
+timePrecision   6;
+runTimeModifiable true;
+functions {}

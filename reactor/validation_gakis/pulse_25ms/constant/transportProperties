@@ -1,0 +1,3 @@
+FoamFile { version 2.0; format ascii; class dictionary; object transportProperties; }
+// TMA at 9.6 Pa, 573 K: 8.4e-3 m2/s (300 Pa, N2) scaled as 1/p; the Ar value is taken equal
+DT              0.2625;
