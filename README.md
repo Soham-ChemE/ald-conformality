@@ -14,3 +14,12 @@ python notebooks/plot_zenodo_raw.py
 ```
 
 References: Ylilammi, Ylivaara, Puurunen, J. Appl. Phys. 123, 205301 (2018); Arts et al., J. Vac. Sci. Technol. A 37, 030908 (2019); Arts et al., J. Phys. Chem. C (2019, 2021); Yanguas-Gil and Elam; Gordon et al. (2003); Cremers, Puurunen, Knoops, Appl. Phys. Rev. 6, 021302 (2019); Yim et al., PCCP (2020), doi 10.1039/D0CP03358H.
+
+## Mac setup (Apple Silicon)
+```
+~/.local/bin/python3.12 -m venv .venv
+.venv/bin/pip install -e . viennaps machball pytest
+sh scripts/fix_viennaps_libomp.sh .venv     # macOS only: one OpenMP runtime, see the script
+.venv/bin/python notebooks/viennaps_smoke.py
+```
+The `objc[...]: Class vtkCocoa... is implemented in both` lines at import are the two wheels' bundled VTK copies; harmless so far.
