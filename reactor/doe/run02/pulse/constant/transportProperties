@@ -1,0 +1,4 @@
+FoamFile { version 2.0; format ascii; class dictionary; object transportProperties; }
+// TMA in N2 at 300 Pa, 573 K. Chapman-Enskog estimate scaled from ~8e-6 m2/s at 1 atm, 300 K:
+// D = 8e-6 * (101325/300) * (573/300)^1.75 = 8.4e-3 m2/s. Treated as a parameter; see paper/assumptions.md.
+DT              0.00252;

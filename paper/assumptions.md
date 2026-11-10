@@ -307,3 +307,24 @@ the irreversible model cannot show. A faithful water model needs two site types,
 hydroxyl fraction plus a reversible physisorbed layer (Yanguas-Gil's soft-saturation form); kdes here stands in for
 the physisorbed part and is a parameter, not a measured value. The TMA results in this paper are unaffected (TMA
 chemisorption on hydroxyls is irreversible at 300 C).
+
+## Night 2, part 4: temperature and hole-size sweeps (reactor/temperature, reactor/holesize_*; figures/temperature_sweep.csv)
+Temperature 200 / 300 / 400 C at fixed 300 Pa, 300 sccm, 1 % TMA, 15 mm gap. Temperature enters through carrier
+density and viscosity, inlet speed (U ~ T at fixed sccm), diffusivity (~T^1.75), precursor density (c0 ~ 1/T) and
+thermal speed (~sqrt T); the product U c0, the supply, is the same at every temperature. Sticking kept at 5e-3.
+| T | blanket t90 centre / worst | patterned AR-100 bottom t90 centre / worst | flat regions |
+| 200 C | 0.350 / 0.390 s | 14.02 / 14.02 s | 1.97 s |
+| 300 C | 0.350 / 0.380 s | 14.02 / 14.15 s | 1.97 s |
+| 400 C | 0.340 / 0.380 s | 14.15 / 14.15 s | 1.97 s |
+Reading: at fixed sccm and fraction the pulse time is temperature-independent to within one write interval, for
+the blanket wafer as well as the patterned one, because the supply is; temperature acts on ALD through the chemistry
+(s, N0, desorption), which this sweep holds fixed by construction. A recipe transferred between temperatures at
+constant sccm and fraction keeps its dose; one transferred at constant partial pressure does not (c0 ~ 1/T).
+Hole size 50 / 100 / 200 nm at fixed open area (14 %) and AR 100, so the wall-area ratio is 55.9 in all three
+(density 7.1e13, 1.8e13, 4.5e12 /m2):
+| d | bottom t90 centre / worst | flat |
+| 50 nm | 14.10 / 14.10 s | 2.00 s |
+| 100 nm | 14.01 / 14.11 s | 1.96 s |
+| 200 nm | 14.10 / 14.10 s | 2.00 s |
+Reading: identical within 1 %. The rule's only geometric input is the wall-area ratio; intra-hole Knudsen transport
+(D_K ~ d, depth ~ d) is not the bottleneck in the supply-limited regime even at 50 nm and AR 100.
