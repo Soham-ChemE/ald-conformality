@@ -36,3 +36,5 @@ Reactor cases: `reactor/showerhead_steady` (laminar N2 flow) and `reactor/shower
 Multiscale wall: `reactor/lib/aldWallKinetics` provides `langmuirSticking` (self-limiting flat surface) and `patternedSurface` (a 1D Knudsen/Langmuir hole model on every wafer face, two-way coupled). Build with `wmake libso` inside the OpenFOAM environment. `coupling/` holds the one-way (Python) and two-way (BC) post-processing.
 
 Headline result so far: `figures/pulse_time_map.png`, the saturating TMA pulse versus feed fraction for blanket and 3D-NAND-like wafers (AR 20/50/100), with the supply-limit line. Driver `reactor/sweep_pattern_map.py`.
+
+JMP Student Edition 19 (DOE tables, fits) is driven by JSL scripts: `sh scripts/run_jsl.sh analysis/some_script.jsl`; the script writes its outputs to files and quits. MATLAB R2025b runs headless with `matlab -batch`.
