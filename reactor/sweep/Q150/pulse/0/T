@@ -1,0 +1,27 @@
+FoamFile { version 2.0; format ascii; class volScalarField; object T; }
+// T is the TMA mole fraction normalised to its showerhead value during the pulse (dimensionless carrier).
+dimensions [0 0 0 1 0 0 0];
+internalField   uniform 0;
+boundaryField
+{
+    // 0.1 s pulse at unit concentration, then purge
+    // Danckwerts total-flux inlet: U (c_face - c0(t)) = D (c_face - c_cell)/delta, so the TMA entering the chamber is
+    // exactly U*c0*A during the pulse. As a mixed BC: value fraction f = U/(U + D/delta) = 0.050/(0.050 + 33.6) = 1.486e-3.
+    showerhead
+    {
+        type                 uniformMixed;
+        uniformValue         table ((0 1) (1.0 1) (1.0001 0) (10 0));
+        uniformGradient      constant 0;
+        uniformValueFraction constant 0.000745445;
+    }
+    topWall    { type zeroGradient; }
+    // self-limiting ALD surface: s on open sites, coverage theta integrated per face (reactor/lib/aldWallKinetics)
+    // TMA: vbar 410 m/s at 573 K; N0 4e18 sites/m2 (about one TMA-saturated Al2O3 monolayer); c0 = TMA number density
+    // in the feed at T = 1, taken as 3 Pa partial pressure at 573 K -> 3.79e20 1/m3.
+    wafer      { type langmuirSticking; s 5e-3; r 0; vbar 410; N0 4e18; c0 3.791e+20; value uniform 0; }
+    floor      { type zeroGradient; }
+    outlet     { type inletOutlet; inletValue uniform 0; value uniform 0; }
+    axis       { type empty; }
+    front      { type wedge; }
+    back       { type wedge; }
+}

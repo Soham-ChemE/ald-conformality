@@ -20,3 +20,11 @@ reactor/lib/*/lnInclude/
 reactor/lib/*/log.wmake
 reactor/showerhead_pulse*/0/U
 reactor/showerhead_pulse*/0/phi
+reactor/sweep/*/*/[0-9]*/
+!reactor/sweep/*/*/0/
+reactor/sweep/*/*/0/U
+reactor/sweep/*/*/0/phi
+reactor/sweep/*/*/constant/polyMesh/
+reactor/sweep/*/*/log.*
+reactor/sweep/*/*/postProcessing/
+reactor/sweep_operating.log

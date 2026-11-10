@@ -71,3 +71,27 @@ Results (figures/reactor_langmuir_coverage.png):
   wafer edge, about 0.4 s, not by the 0.1 s recipe value from the tube-reactor dataset.
 - Interpretation: at 300 Pa, 300 sccm and 3 Pa TMA the process is supply-limited; pulse time scales inversely with
   TMA partial pressure x flow. This is the knob map the DOE will quantify (pressure, flow, TMA fraction, gap).
+
+## Night 1, part 3: operating-point sweep with the self-limiting wafer (figures/reactor_sweep_operating.png, .csv)
+One factor at a time around 300 Pa / 300 sccm / 15 mm / 1 % TMA, s = 5e-3, N0 = 4e18, 1.0 s pulse + 1.0 s purge.
+| case | Pe | monolayer supply time N0/(U c0) | t90 centre | t90 worst on wafer | edge lag | theta after 0.1 s |
+| base 300 Pa, 300 sccm, 15 mm, 1 % | 0.090 | 0.21 s | 0.35 s | 0.38 s | 8.6 % | 0.25 |
+| 100 Pa | 0.090 | 0.21 | 0.41 | 0.43 | 4.9 % | 0.24 |
+| 1000 Pa | 0.090 | 0.21 | 0.35 | 0.40 | 14.3 % | 0.18 |
+| 150 sccm | 0.045 | 0.42 | 0.56 | 0.64 | 14.3 % | 0.13 |
+| 600 sccm | 0.179 | 0.105 | 0.23 | 0.24 | 4.3 % | 0.43 |
+| 10 mm gap | 0.060 | 0.21 | 0.31 | 0.34 | 9.7 % | 0.30 |
+| 25 mm gap | 0.149 | 0.21 | 0.40 | 0.47 | 17.5 % | 0.16 |
+| 0.5 % TMA | 0.090 | 0.42 | 0.60 | 0.65 | 8.3 % | 0.13 |
+| 3 % TMA | 0.090 | 0.07 | 0.16 | 0.19 | 18.8 % | 0.63 |
+Reading:
+- Pulse time is set by supply. Doubling TMA fraction or N2 flow halves the monolayer supply time and t90 follows it
+  (t90 = 1.6 to 2.3 x the supply time; the excess is the finite sticking plus the Langmuir (1 - theta) tail).
+- Pressure barely moves t90 at fixed sccm (U and D both scale as 1/p, so the gap Peclet number is unchanged), but it
+  moves uniformity: the edge lags the centre by 5 % at 100 Pa and 14 % at 1000 Pa, because lateral mixing slows.
+- Gap: 10 mm beats 25 mm on both counts, 0.31 vs 0.40 s and 10 % vs 18 % edge lag. Residence volume and diffusion
+  distance both shrink.
+- The within-wafer saturation-time spread (edge lag) is the uniformity figure of merit for the feature-scale step: the
+  last point to saturate sets the recipe pulse time, so every knob that raises the edge lag costs throughput twice.
+- Caveats: one-factor-at-a-time, s and N0 from literature ranges, bare-floor edge, isothermal, frozen carrier flow,
+  no H2O half-cycle. A central composite design over (Q, x, g, p) with the GP surrogate is the next layer.
