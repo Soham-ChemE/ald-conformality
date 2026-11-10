@@ -13,21 +13,21 @@ theta 2.5;     // half wedge angle, deg
 
 // y = r cos(theta), z_wedge = +- r sin(theta); OpenFOAM axis is x here (z of the chamber)
 // Use x = axial (0..G), y = radial, z = out of plane.
-cy #calc "cos(degToRad($theta))";
-sz #calc "sin(degToRad($theta))";
+cy 0.999048221582;   // cos(2.5 deg) and sin below written out: #calc expressions are refused when OpenFOAM runs as root (CI containers)
+sz 0.0436193873653;
 
 vertices
 (
     (0   0 0)                                   // 0 axis bottom
     ($G  0 0)                                   // 1 axis top
-    (0   #calc "$Rw*$cy" #calc "-$Rw*$sz")      // 2
-    ($G  #calc "$Rw*$cy" #calc "-$Rw*$sz")      // 3
-    (0   #calc "$Rw*$cy" #calc " $Rw*$sz")      // 4
-    ($G  #calc "$Rw*$cy" #calc " $Rw*$sz")      // 5
-    (0   #calc "$Rc*$cy" #calc "-$Rc*$sz")      // 6
-    ($G  #calc "$Rc*$cy" #calc "-$Rc*$sz")      // 7
-    (0   #calc "$Rc*$cy" #calc " $Rc*$sz")      // 8
-    ($G  #calc "$Rc*$cy" #calc " $Rc*$sz")      // 9
+    (0   149.857233237 -6.5429081048)      // 2
+    ($G  149.857233237 -6.5429081048)      // 3
+    (0   149.857233237 6.5429081048)      // 4
+    ($G  149.857233237 6.5429081048)      // 5
+    (0   199.809644316 -8.72387747307)      // 6
+    ($G  199.809644316 -8.72387747307)      // 7
+    (0   199.809644316 8.72387747307)      // 8
+    ($G  199.809644316 8.72387747307)      // 9
 );
 
 blocks

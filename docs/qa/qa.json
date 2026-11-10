@@ -4,8 +4,8 @@
    "dark": {
     "errors": [],
     "failed": [],
-    "imagesLoaded": "0/0",
-    "transferBytes": 736561,
+    "imagesLoaded": "0/8",
+    "transferBytes": 770437,
     "scenes": [
      "stack",
      "map"
@@ -15,8 +15,8 @@
    "light": {
     "errors": [],
     "failed": [],
-    "imagesLoaded": "0/0",
-    "transferBytes": 736561,
+    "imagesLoaded": "0/8",
+    "transferBytes": 770437,
     "scenes": [
      "stack",
      "map"
@@ -28,12 +28,12 @@
     "accessibility": 100,
     "bestPractices": 100,
     "seo": 100,
-    "fcp": "0.2\u00a0s",
-    "lcp": "0.2\u00a0s",
+    "fcp": "0.3\u00a0s",
+    "lcp": "0.3\u00a0s",
     "tbt": "0\u00a0ms",
     "cls": "0",
-    "si": "0.4\u00a0s",
-    "bytes": "Total size was 533\u00a0KiB"
+    "si": "0.6\u00a0s",
+    "bytes": "Total size was 565\u00a0KiB"
    }
   }
  }

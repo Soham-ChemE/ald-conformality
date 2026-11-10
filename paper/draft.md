@@ -357,6 +357,106 @@ The rule as throughput: WPH for 5 nm (49 cycles) against wall-area ratio, both h
 | 55.9 (AR 100) | 39.3 s, 1.9, 1.8 (2.1) | 19.9 s, 3.7, 3.5 (4.9) |
 | 112 | 67.6 s, 1.1, 1.1 (1.2) | 29.3 s, 2.5, 2.4 (3.0) |
 
+### 3.11 Tapered holes, word-line recesses and other chemistries
+Real channel holes are not cylinders. The feature solver now takes a frustum (TaperedHole, diameter falling linearly
+from the mouth to a fraction of it at the bottom) and solves the conservative form (1/A) d/dx (A D dn/dx) of the
+diffusion equation on the varying cross-section; with the sink switched off the density in a frustum is uniform to
+1e-9, and bottom_ratio = 1 reproduces the cylinder exactly. Published numbers for the taper of production holes are
+scarce: Lam reports less than 0.1 % CD deviation over 10 um with cryogenic etching, about 10 nm on a 100 nm hole,
+against about 30 nm for room-temperature etches [Lam 2024; EE Times Japan 2024], and TCAD studies use 0.3 degree
+tapers [Lee and Shin 2022]; we therefore take 90 % as the anchored bottom diameter and 80 and 60 % as a sweep (no
+peer-reviewed vendor paper with a measured top/bottom CD pair in nanometres was found in open access). Driven by the
+chamber's centre-face TMA density of the AR-100 wafer, the bottoms of 100 / 90 / 80 / 60 nm-bottom holes reach 90 %
+at 14.03 / 14.21 / 14.36 / 14.62 s (Figure, tapered_hole.png; table below): the taper costs 1 to 4 %, because on a
+supply-limited wafer the hole's own conductance is not the bottleneck. At a constant mouth density the same taper
+costs 4 to 20 % (15.9 to 19.1 s): the lost conductance (D_K ~ d, A ~ d^2) outweighs the lost wall area. The rule with
+the frustum wall area (0.95 / 0.90 / 0.80 of the cylinder's) moves the other way, to 13.7 / 13.0 / 11.6 s, and the
+two bracket a tapered-hole wafer: the area reduction buys at most the rule's 5 to 20 %, the transport penalty takes
+back 1 to 4 % of it, and for the anchored 90 % taper both are within 5 % of the straight hole.
+
+| bottom diameter | wall area / straight | chamber-driven bottom t90 (one-way) | rule with frustum area, 1.2 (1 + 55.9 A_rel) N0/(U c0) | driven / rule | constant 0.3 Pa mouth, t90 |
+|---|---|---|---|---|---|
+| 100 nm (straight) | 1.000 | 14.03 s (chamber two-way: 14.05 s first write, 14.01 s interpolated) | 14.39 s | 0.97 | 15.93 s |
+| 90 nm (literature-anchored, cryogenic etch) | 0.950 | 14.21 s | 13.68 s | 1.04 | 16.52 s |
+| 80 nm | 0.900 | 14.36 s | 12.98 s | 1.11 | 17.23 s |
+| 60 nm | 0.800 | 14.62 s | 11.56 s | 1.26 | 19.12 s |
+
+Word lines of a replacement-gate 3D-NAND stack are filled through the gate-line slit into lateral cavities a few tens
+of nanometres high and hundreds of nanometres to a micrometre deep. We model this as a nested feature (aldconf.recess):
+a slit of width w_s and depth L_s whose walls carry recesses of height g_r, length L_r and pitch p_r, each recess a
+Knudsen-Langmuir slit sub-problem fed by the local slit density, with the slit wall's uptake equal to the flat uptake
+on the un-recessed fraction plus the recess mouth flux on the recessed fraction, solved quasi-steadily; it is the
+patternedSurface construction one level down, and it reduces to the plain slit without recesses (to 1e-9) and to a
+slit with the same total wall area when the recesses are short (within 3 % at aspect ratio 1). With literature
+dimensions (29 nm word lines at 51 nm pitch [Lee and Shin 2022], 98 pairs in 5 um [Reiter et al. 2024], 250 nm slits
+with recesses of 365 nm [TechInsights 2014] or 1 um [Onto Innovation 2023]) and the TMA drive of the AR-100 wafer,
+the slit bottom saturates at 5.4 and 8.3 s and the last recess bottom 0.09 and 0.72 s later (2 and 9 %); a 100 nm
+slit takes 13.5 and 16.5 s with lags of 0.5 and 1 % (Figure, wordline_recess.png; table below). In every case the
+structure saturates within 4 % of the plain slit carrying the same total wall area (14.7 and 39.6 times the slit
+wall), so the rule's area-only treatment of recesses holds up to recess aspect ratios of 35. The consequence for the
+recipe is in the area: a wafer tiled with these slits at a 1 to 2.3 um pitch carries 150 to 189 wafer-areas of wall,
+2.7 to 3.4 x the AR-100 hole wafer, and the rule puts its TMA pulse at 38 to 48 s (fully patterned) at 1 %. Closing
+this with a recessed-slit boundary condition in the chamber is the natural next step; the nested model says the
+correction it would find inside the structure is below 10 %.
+
+| slit width w_s | recess length L_r (AR_r) | area factor A_f | chamber-driven t90: plain slit bottom | slit bottom (flat wall) | recess bottom at mouth / mid / stack bottom | delay of the last recess bottom behind the slit bottom | area-equivalent slit bottom | constant 0.3 Pa: slit bottom / last recess bottom; exposure | ratio to the effusion-limit exposure |
+|---|---|---|---|---|---|---|---|---|---|
+| 250 nm | 365 nm (12.6) | 14.7 | 2.30 s | 5.37 s | 2.09 / 4.46 / 5.46 s | 0.09 s (1.8 %) | 5.39 s | 2.70 / 2.79 s; 0.84 Pa s | 4.6 |
+| 250 nm | 1000 nm (34.5) | 39.6 | 2.30 s | 8.33 s | 2.94 / 6.94 / 9.05 s | 0.72 s (8.6 %) | 8.70 s | 6.02 / 7.03 s; 2.11 Pa s | 4.3 |
+| 100 nm | 365 nm (12.6) | 14.7 | 3.76 s | 13.46 s | 2.11 / 8.55 / 13.53 s | 0.07 s (0.5 %) | 13.49 s | 14.53 / 14.68 s; 4.40 Pa s | 9.7 |
+| 100 nm | 1000 nm (34.5) | 39.6 | 3.76 s | 16.52 s | 2.97 / 13.82 / 16.73 s | 0.20 s (1.2 %) | 16.66 s | 37.2 / 39.2 s; 11.7 Pa s | 9.6 |
+
+TMA (s 5e-3, N0 4e18), 5 um stack, 29 nm recesses at 51 nm pitch. The effusion-limit exposure is the stoichiometric
+minimum at the mouth, (A_wall/A_mouth) N0/(n0 vbar/4).
+
+The rule carries no chemistry beyond N0 and c0, and a second chamber chemistry tests that. HfO2 from TDMAH
+(M 354.7, vbar 185 m/s at 573 K) was run on the AR-100 wafer at 1 %, 300 Pa, 573 K, 300 sccm with s = 7.0e-3 [Reiter
+et al. 2024, calibrated to 3D-NAND HfO2 step coverage; no direct TDMAH measurement exists], N0 = 2.77e18 Hf/m2 from a
+GPC of 0.10 nm [Blaschke et al. 2020; Gieraltowska et al. 2023] and the bulk density 9.68 g/cm3 [Delabie et al.
+2005], and a gas diffusivity of 3.6e-3 m2/s (hard-sphere Chapman-Enskog relative to TMA). The hole bottoms reach
+90 % at 11.6 s against 14.05 s for TMA; the rule gives 9.96 s against 14.38 s (table below). TDMAH sits 17 % above
+its rule where TMA sits 2 % below: 0.5 s of the 1.6 s excess is the 2.3 x lower diffusivity (gap Peclet number 0.21
+instead of 0.09; a run with the TMA diffusivity gives 11.1 s), the rest the shorter supply time against the fixed
+chamber overheads, the trend the DOE found for the rule constant. 573 K is at the upper edge of the TDMAH
+self-limiting window [Blaschke et al. 2020; Gieraltowska et al. 2023; Hausmann et al. 2002]; it was kept so that the
+flow field, U, c0 and the inlet condition are those of every other run, and the rule at 250 C is 9.3 to 10.0 s
+because U c0 at fixed sccm and fraction is temperature-independent. Rule-only predictions for TiN from TiCl4 (s 0.10
+[Ylilammi et al. 2018], GPC 0.30 A, density 4.23 g/cm3 [Kinnunen et al. 2017], N0 1.24e18) and W from WF6 (s 0.40
+[Elam et al. 2001], GPC 2.5 A [Klaus et al. 2000], 19.25 g/cm3, N0 1.58e19) give 4.4 and 57 s per cycle on the same
+wafer at 1 %: the sticking coefficients span 5e-3 to 0.4 and do not enter, since s vbar/4 exceeds the inlet speed by
+6 to 400 x for all four precursors; what differs is the number of metal atoms a cycle has to deliver. Per nanometre
+of film the pulse scales with the film's metal-atom number density (HfO2 100 s/nm, Al2O3 144, TiN 148, W 227), which
+is the number a tool's throughput model needs. The inputs carry their caveats: the TDMAH sticking value is a model
+calibration for an undisclosed Hf amide, not a measurement; the TiCl4 value is for TiCl4/H2O on TiO2 at 110 C, not
+TiCl4/NH3; the WF6 value is on the Si-terminated surface, not the B-terminated one; the HfO2 and W film densities are
+bulk values, not measured ALD densities; N0 therefore carries the GPC x density uncertainty of each chemistry (factor
+1.1 to 1.3 across the cited values), the same dominant term the Monte Carlo on the TMA rule found. None of these
+moves the patterned-wafer result, which is supply-limited, but each would move a blanket-wafer one.
+
+Chamber runs, AR-100 wafer (wall-area ratio 55.9), 1 % precursor, 300 Pa, 573 K, 300 sccm, 20 s pulse:
+
+| | TMA (reference) | TDMAH | TDMAH with the TMA diffusivity (sensitivity) |
+|---|---|---|---|
+| M, vbar at 573 K | 72.09, 410 m/s | 354.7, 185 m/s | 354.7, 185 m/s |
+| s, N0 | 5e-3, 4.0e18 | 7.0e-3, 2.77e18 | 7.0e-3, 2.77e18 |
+| D in N2 at 300 Pa; inlet fraction f | 8.4e-3 m2/s; 1.49e-3 | 3.62e-3 m2/s; 3.45e-3 | 8.4e-3; 1.49e-3 |
+| gap Peclet number U g / D | 0.09 | 0.21 | 0.09 |
+| flat t90 (centre) | 1.95 s | 1.30 s | 1.20 s |
+| hole-bottom t90 centre / worst / r = 149 mm | 14.05 / 14.10 / 13.50 s | 11.60 / 11.60 / 11.10 s | 11.10 / 11.15 / 10.95 s |
+| rule 1.2 (1 + 55.9) N0/(U c0) | 14.38 s | 9.96 s | 9.96 s |
+| bottom t90 / rule | 0.98 | 1.17 | 1.12 |
+| surface density at 5 s (centre) | 0.084 c0 | 0.197 c0 | 0.213 c0 |
+
+Rule-only predictions, AR-100 wafer (55.9), 1 % precursor, baseline chamber (U c0 = 1.90e19 molecules/m2/s):
+
+| film / precursor | T | s (source) | GPC (source) | film density (source) | N0 = GPC rho N_A / M | vbar | s vbar/4 vs U = 0.05 m/s | supply time N0/(U c0) | rule, AR-100 wafer | rule, blanket (x 1.2) |
+|---|---|---|---|---|---|---|---|---|---|---|
+| Al2O3 / TMA | 300 C | 5e-3 (chamber runs; Arts 2019 0.5-2e-3, PillarHall fit 8.5e-3) | 0.10 nm | (N0 taken as 4e18, one saturated monolayer) | 4.0e18 | 410 m/s | 0.51 | 0.211 s | 14.4 s | 0.25 s |
+| HfO2 / TDMAH | 300 C | 7.0e-3 (Reiter 2024, Hf amide, calibrated to 3D-NAND HfO2 step coverage) | 0.10 nm (Blaschke 2020: 1.08 A at 200 C, 0.93 A at 250 C; Gieraltowska 2023: 1.2 A at 180-240 C) | 9.68 g/cm3 bulk monoclinic (Delabie 2005) | 2.77e18 | 185 m/s | 0.32 | 0.146 s | 9.96 s | 0.17 s |
+| HfO2 / TDMAH | 250 C | 7.0e-3 | 0.093 nm (Blaschke 2020) | 9.68 g/cm3 | 2.58e18 | 177 m/s | 0.31 | 0.136 s | 9.26 s | 0.16 s |
+| TiN / TiCl4 | 325 C | 0.10 (Ylilammi 2018, TiCl4/H2O on TiO2 at 110 C; no TiCl4/NH3 value published) | 0.030 nm (Kinnunen 2017, 325 C; Satta 2002: 0.024 nm at 400 C) | 4.23 g/cm3 XRR (Kinnunen 2017; bulk 5.21) | 1.24e18 | 253 m/s | 6.3 | 0.065 s | 4.44 s | 0.08 s |
+| W / WF6 | 300 C | 0.40 (Elam 2001, WF6 on the Si-terminated surface at 573 K; no B-terminated value) | 0.25 nm (Klaus 2000, WF6/Si2H6) | 19.25 g/cm3 (bcc, a = 316.5 pm) | 1.58e19 | 202 m/s | 20 | 0.830 s | 56.7 s | 1.00 s |
+
 ### 3.12 A full 3D chamber with a one-sided pump
 The wedge is axisymmetric by construction. To test what a real pumping arrangement does to the saturation map, the
 same chamber was meshed in full 3D (blockMesh O-grid, 106,000 hexahedra, non-orthogonality below 31 deg, 12 cells
@@ -465,20 +565,26 @@ the wedge's radial direction, where the edge lag is 0.4 %.
 5. On a non-uniform layout the pulse is set by the local wall-area ratio of the most demanding region, not by the
    wafer average: the average under-predicts by 2.3x (dense centre) and 1.2x (aspect-ratio ramp), the local ratio
    is conservative by 15 to 21 %, and a pattern boundary puts a 26 % saturation gradient inside the array.
-6. Second-order knobs: pressure up and carrier flow down raise precursor utilization from about 55 % to 95 % at
+6. Real feature shapes and other chemistries stay inside the rule: tapered channel holes cost 1 to 4 % on the
+   supply-limited wafer (the anchored 90 % taper is within 5 % of the straight hole either way); word-line recesses
+   fed through a slit saturate within 4 % of a plain slit with the same wall area up to recess aspect ratio 35, so
+   their cost is in the wall area alone (150 to 189 wafer-areas, 38 to 48 s at 1 %); and the rule is
+   chemistry-agnostic through s, N0 and c0, with the HfO2/TDMAH chamber run at 1.17 times its rule and TiN and W
+   predicted at 4.4 and 57 s per cycle on the same wafer.
+7. Second-order knobs: pressure up and carrier flow down raise precursor utilization from about 55 % to 95 % at
    fixed precursor flow; gap and pressure set within-wafer edge lag (5 to 18 %) but not time.
-7. The water half-cycle needs the same pulse as TMA on patterned wafers despite a 50x lower sticking coefficient,
+8. The water half-cycle needs the same pulse as TMA on patterned wafers despite a 50x lower sticking coefficient,
    and coats deep features more evenly; reversible adsorption, not chamber flushing, governs its purge.
-8. In fab units the rule's pulse gives 99 % step coverage as well as 90 %, because the saturation front is 0.25 to
+9. In fab units the rule's pulse gives 99 % step coverage as well as 90 %, because the saturation front is 0.25 to
    0.3 s wide at every aspect ratio; 50 cycles of the blanket recipe leave 1.4 nm of a 5.15 nm film on top of an
    AR-100 array and nothing at the bottom. The Al2O3 cycle on the AR-100 wafer is 3.1 times the blanket cycle (37.6
    against 12.2 s; 1.9 against 5.5 wafers per hour for 5 nm), its pulses are three quarters of the cycle, and above
    a wall-area ratio of about 10 throughput falls as 1/(1 + A_wall/A_wafer); the purge is set by water desorption,
    not by the chamber, which clears to 1 % in 2 s while a 10 um hole empties in microseconds.
-9. Plasma ALD adds a hard ceiling: above a wall recombination probability of about 3e-3, aspect ratio 100 is
+10. Plasma ALD adds a hard ceiling: above a wall recombination probability of about 3e-3, aspect ratio 100 is
    unreachable by dose. Separated-chemistry (spatial) architectures beat temporal pulsing by the same wall-area
    factor the rule predicts.
-10. All of this runs on a laptop in open-source tools, with the feature model verified against an independent code
+11. All of this runs on a laptop in open-source tools, with the feature model verified against an independent code
    and fitted to public measurements, and every number traceable to a script in the repository.
 
 ## Acknowledgements

@@ -438,6 +438,107 @@ $\Awall$ & 1\,\% TMA & 3\,\% TMA \\
 \end{tabular}
 \end{table}
 
+\subsection{Tapered holes, word-line recesses and other chemistries}
+\label{sec:geomchem}
+Real channel holes are not cylinders. The feature solver now takes a frustum (\texttt{TaperedHole}, diameter falling linearly from the mouth to a fraction of it at the bottom) and solves the conservative form $(1/A)\,\partial_x(A D\,\partial_x n)$ of the diffusion equation on the varying cross-section; with the sink switched off the density in a frustum is uniform to $10^{-9}$, and a bottom ratio of 1 reproduces the cylinder exactly. Published numbers for the taper of production holes are scarce: Lam reports less than 0.1\,\% CD deviation over 10\,$\mu$m with cryogenic etching, about 10\,nm on a 100\,nm hole, against about 30\,nm for room-temperature etches \cite{lam2024,eetimesjp2024}, and TCAD studies use 0.3$^{\circ}$ tapers \cite{lee2022}; we therefore take 90\,\% as the anchored bottom diameter and 80 and 60\,\% as a sweep (no peer-reviewed vendor paper with a measured top/bottom CD pair in nanometres was found in open access). Driven by the chamber's centre-face TMA density of the AR-100 wafer, the bottoms of 100 / 90 / 80 / 60\,nm-bottom holes reach 90\,\% at 14.03 / 14.21 / 14.36 / 14.62\,s (Fig.~\ref{fig:taper}, Table~\ref{tab:taper}): the taper costs 1 to 4\,\%, because on a supply-limited wafer the hole's own conductance is not the bottleneck. At a constant mouth density the same taper costs 4 to 20\,\% (15.9 to 19.1\,s): the lost conductance ($D_K \sim d$, $A \sim d^2$) outweighs the lost wall area. The rule with the frustum wall area (0.95 / 0.90 / 0.80 of the cylinder's) moves the other way, to 13.7 / 13.0 / 11.6\,s, and the two bracket a tapered-hole wafer: the area reduction buys at most the rule's 5 to 20\,\%, the transport penalty takes back 1 to 4\,\% of it, and for the anchored 90\,\% taper both are within 5\,\% of the straight hole.
+
+\begin{figure}[tbp]
+\centering
+\includegraphics[width=\linewidth]{tapered_hole.png}
+\caption{Tapered channel holes (AR 100, 100\,nm mouth, 10\,$\mu$m deep) with 100 / 90 / 80 / 60\,nm bottoms. Left: bottom coverage against time driven by the chamber's centre-face TMA density (1\,\%, 20\,s pulse), with the chamber's own two-way 14.01\,s marked. Middle: coverage along the hole at 4, 8 and 12\,s, straight (solid) against 60\,\% bottom (dashed). Right: time to 90\,\% bottom coverage against bottom/mouth diameter: chamber-driven, the rule with the frustum wall area, and the constant 0.3\,Pa feature-only benchmark. Under the supply-limited chamber the taper costs 1--4\,\%; at constant mouth density 4--20\,\%; the rule with the reduced frustum area predicts 5--20\,\% less.}
+\label{fig:taper}
+\end{figure}
+
+\begin{table}[tbp]
+\centering
+\caption{Tapered AR-100 holes (100\,nm mouth, 10\,$\mu$m deep), 1\,\% TMA, baseline chamber, driven one-way by the chamber's centre-face TMA density of the straight-hole wafer.}
+\label{tab:taper}
+\footnotesize
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{P{1.15in}P{0.55in}P{1.4in}P{1.1in}P{0.5in}P{0.7in}}
+\toprule
+Bottom diameter & Wall area / straight & Chamber-driven bottom $t_{90}$ (one-way) & Rule with frustum area, $1.2\,(1 + 55.9\,A_{\mathrm{rel}})$ $N_0/(U c_0)$ & Driven / rule & Constant 0.3\,Pa mouth, $t_{90}$ \\
+\midrule
+100\,nm (straight) & 1.000 & 14.03\,s (chamber two-way: 14.05\,s first write, 14.01\,s interpolated) & 14.39\,s & 0.97 & 15.93\,s \\
+90\,nm (literature-anchored, cryogenic etch) & 0.950 & 14.21\,s & 13.68\,s & 1.04 & 16.52\,s \\
+80\,nm & 0.900 & 14.36\,s & 12.98\,s & 1.11 & 17.23\,s \\
+60\,nm & 0.800 & 14.62\,s & 11.56\,s & 1.26 & 19.12\,s \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Word lines of a replacement-gate 3D-NAND stack are filled through the gate-line slit into lateral cavities a few tens of nanometres high and hundreds of nanometres to a micrometre deep. We model this as a nested feature (\texttt{aldconf.recess}): a slit of width $w_s$ and depth $L_s$ whose walls carry recesses of height $g_r$, length $L_r$ and pitch $p_r$, each recess a Knudsen--Langmuir slit sub-problem fed by the local slit density, with the slit wall's uptake equal to the flat uptake on the un-recessed fraction plus the recess mouth flux on the recessed fraction, solved quasi-steadily; it is the \texttt{patternedSurface} construction one level down, and it reduces to the plain slit without recesses (to $10^{-9}$) and to a slit with the same total wall area when the recesses are short (within 3\,\% at aspect ratio 1). With literature dimensions (29\,nm word lines at 51\,nm pitch \cite{lee2022}, 98 pairs in 5\,$\mu$m \cite{reiter2024}, 250\,nm slits with recesses of 365\,nm \cite{techinsights2014} or 1\,$\mu$m \cite{onto2023}) and the TMA drive of the AR-100 wafer, the slit bottom saturates at 5.4 and 8.3\,s and the last recess bottom 0.09 and 0.72\,s later (2 and 9\,\%); a 100\,nm slit takes 13.5 and 16.5\,s with lags of 0.5 and 1\,\% (Fig.~\ref{fig:recess}, Table~\ref{tab:recess}). In every case the structure saturates within 4\,\% of the plain slit carrying the same total wall area (14.7 and 39.6 times the slit wall), so the rule's area-only treatment of recesses holds up to recess aspect ratios of 35. The consequence for the recipe is in the area: a wafer tiled with these slits at a 1 to 2.3\,$\mu$m pitch carries 150 to 189 wafer-areas of wall, 2.7 to 3.4$\times$ the AR-100 hole wafer, and the rule puts its TMA pulse at 38 to 48\,s (fully patterned) at 1\,\%. Closing this with a recessed-slit boundary condition in the chamber is the natural next step; the nested model says the correction it would find inside the structure is below 10\,\%.
+
+\begin{figure}[tbp]
+\centering
+\includegraphics[width=\linewidth]{wordline_recess.png}
+\caption{Word-line recesses fed through a slit (250\,nm slit, 5\,$\mu$m deep, 29\,nm recesses 1\,$\mu$m long at 51\,nm pitch, TMA), chamber-driven. Top row: coverage in the recesses ($x$ = depth along the slit, $y$ = distance into the recess) at 3, 6 and 9\,s. Bottom left: coverage of the slit wall (solid) and of the recess bottoms (dashed) along the slit at the same times. Bottom middle: slit mouth, slit bottom and recess bottoms at the mouth and at the stack bottom against time under the chamber drive. Bottom right: the same at a constant 0.3\,Pa mouth density. The saturation front runs down the slit and into each recess behind it; the last recess bottom lags the slit bottom by 0.7\,s (9\,\%) under the chamber drive, and the structure saturates within 4\,\% of a slit with the same total wall area.}
+\label{fig:recess}
+\end{figure}
+
+\begin{table}[tbp]
+\centering
+\caption{Word-line recesses through a slit, TMA ($s = 5\times10^{-3}$, $N_0 = 4\times10^{18}$\,m$^{-2}$), 5\,$\mu$m stack, 29\,nm recesses at 51\,nm pitch, driven one-way by the AR-100 wafer's centre-face TMA density, and at a constant 0.3\,Pa mouth density. $A_f$ is the total wall area over the plain slit wall. The effusion-limit exposure is the stoichiometric minimum at the mouth, $(A_{\mathrm{wall}}/A_{\mathrm{mouth}})\,N_0/(n_0 \bar{v}/4)$.}
+\label{tab:recess}
+\scriptsize
+\setlength{\tabcolsep}{2.5pt}
+\begin{tabular}{P{0.42in}P{0.55in}P{0.4in}P{0.56in}P{0.45in}P{0.74in}P{0.62in}P{0.56in}P{0.8in}P{0.5in}}
+\toprule
+Slit width $w_s$ & Recess length $L_r$ (AR$_r$) & Area factor $A_f$ & Chamber-driven $t_{90}$: plain slit bottom & Slit bottom (flat wall) & Recess bottom at mouth / mid / stack bottom & Delay of the last recess bottom behind the slit bottom & Area-equivalent slit bottom & Constant 0.3\,Pa: slit bottom / last recess bottom; exposure & Ratio to the effusion-limit exposure \\
+\midrule
+250\,nm & 365\,nm (12.6) & 14.7 & 2.30\,s & 5.37\,s & 2.09 / 4.46 / 5.46\,s & 0.09\,s (1.8\,\%) & 5.39\,s & 2.70 / 2.79\,s; 0.84\,Pa\,s & 4.6 \\
+250\,nm & 1000\,nm (34.5) & 39.6 & 2.30\,s & 8.33\,s & 2.94 / 6.94 / 9.05\,s & 0.72\,s (8.6\,\%) & 8.70\,s & 6.02 / 7.03\,s; 2.11\,Pa\,s & 4.3 \\
+100\,nm & 365\,nm (12.6) & 14.7 & 3.76\,s & 13.46\,s & 2.11 / 8.55 / 13.53\,s & 0.07\,s (0.5\,\%) & 13.49\,s & 14.53 / 14.68\,s; 4.40\,Pa\,s & 9.7 \\
+100\,nm & 1000\,nm (34.5) & 39.6 & 3.76\,s & 16.52\,s & 2.97 / 13.82 / 16.73\,s & 0.20\,s (1.2\,\%) & 16.66\,s & 37.2 / 39.2\,s; 11.7\,Pa\,s & 9.6 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The rule carries no chemistry beyond $N_0$ and $c_0$, and a second chamber chemistry tests that. HfO$_2$ from TDMAH ($M = 354.7$, $\bar{v} = 185$\,m/s at 573\,K) was run on the AR-100 wafer at 1\,\%, 300\,Pa, 573\,K, 300\,sccm with $s = 7.0\times10^{-3}$ \cite{reiter2024} (calibrated to 3D-NAND HfO$_2$ step coverage; no direct TDMAH measurement exists), $N_0 = 2.77\times10^{18}$\,Hf/m$^2$ from a GPC of 0.10\,nm \cite{blaschke2020,gieraltowska2023} and the bulk density 9.68\,g/cm$^3$ \cite{delabie2005}, and a gas diffusivity of $3.6\times10^{-3}$\,m$^2$/s (hard-sphere Chapman--Enskog relative to TMA). The hole bottoms reach 90\,\% at 11.6\,s against 14.05\,s for TMA; the rule gives 9.96\,s against 14.38\,s (Table~\ref{tab:chem}). TDMAH sits 17\,\% above its rule where TMA sits 2\,\% below: 0.5\,s of the 1.6\,s excess is the 2.3$\times$ lower diffusivity (gap P\'eclet number 0.21 instead of 0.09; a run with the TMA diffusivity gives 11.1\,s), the rest the shorter supply time against the fixed chamber overheads, the trend the DOE found for the rule constant. 573\,K is at the upper edge of the TDMAH self-limiting window \cite{blaschke2020,gieraltowska2023,hausmann2002}; it was kept so that the flow field, $U$, $c_0$ and the inlet condition are those of every other run, and the rule at 250\,\degC\ is 9.3 to 10.0\,s because $U c_0$ at fixed sccm and fraction is temperature-independent. Rule-only predictions for TiN from TiCl$_4$ ($s = 0.10$ \cite{ylilammi2018}, GPC 0.30\,\AA, density 4.23\,g/cm$^3$ \cite{kinnunen2017}, $N_0 = 1.24\times10^{18}$) and W from WF$_6$ ($s = 0.40$ \cite{elam2001}, GPC 2.5\,\AA\ \cite{klaus2000}, 19.25\,g/cm$^3$, $N_0 = 1.58\times10^{19}$) give 4.4 and 57\,s per cycle on the same wafer at 1\,\%: the sticking coefficients span $5\times10^{-3}$ to 0.4 and do not enter, since $s\bar{v}/4$ exceeds the inlet speed by 6 to 400$\times$ for all four precursors; what differs is the number of metal atoms a cycle has to deliver. Per nanometre of film the pulse scales with the film's metal-atom number density (HfO$_2$ 100\,s/nm, Al$_2$O$_3$ 144, TiN 148, W 227), which is the number a tool's throughput model needs. The inputs carry their caveats: the TDMAH sticking value is a model calibration for an undisclosed Hf amide, not a measurement; the TiCl$_4$ value is for TiCl$_4$/H$_2$O on TiO$_2$ at 110\,\degC, not TiCl$_4$/NH$_3$; the WF$_6$ value is on the Si-terminated surface, not the B-terminated one; the HfO$_2$ and W film densities are bulk values, not measured ALD densities; $N_0$ therefore carries the GPC $\times$ density uncertainty of each chemistry (factor 1.1 to 1.3 across the cited values), the same dominant term the Monte Carlo on the TMA rule found. None of these moves the patterned-wafer result, which is supply-limited, but each would move a blanket-wafer one.
+
+\begin{table}[tbp]
+\centering
+\caption{Other chemistries. (a) Chamber runs on the AR-100 wafer (wall-area ratio 55.9), 1\,\% precursor, 300\,Pa, 573\,K, 300\,sccm, 20\,s pulse: TMA, TDMAH, and TDMAH with the TMA gas diffusivity as a sensitivity. (b) Rule-only predictions for the AR-100 wafer at 1\,\% precursor in the baseline chamber ($U c_0 = 1.90\times10^{19}$ molecules m$^{-2}$ s$^{-1}$); $N_0 = \mathrm{GPC}\,\rho N_A/M$.}
+\label{tab:chem}
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+(a)\par\medskip
+\begin{tabular}{P{1.7in}P{1.2in}P{1.2in}P{1.4in}}
+\toprule
+ & TMA (reference) & TDMAH & TDMAH with the TMA diffusivity (sensitivity) \\
+\midrule
+$M$, $\bar{v}$ at 573\,K & 72.09, 410\,m/s & 354.7, 185\,m/s & 354.7, 185\,m/s \\
+$s$, $N_0$ (m$^{-2}$) & $5\times10^{-3}$, $4.0\times10^{18}$ & $7.0\times10^{-3}$, $2.77\times10^{18}$ & $7.0\times10^{-3}$, $2.77\times10^{18}$ \\
+$D$ in N$_2$ at 300\,Pa; inlet fraction $f$ & $8.4\times10^{-3}$\,m$^2$/s; $1.49\times10^{-3}$ & $3.62\times10^{-3}$\,m$^2$/s; $3.45\times10^{-3}$ & $8.4\times10^{-3}$; $1.49\times10^{-3}$ \\
+Gap P\'eclet number $U g/D$ & 0.09 & 0.21 & 0.09 \\
+Flat $t_{90}$ (centre) & 1.95\,s & 1.30\,s & 1.20\,s \\
+Hole-bottom $t_{90}$ centre / worst / $r = 149$\,mm & 14.05 / 14.10 / 13.50\,s & 11.60 / 11.60 / 11.10\,s & 11.10 / 11.15 / 10.95\,s \\
+Rule $1.2\,(1 + 55.9)\,N_0/(U c_0)$ & 14.38\,s & 9.96\,s & 9.96\,s \\
+Bottom $t_{90}$ / rule & 0.98 & 1.17 & 1.12 \\
+Surface density at 5\,s (centre) & $0.084\,c_0$ & $0.197\,c_0$ & $0.213\,c_0$ \\
+\bottomrule
+\end{tabular}
+\par\medskip (b)\par\medskip
+\scriptsize
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{P{1.0in}P{0.92in}P{0.92in}P{0.92in}P{0.92in}P{0.92in}}
+\toprule
+ & Al$_2$O$_3$ / TMA & HfO$_2$ / TDMAH & HfO$_2$ / TDMAH & TiN / TiCl$_4$ & W / WF$_6$ \\
+\midrule
+$T$ & 300\,\degC & 300\,\degC & 250\,\degC & 325\,\degC & 300\,\degC \\
+$s$ (source) & $5\times10^{-3}$ (chamber runs; Arts et al.\ \cite{arts2019jvsta} 0.5--2$\times10^{-3}$, PillarHall fit $8.5\times10^{-3}$) & $7.0\times10^{-3}$ (Reiter et al.\ \cite{reiter2024}, Hf amide, calibrated to 3D-NAND HfO$_2$ step coverage) & $7.0\times10^{-3}$ & 0.10 (Ylilammi et al.\ \cite{ylilammi2018}, TiCl$_4$/H$_2$O on TiO$_2$ at 110\,\degC; no TiCl$_4$/NH$_3$ value published) & 0.40 (Elam et al.\ \cite{elam2001}, WF$_6$ on the Si-terminated surface at 573\,K; no B-terminated value) \\
+GPC (source) & 0.10\,nm & 0.10\,nm (Blaschke et al.\ \cite{blaschke2020}: 1.08\,\AA\ at 200\,\degC, 0.93\,\AA\ at 250\,\degC; Gieraltowska et al.\ \cite{gieraltowska2023}: 1.2\,\AA\ at 180--240\,\degC) & 0.093\,nm (Blaschke et al.\ \cite{blaschke2020}) & 0.030\,nm (Kinnunen et al.\ \cite{kinnunen2017}, 325\,\degC; Satta et al.\ \cite{satta2002}: 0.024\,nm at 400\,\degC) & 0.25\,nm (Klaus et al.\ \cite{klaus2000}, WF$_6$/Si$_2$H$_6$) \\
+Film density (source) & ($N_0$ taken as $4\times10^{18}$, one saturated monolayer) & 9.68\,g/cm$^3$ bulk monoclinic (Delabie et al.\ \cite{delabie2005}) & 9.68\,g/cm$^3$ & 4.23\,g/cm$^3$ XRR (Kinnunen et al.\ \cite{kinnunen2017}; bulk 5.21) & 19.25\,g/cm$^3$ (bcc, $a = 316.5$\,pm) \\
+$N_0$ (m$^{-2}$) & $4.0\times10^{18}$ & $2.77\times10^{18}$ & $2.58\times10^{18}$ & $1.24\times10^{18}$ & $1.58\times10^{19}$ \\
+$\bar{v}$ & 410\,m/s & 185\,m/s & 177\,m/s & 253\,m/s & 202\,m/s \\
+$s\bar{v}/4$ vs $U = 0.05$\,m/s & 0.51 & 0.32 & 0.31 & 6.3 & 20 \\
+Supply time $N_0/(U c_0)$ & 0.211\,s & 0.146\,s & 0.136\,s & 0.065\,s & 0.830\,s \\
+Rule, AR-100 wafer & 14.4\,s & 9.96\,s & 9.26\,s & 4.44\,s & 56.7\,s \\
+Rule, blanket ($\times 1.2$) & 0.25\,s & 0.17\,s & 0.16\,s & 0.08\,s & 1.00\,s \\
+\bottomrule
+\end{tabular}
+\end{table}
+
 \subsection{A full 3D chamber with a one-sided pump}
 \label{sec:chamber3d}
 The wedge is axisymmetric by construction. To test what a real pumping arrangement does to the saturation map, the same chamber was meshed in full 3D (\texttt{blockMesh} O-grid, 106,000 hexahedra, non-orthogonality below 31$^{\circ}$, 12 cells across the 15\,mm gap) with the outlet reduced from the full annulus to a 60$^{\circ}$ sector of the side wall at $r = 200$\,mm, the rest of the side wall a no-slip wall; showerhead, wafer condition, operating point and TMA fraction are those of Section~\ref{sec:loading} (uniform AR-100 wafer, 1\,\% TMA, 16\,s pulse). The steady carrier flow ($\mathrm{Re} = 0.045$) is strongly one-sided: the gap-averaged outward velocity at $r = 140$\,mm is 0.85\,m/s in the port-side quadrant and 0.01\,m/s on the far side, against 0.27\,m/s in the axisymmetric chamber, so gas over the far half of the wafer crosses the wafer toward the port instead of leaving radially (Fig.~\ref{fig:3dmap}).
@@ -517,6 +618,7 @@ within 25\,\% over aspect ratios 20--100 and a twenty-fold range of feed fractio
 \item The chamber model reproduces the published Fiji F200 case where that case can be represented: the TMA exposure delivered to the wafer per pulse agrees with the authors' three-dimensional CFD to 12 to 22\,\% and the saturation state of the 25 and 60\,ms pulses with the measured growth per cycle; the 2.4\,\% measured non-uniformity, which comes from an off-axis pulse recirculation, a cold loading door and softer-than-Langmuir kinetics, is not reproduced by an axisymmetric frozen-flow model. The blanket saturation exposure, 0.146\,Pa\,s at the surface, sits inside the 0.05 to 1.3\,Pa\,s spread of kinetic saturation exposures from seven independent sources.
 \item A recipe saturated on a blanket wafer under-doses a product wafer by the wall-area ratio, 11 to 56 here. Blanket wafers are the kinetics-limited exception to the rule, not the norm.
 \item On a non-uniform layout the pulse is set by the local wall-area ratio of the most demanding region, not by the wafer average: the average under-predicts by 2.3$\times$ (dense centre) and 1.2$\times$ (aspect-ratio ramp), the local ratio is conservative by 15 to 21\,\%, and a pattern boundary puts a 26\,\% saturation gradient inside the array.
+\item Real feature shapes and other chemistries stay inside the rule: tapered channel holes cost 1 to 4\,\% on the supply-limited wafer (the anchored 90\,\% taper is within 5\,\% of the straight hole either way); word-line recesses fed through a slit saturate within 4\,\% of a plain slit with the same wall area up to recess aspect ratio 35, so their cost is in the wall area alone (150 to 189 wafer-areas, 38 to 48\,s at 1\,\%); and the rule is chemistry-agnostic through $s$, $N_0$ and $c_0$, with the HfO$_2$/TDMAH chamber run at 1.17 times its rule and TiN and W predicted at 4.4 and 57\,s per cycle on the same wafer.
 \item Second-order knobs: pressure up and carrier flow down raise precursor utilization from about 55\,\% to 95\,\% at fixed precursor flow; gap and pressure set within-wafer edge lag (5 to 18\,\%) but not time.
 \item The water half-cycle needs the same pulse as TMA on patterned wafers despite a 50$\times$ lower sticking coefficient, and coats deep features more evenly; reversible adsorption, not chamber flushing, governs its purge.
 \item In fab units the rule's pulse gives 99\,\% step coverage as well as 90\,\%, because the saturation front is 0.25 to 0.3\,s wide at every aspect ratio; 50 cycles of the blanket recipe leave 1.4\,nm of a 5.15\,nm film on top of an AR-100 array and nothing at the bottom. The Al$_2$O$_3$ cycle on the AR-100 wafer is 3.1 times the blanket cycle (37.6 against 12.2\,s; 1.9 against 5.5 wafers per hour for 5\,nm), its pulses are three quarters of the cycle, and above a wall-area ratio of about 10 throughput falls as $1/(1 + \Awall)$; the purge is set by water desorption, not by the chamber, which clears to 1\,\% in 2\,s while a 10\,$\mu$m hole empties in microseconds.
@@ -683,6 +785,82 @@ A.~C. Dillon, A.~W. Ott, J.~D. Way and S.~M. George,
 ``Surface chemistry of Al$_2$O$_3$ deposition using Al(CH$_3$)$_3$ and H$_2$O in a binary reaction sequence,''
 \emph{Surf. Sci.} \textbf{322}, 230--242 (1995).
 \href{https://doi.org/10.1016/0039-6028(95)90033-0}{doi:10.1016/0039-6028(95)90033-0}.
+
+\bibitem{reiter2024}
+T.~Reiter, L.~F. Aguinsky, F.~Rodrigues, J.~Weinbub, A.~H\"ossinger and L.~Filipovic,
+``Modeling the impact of incomplete conformality during atomic layer processing,''
+\emph{Solid-State Electron.} \textbf{211}, 108816 (2024).
+\href{https://doi.org/10.1016/j.sse.2023.108816}{doi:10.1016/j.sse.2023.108816}.
+
+\bibitem{blaschke2020}
+D.~Blaschke, F.~Munnik, J.~Grenzer, L.~Rebohle, H.~Schmidt, P.~Zahn and S.~Gemming,
+``A correlation study of layer growth rate, thickness uniformity, stoichiometry, and hydrogen impurity level in HfO$_2$ thin films grown by ALD between 100\,\degC\ and 350\,\degC,''
+\emph{Appl. Surf. Sci.} \textbf{506}, 144188 (2020).
+\href{https://doi.org/10.1016/j.apsusc.2019.144188}{doi:10.1016/j.apsusc.2019.144188}.
+
+\bibitem{gieraltowska2023}
+S.~Gieraltowska, L.~Wachnicki, P.~Dluzewski, B.~S. Witkowski, M.~Godlewski and E.~Guziewicz,
+``Atomic layer deposition of HfO$_2$ films using TDMAH and water or ammonia water,''
+\emph{Materials} \textbf{16}(11), 4077 (2023).
+\href{https://doi.org/10.3390/ma16114077}{doi:10.3390/ma16114077}.
+
+\bibitem{hausmann2002}
+D.~M. Hausmann, E.~Kim, J.~Becker and R.~G. Gordon,
+``Atomic layer deposition of hafnium and zirconium oxides using metal amide precursors,''
+\emph{Chem. Mater.} \textbf{14}(10), 4350--4358 (2002).
+\href{https://doi.org/10.1021/cm020357x}{doi:10.1021/cm020357x}.
+
+\bibitem{delabie2005}
+A.~Delabie, R.~L. Puurunen, B.~Brijs, M.~Caymax, T.~Conard, B.~Onsia, O.~Richard, W.~Vandervorst, C.~Zhao, M.~M. Heyns, M.~Meuris, M.~M. Viitanen, H.~H. Brongersma, M.~de Ridder, L.~V. Goncharova, E.~Garfunkel, T.~Gustafsson and W.~Tsai,
+``Atomic layer deposition of hafnium oxide on germanium substrates,''
+\emph{J. Appl. Phys.} \textbf{97}, 064104 (2005).
+\href{https://doi.org/10.1063/1.1856221}{doi:10.1063/1.1856221}.
+
+\bibitem{kinnunen2017}
+S.~A. Kinnunen, J.~Malm, K.~Arstila, M.~Lahtinen and T.~Sajavaara,
+``Characterization of ALD grown Ti$_x$Al$_y$N and Ti$_x$Al$_y$C thin films,''
+\emph{Nucl. Instrum. Methods Phys. Res. B} \textbf{406}, 152--155 (2017).
+\href{https://doi.org/10.1016/j.nimb.2016.12.032}{doi:10.1016/j.nimb.2016.12.032}.
+
+\bibitem{satta2002}
+A.~Satta, J.~Schuhmacher, C.~M. Whelan, W.~Vandervorst, S.~H. Brongersma, G.~P. Beyer, K.~Maex, A.~Vantomme, M.~M. Viitanen, H.~H. Brongersma and W.~F.~A. Besling,
+``Growth mechanism and continuity of atomic layer deposited TiN films on thermal SiO$_2$,''
+\emph{J. Appl. Phys.} \textbf{92}(12), 7641--7646 (2002).
+\href{https://doi.org/10.1063/1.1522485}{doi:10.1063/1.1522485}.
+
+\bibitem{elam2001}
+J.~W. Elam, C.~E. Nelson, R.~K. Grubbs and S.~M. George,
+``Kinetics of the WF$_6$ and Si$_2$H$_6$ surface reactions during tungsten atomic layer deposition,''
+\emph{Surf. Sci.} \textbf{479}, 121--135 (2001).
+\href{https://doi.org/10.1016/S0039-6028(01)00969-4}{doi:10.1016/S0039-6028(01)00969-4}.
+
+\bibitem{klaus2000}
+J.~W. Klaus, S.~J. Ferro and S.~M. George,
+``Atomic layer deposition of tungsten using sequential surface chemistry with a sacrificial stripping reaction,''
+\emph{Thin Solid Films} \textbf{360}, 145--153 (2000).
+\href{https://doi.org/10.1016/S0040-6090(99)01076-7}{doi:10.1016/S0040-6090(99)01076-7}.
+
+\bibitem{lee2022}
+D.~Lee and C.~Shin,
+``Impact of stacking-up and scaling-down bit cells in 3D NAND on their threshold voltages,''
+\emph{Micromachines} \textbf{13}(7), 1139 (2022).
+\href{https://doi.org/10.3390/mi13071139}{doi:10.3390/mi13071139}.
+
+\bibitem{lam2024}
+Lam Research Corp., ``Lam Research introduces Lam Cryo 3.0 cryogenic etch technology to accelerate scaling of 3D NAND for the AI era,'' press release, Fremont, CA, 31 July 2024.
+\url{https://www.nasdaq.com/press-release/lam-research-introduces-lam-cryotm-30-cryogenic-etch-technology-accelerate-scaling-3d} (accessed November 2026).
+
+\bibitem{eetimesjp2024}
+EE Times Japan, article on Lam Research's third-generation Cryo etch for 1000-layer NAND (in Japanese), 2 September 2024.
+\url{https://eetimes.itmedia.co.jp/ee/spv/2409/02/news119.html} (accessed November 2026).
+
+\bibitem{onto2023}
+N.~Keller et al.\ (Onto Innovation), ``Measuring the critical W-recess in 3D NAND,'' \emph{Semiconductor Digest}, July 2023, p.~31.
+\url{https://ontoinnovation.com/writable/files/Measuring-the-Critical-W-recess-in-3D-NAND_Semi-Digest_July_2023.pdf} (accessed November 2026).
+
+\bibitem{techinsights2014}
+3DInCites, analysis of TechInsights' cross-sections of Samsung's 86\,Gbit 32-layer V-NAND, December 2014.
+\url{https://www.3dincites.com/?p=8892} (accessed November 2026).
 
 \bibitem{george2010}
 S.~M. George,

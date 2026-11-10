@@ -73,3 +73,14 @@ One change to the shared runtime, in this repository's copy of `site.js`: the so
 context with `failIfMajorPerformanceCaveat`, which a software renderer refuses at once, instead of creating one and reading
 its renderer string; creating a SwiftShader context cost 2.4 s of main thread before first paint in the audit environment.
 Pinned CDN builds: three.js 0.186.1, GSAP 3.15.0, Lenis 1.3.27.
+
+## 6. Night three: static figure cards and the layout-to-recipe tool
+
+Section 11 ("The reviewer's questions, answered with runs") shows eight of the repository's own matplotlib figures as cards
+(`assets/fig_*.png`, copied and quantised from `figures/` by `build_assets.py --figs`, since GitHub Pages serves `docs/` only),
+each with a caption whose numbers trace to `CLAIMS.md`: the sticking-coefficient sensitivity, step coverage and thickness,
+purge and throughput, the blanket saturation against published exposures, the Fiji F200 reproduction, the 3D chamber map,
+tapered holes and word-line recesses. They are deliberately static: these are audit figures, and a 3D restaging would add
+nothing to what the plot says. Section 10 is the layout-to-recipe tool (`assets/layout-tool.js`, markup from
+`partials/layout-tool.html`): zones in, per-zone local rule out, the lateral-feed margin calibrated on the two non-uniform
+runs and labelled as such, an SVG wafer map, CSV in and out; it has its own Playwright checks (`partials/README.md`).

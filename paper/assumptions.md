@@ -597,3 +597,50 @@ r = 140 mm and the worst point moves to the far side (r 133 mm, 160 deg from the
 indicator (4.8 % spread at r = 140 mm). Caveats: 12 gap cells; writes 0.1 s apart (interpolated); frozen flow; a plain
 sector port at uniform pressure; non-absorbing floor and side wall; Stokes flow, so only the Peclet numbers change
 the result with operating point.
+
+## Night 3, part 5: geometry and chemistry (reactor/chemistry/make_tdmah_case.py, coupling/tapered_hole.py, coupling/wordline_recess.py, src/aldconf/recess.py)
+
+Tapered holes: TaperedHole(diameter, length, bottom_ratio) in aldconf.geometry; the solver uses the conservative
+(1/A) d/dx (A D dn/dx) form on the frustum cross-section when the geometry is tapered and the previous uniform-area
+form otherwise (film narrowing included), so no earlier number changes. Checks: zero sink gives a uniform density
+to 1e-9 in a 0.5 frustum; bottom_ratio 1 is bitwise the Hole; the area form at bottom_ratio 0.999 agrees with the
+cylinder within 0.01 in coverage; frustum area matches a numerical integral to 1e-4. AR-100 holes (100 nm mouth,
+10 um) with 100 / 90 / 80 / 60 nm bottoms driven by the centre-face value of showerhead_pulse_patterned_AR100_long
+times c0 (aldconf.simulate_driven, 5 substeps per 0.05 s write), s 5e-3, N0 4e18:
+| bottom | wall area / straight | driven bottom t90 | constant 0.3 Pa t90 | rule 1.2 (1 + 55.9 A_rel) N0/(U c0) |
+| 100 nm | 1.000 | 14.03 s | 15.93 s | 14.39 s |
+| 90 nm | 0.950 | 14.21 s | 16.52 s | 13.68 s |
+| 80 nm | 0.900 | 14.36 s | 17.23 s | 12.98 s |
+| 60 nm | 0.800 | 14.62 s | 19.12 s | 11.56 s |
+(Chamber two-way bottom t90 at the centre: 14.05 s at the first write above 0.9, 14.01 s interpolated.) 8 s wall
+time for the script. Reading: supply-limited wafer, taper nearly invisible (1-4 %); feature-only penalty 4-20 %; the
+rule's area reduction goes the other way (5-20 % shorter) and the two bracket a tapered-hole wafer.
+Word-line recesses: aldconf.recess, RecessedSlit(w_s, L_s, g_r, L_r, p_r), 200 slit cells x 50 recess cells,
+vectorised Thomas solves per substep; limits tested (plain slit to 1e-9; AR-1 recesses vs area-equivalent slit
+within 3 % on the front). Dimensions: g_r 29 nm, p_r 51 nm (Lee and Shin 2022), L_s 5 um (98 pairs, Reiter 2024),
+w_s 250 nm (Onto 2023) and 100 nm, L_r 365 nm (TechInsights 2014: 730 nm slit-to-slit) and 1 um (Onto 2023: slit
+pitch > 2 um). Drive A = centre-face TMA density of the AR-100 long case (one-way); drive B = constant 0.3 Pa:
+| w_s | L_r | A_f | A: plain slit | slit bottom | recess bottoms mouth / mid / deep | lag | area-eq slit | B: slit bottom / last recess; exposure | effusion limit |
+| 250 nm | 365 nm | 14.7 | 2.30 s | 5.37 s | 2.09 / 4.46 / 5.46 s | 0.09 s | 5.39 s | 2.70 / 2.79 s; 0.84 Pa s | 0.61 s |
+| 250 nm | 1 um | 39.6 | 2.30 s | 8.33 s | 2.94 / 6.94 / 9.05 s | 0.72 s | 8.70 s | 6.02 / 7.03 s; 2.11 Pa s | 1.63 s |
+| 100 nm | 365 nm | 14.7 | 3.76 s | 13.46 s | 2.11 / 8.55 / 13.53 s | 0.07 s | 13.49 s | 14.53 / 14.68 s; 4.40 Pa s | 1.52 s |
+| 100 nm | 1 um | 39.6 | 3.76 s | 16.52 s | 2.97 / 13.82 / 16.73 s | 0.20 s | 16.66 s | 37.2 / 39.2 s; 11.7 Pa s | 4.08 s |
+Wall-area ratio of a wafer tiled at pitch w_s + 2 L_r: 150 / 176 / 178 / 189 (fully patterned); rule 38.3 / 44.8 /
+45.2 / 48.0 s at 1 % TMA (19.3-24.1 s at 50 % patterned). 16 s wall time for the script. Reading: the recess bottoms
+lag the slit bottom by 0.5-9 % and the structure is an area-equivalent slit within 4 %; the rule's area-only treatment
+holds to recess AR 35; the chamber loading of such a wafer (not run; no recessed-slit BC) would be 2.7-3.4 x the hole
+wafer's.
+TDMAH chamber run (reactor/chemistry/showerhead_pulse_patterned_AR100_tdmah, copy of the AR-100 long case with
+vbar 185, s 7e-3, N0 2.77e18, DT 3.62e-3, f 3.445e-3; 20 s pulse, 22 s, writes every 0.05 s): 132 s wall time;
+bottom t90 11.60 s centre / 11.60 worst / 11.10 at r = 149 mm, flat 1.30 s, surface density at 5 s 0.197 c0; rule
+9.96 s, ratio 1.165. Sensitivity ..._tdmah_Dtma (DT 8.4e-3, f 1.489e-3, TDMAH kinetics): 185 s; bottom t90 11.10 /
+11.15 / 10.95 s, flat 1.20 s, ratio 1.115. TMA reference from the same post-processing: 14.05 / 14.10 / 13.50 s, flat
+1.95 s, rule 14.38 s, ratio 0.977. Reading: the chemistry enters through N0 (and c0); the lower TDMAH diffusivity
+(gap Peclet 0.21) adds 0.5 s, the shorter supply time against the chamber's fixed overheads the remaining 1.1 s.
+573 K kept for comparability (upper edge of the TDMAH window); rule at 523 K 9.26-9.96 s (U c0 temperature-
+independent at fixed sccm and fraction). Rule-only: TiN/TiCl4 (s 0.10, GPC 0.30 A, 4.23 g/cm3, N0 1.24e18) 4.44 s;
+W/WF6 (s 0.40, GPC 2.5 A, 19.25 g/cm3, N0 1.58e19) 56.7 s; per nanometre of film HfO2 100, Al2O3 144, TiN 148,
+W 227 s/nm (proportional to the film's metal-atom number density). Caveats: TDMAH sticking is a model calibration for an undisclosed Hf amide (Reiter 2024), not a
+measurement; TiCl4 sticking is for TiCl4/H2O on TiO2 at 110 C, not TiCl4/NH3; WF6 sticking is on the Si-terminated
+surface, not the B-terminated one; film densities for ALD HfO2 (bulk used) and ALD W (bulk used) are not measured
+values; N0 therefore carries the GPC x density uncertainty (factor 1.1-1.3). Tests: 86 pass (9 new) in 14 s.
