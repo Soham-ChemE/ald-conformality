@@ -132,3 +132,21 @@ wafer captures 94 % of everything injected, and nothing saturates: flat regions 
 90 % after 1 s pulse + 5 s purge. Supply arithmetic: the pulse delivers 1.9e19 molecules/m2 against a demand of
 57 x 4e18 = 2.3e20, i.e. 8 % of a monolayer-equivalent. A blanket-wafer recipe (0.35 s) under-doses a 3D NAND wafer
 by more than an order of magnitude at this precursor supply. Long-pulse runs (20 s at 1 %, 8 s at 3 %) are next.
+
+Long-pulse results for the 3D-NAND-like AR-100 wafer (figures/coupling_patterned_long.png):
+| supply | blanket wafer t90 | patterned wafer, flat regions t90 | hole bottom t90 centre | hole bottom t90 r = 149 mm | TMA captured over the pulse |
+| 1 % TMA, 300 sccm, 20 s pulse | 0.35 s | 1.95 s | 14.05 s | 13.3 s | 60 % |
+| 3 % TMA, 300 sccm, 8 s pulse | 0.16 s | 0.70 s | 4.75 s | 4.55 s | 50 % |
+Reading:
+- The pulse that saturates the bottom of AR-100 holes across a 3D-NAND-like wafer is 14 s at 1 % TMA: 40 x the
+  blanket-wafer value of 0.35 s. Tripling the TMA fraction cuts it to 4.75 s, almost exactly 1/3: the process is
+  supply-limited end to end, so pulse time x precursor supply rate is roughly constant (14.05 x 1 = 14.0, 4.75 x 3 =
+  14.3 "percent-seconds"). The knob is precursor molecules per second, not carrier flow, pressure or gap.
+- The flat regions between holes take 1.95 s instead of 0.35 s: the holes starve the flat surface (loading).
+- The wafer edge saturates slightly earlier than the centre on the patterned wafer (13.3 vs 14.05 s), the opposite of
+  the blanket wafer (edge 8 % later): with the surface density collapsed to 0.02 c0 everywhere, the un-patterned floor
+  ring outside the wafer feeds the edge laterally. An edge ring that is also a sink would remove this.
+- Captured fraction over the pulse: 60 % and 50 %, the rest pumped away mostly after the surfaces saturate.
+Caveats unchanged (isothermal, frozen carrier, no H2O half-cycle, Knudsen D_K = d vbar/3, s and N0 literature-range,
+hole density and pattern coverage assumed). Next: a 2D map of saturating pulse time versus TMA fraction and AR,
+the H2O half-cycle (s ~ 1e-4, which will dominate cycle time), the edge-ring geometry, and DOE/GP over the knob set.

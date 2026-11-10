@@ -32,3 +32,5 @@ Native Apple Silicon build from https://github.com/gerlero/openfoam-app (v2.2.3,
 Smoke case: `reactor/smoke_pitzDaily` (tutorial copy, 50 iterations). ParaView is not bundled; figures are made in Python from the written fields instead.
 
 Reactor cases: `reactor/showerhead_steady` (laminar N2 flow) and `reactor/showerhead_pulse` (0.1 s TMA pulse, Danckwerts inlet, absorbing wafer); `reactor/postprocess_pulse.py` turns the written fields into dose-vs-radius. Assumptions and first results: `paper/assumptions.md`.
+
+Multiscale wall: `reactor/lib/aldWallKinetics` provides `langmuirSticking` (self-limiting flat surface) and `patternedSurface` (a 1D Knudsen/Langmuir hole model on every wafer face, two-way coupled). Build with `wmake libso` inside the OpenFOAM environment. `coupling/` holds the one-way (Python) and two-way (BC) post-processing.

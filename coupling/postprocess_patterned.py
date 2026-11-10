@@ -11,7 +11,12 @@ OUT = ROOT / "figures"
 r_mm = np.arange(150) + 0.5
 U, A = 0.050, np.pi * 0.15 ** 2
 
-cases = {"AR 100": ROOT / "reactor/showerhead_pulse_patterned_AR100", "AR 50": ROOT / "reactor/showerhead_pulse_patterned_AR50"}
+DEFAULT = {"AR 100": "showerhead_pulse_patterned_AR100", "AR 50": "showerhead_pulse_patterned_AR50"}
+# usage: postprocess_patterned.py [label=casedir ...] [--tag name]
+args = [a for a in sys.argv[1:] if "=" in a]
+tag = sys.argv[sys.argv.index("--tag") + 1] if "--tag" in sys.argv else "wafer"
+cases = {a.split("=")[0]: ROOT / "reactor" / a.split("=")[1] for a in args} if args else {k: ROOT / "reactor" / v for k, v in DEFAULT.items()}
+PULSE_SHADE = None
 tf, thf, facef, sf, vbarf, c0f, N0f, pulsef = load_flat(ROOT / "reactor/sweep/base/pulse")
 fig, axes = plt.subplots(1, 3, figsize=(15, 4.3))
 axes[0].plot(tf, facef[:, 0], "k:", label="unpatterned wafer")
@@ -34,9 +39,9 @@ for lab, cd in cases.items():
     axes[1].plot(t, f["thetaBottom"][:, 0], label=f"{lab} hole bottom, centre"); axes[1].plot(t, f["thetaBottom"][:, 140], "--", label=f"{lab} hole bottom, r = 140 mm")
     axes[2].plot(r_mm, [t90(f["thetaBottom"], j) for j in range(150)], label=f"{lab} hole bottom")
 axes[1].plot(tf, thf[:, 0], "k:", label="unpatterned flat wafer")
-axes[0].axvspan(0, 1.0, color="0.92"); axes[0].set_xlim(0, 3); axes[0].set_xlabel("time (s)"); axes[0].set_ylabel("TMA density at wafer surface / c0")
+axes[0].set_xlim(0, max(3.0, t[-1])); axes[0].set_xlabel("time (s)"); axes[0].set_ylabel("TMA density at wafer surface / c0")
 axes[0].set_title("Loading: a patterned wafer depresses the surface precursor density", fontsize=9); axes[0].legend(fontsize=7)
-axes[1].axvspan(0, 1.0, color="0.92"); axes[1].set_xlabel("time (s)"); axes[1].set_ylabel("coverage"); axes[1].set_ylim(0, 1.05)
+axes[1].set_xlabel("time (s)"); axes[1].set_ylabel("coverage"); axes[1].set_ylim(0, 1.05)
 axes[1].set_title("Hole-bottom coverage, two-way coupled", fontsize=9); axes[1].legend(fontsize=7)
 axes[2].set_xlabel("radius (mm)"); axes[2].set_ylabel("time to 90 % coverage at the hole bottom (s)"); axes[2].set_title("Saturation time of the hole bottom across the wafer", fontsize=9); axes[2].legend(fontsize=8)
-fig.tight_layout(); fig.savefig(OUT / "coupling_patterned_wafer.png", dpi=150); print("saved", OUT / "coupling_patterned_wafer.png")
+fig.tight_layout(); fig.savefig(OUT / f"coupling_patterned_{tag}.png", dpi=150); print("saved", OUT / f"coupling_patterned_{tag}.png")
