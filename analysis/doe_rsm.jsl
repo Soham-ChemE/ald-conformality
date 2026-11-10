@@ -1,0 +1,29 @@
+// Response-surface fit of the patterned-wafer DOE in JMP Student Edition.
+// Input: figures/doe_results.csv (25 runs). Responses: log10 t90_worst (saturating pulse), edge_lag_pct, utilization.
+// Factors: coded c_x, c_Q, c_p, c_g (face-centred CCD). Writes a text report and the prediction formulas.
+root = "/Users/thegreat/Documents/MATLAB/ald-conformality/";
+dt = Open( root || "figures/doe_results.csv" );
+dt << New Column( "log10_t90_worst", Numeric, Continuous, Formula( Log10( :t90_worst ) ) );
+dt << Run Formulas;
+out = "JMP " || JMP Version() || " response-surface fits, " || Char( N Rows( dt ) ) || " runs\n";
+responses = {"log10_t90_worst", "edge_lag_pct", "utilization"};
+For( i = 1, i <= N Items( responses ), i++,
+    r = responses[i];
+    fit = dt << Fit Model(
+        Y( As Column( r ) ),
+        Effects( :c_x & RS, :c_Q & RS, :c_p & RS, :c_g & RS ),
+        Personality( Standard Least Squares ), Emphasis( Minimal Report ), Run( :AsColumn( r ) << {Lack of Fit( 0 ), Plot Actual by Predicted( 0 )} )
+    );
+    rep = Report( fit );
+    rsq = rep["Summary of Fit"][Number Col Box( 1 )] << Get;
+    est = rep["Parameter Estimates"][Number Col Box( 1 )] << Get;
+    terms = rep["Parameter Estimates"][String Col Box( 1 )] << Get;
+    out = out || "\n== " || r || ": RSquare " || Char( Round( rsq[1], 4 ) ) || ", RMSE " || Char( Round( rsq[3], 4 ) ) || "\n";
+    For( j = 1, j <= N Items( terms ), j++, out = out || "   " || terms[j] || " = " || Char( Round( est[j], 5 ) ) || "\n" );
+    fit << Save Prediction Formula;
+    rep << Close Window;
+);
+dt << Save( root || "figures/doe_results_with_predictions.jmp" );
+Save Text File( root || "figures/doe_rsm_report.txt", out );
+Close( dt, No Save );
+Quit( No Save );

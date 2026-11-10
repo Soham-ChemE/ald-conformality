@@ -1,0 +1,17 @@
+FoamFile { version 2.0; format ascii; class volVectorField; object U; }
+dimensions [0 1 -1 0 0 0 0];
+// 300 sccm N2 at 300 Pa, 573 K over the 150 mm showerhead: Q = 3.54e-3 m3/s, A = 7.07e-2 m2 -> 0.050 m/s downward (-x)
+internalField   uniform (0 0 0);
+boundaryField
+{
+    showerhead { type fixedValue; value uniform (-0.050 0 0); }
+    topWall    { type noSlip; }
+    wafer      { type noSlip; }
+    edgeRing   { type noSlip; }
+    ringOuter  { type noSlip; }
+    outerWall  { type noSlip; }
+    outlet     { type pressureInletOutletVelocity; value uniform (0 0 0); }
+    axis       { type empty; }
+    front      { type wedge; }
+    back       { type wedge; }
+}

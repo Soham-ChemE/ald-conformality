@@ -2,7 +2,7 @@
 
 Soham Kavathekar, Department of Chemical and Biomolecular Engineering, University of Pennsylvania
 
-*Draft 0.6 (public), 2026-11-10. Every number is from a run documented in `paper/assumptions.md`.*
+*Draft 0.7 (public), 2026-11-10. Every number is from a run documented in `paper/assumptions.md`.*
 
 ## Abstract
 
@@ -99,7 +99,11 @@ of TMA supplied in that time against 0.0103 mol needed. In the normalisation use
 arrived at 1.12 (0.92 to 1.31) times the supply-limit time. Our twelve patterned-wafer cases, with nothing tuned to
 that experiment, saturate at 1.05 to 1.27 times theirs (Figure, validation_supply_rule.png); the blanket wafers, at
 a Damkoehler number of 10 instead of hundreds, sit at 1.5 to 4.3 and are the kinetics-limited exception. Argonne's
-plug-flow theory [Lu 2022; Yanguas-Gil and Elam 2024] predicts the same approach to unity from above.
+plug-flow theory [Lu 2022; Yanguas-Gil and Elam 2024] predicts the same approach to unity from above. A second
+measured set, TMA utilization in a rotary-drum reactor at five silica-gel loadings from 40 to 1500 m2 [Coile et al.
+2020, Table 2], rises from 25 % to 71 % with area, i.e. saturation moves from 4.0 to 1.4 supply-limit times as the
+reactor fills with surface; our blanket and patterned wafers (0.07 to 4 m2) and the fluidized bed (940 m2, 92 %)
+fall on the same trend across five orders of magnitude of surface area (Figure, right panel).
 
 ## 3. Results
 

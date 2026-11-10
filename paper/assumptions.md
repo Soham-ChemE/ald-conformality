@@ -262,3 +262,16 @@ Reading: a wafer carrying tens of wafer-areas of holes behaves like a powder bed
 the measured anchor for the "1.2" in the design rule; the model was not tuned to it (N0, s and the chamber were fixed
 before the comparison). One point is one point: the Strempel et al. 2018 fixed-bed data (Davisil silica, 506 m2/g,
 atmospheric, 50 mL/min) has the breakthrough curves in its reference 15 and would add a second, lower-Da point.
+
+## Night 2, part 1b: second measured set, Argonne rotary drum (Coile et al., JVST A 38, 052403, 2020; OSTI 1660751)
+Hot-wall tube reactor, 200 sccm carrier at 0.8 Torr, 200 C, silica gel in a rotating mesh drum at 120 rpm; TMA
+saturation by in-situ QMS (95 % of the integrated CH4 signal). Table 2, TMA utilization vs loading: 2 g 24.7 %,
+5 g 47.9 %, 15 g 46.7 %, 30 g 55.3 %, 75 g 70.7 % (about 20 m2/g: 50 g ~ 1000 m2, 75 g ~ 1500 m2 per the paper).
+Utilization = reacted/delivered up to saturation = 1/tau_sat, so tau_sat falls from 4.0 (40 m2) to 1.4 (1500 m2):
+the more area the reactor holds, the closer saturation sits to the supply limit. Same trend as our wafers (blanket
+1.5-4.3 at 0.07 m2 of area; patterned 1.05-1.27 at 0.8-4 m2) and the fluidized bed (1.09 at 940 m2). The drum does
+not reach the fluidized bed's utilization because precursor must diffuse through the mesh into a 5 mm bed (the
+authors' explanation), i.e. transport to the surface, not supply, caps it; its Damkoehler number by the flow
+definition is not meaningful, so the drum points appear on the utilization-vs-area panel only.
+Figure: validation_supply_rule.png now has two panels: tau_sat vs Da (chamber, theory, fluidized bed) and precursor
+utilization vs total reactive area across five orders of magnitude (0.07 m2 blanket wafer to 1500 m2 of powder).

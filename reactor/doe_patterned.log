@@ -1,0 +1,1 @@
+run00 x=0.50% Q=150 p=100 g=10.0 | t_supply 47.92 s, t90 worst 57.57 s (tau 1.20), edge lag +0.0 %, util 83 % | 551s

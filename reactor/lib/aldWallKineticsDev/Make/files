@@ -1,0 +1,3 @@
+langmuirStickingFvPatchScalarField.C
+patternedSurfaceFvPatchScalarField.C
+LIB = $(FOAM_USER_LIBBIN)/libaldWallKineticsDev

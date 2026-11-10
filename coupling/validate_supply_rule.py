@@ -26,7 +26,12 @@ t0_min = 0.0103 / (0.0115 / 24.0); tau_arg = 24.0 / t0_min
 tau_lo = 24.0 / (0.0103 / ((0.0115 + 0.0020) / 24.0)); tau_hi = 24.0 / (0.0103 / ((0.0115 - 0.0020) / 24.0))
 print(f"Argonne fluidized bed: t0 = {t0_min:.1f} min, measured 24 min -> tau_sat = {tau_arg:.2f} (range {min(tau_lo,tau_hi):.2f}-{max(tau_lo,tau_hi):.2f}), Da ~ 1e4")
 print(df[["kind", "x", "AR", "wall_ratio", "Da", "t_supply", "t90_worst", "tau_sat"]].round(3).to_string())
-fig, ax = plt.subplots(figsize=(7.5, 4.5))
+# Second measured set: Argonne rotary drum (Coile, Young, Libera, Mane, Elam, JVST A 38, 052403 (2020), OSTI 1660751),
+# Table 2: TMA utilization at 120 rpm vs silica-gel loading; ~20 m2/g (50 g ~ 1000 m2, 75 g ~ 1500 m2 per the paper).
+# Utilization = TMA reacted / TMA delivered up to saturation = 1/tau_sat.
+drum_mass = np.array([2, 5, 15, 30, 75]); drum_util = np.array([0.247, 0.479, 0.467, 0.553, 0.707]); drum_S = drum_mass * 20.0
+df["S_total"] = (1 + df.wall_ratio) * A_WAFER
+fig, (ax, ax2) = plt.subplots(1, 2, figsize=(14, 4.6))
 for kind, mk, lab in (("blanket", "o", "this work: blanket wafer (chamber model)"), ("patterned", "s", "this work: patterned wafers AR 20-100 (two-way model)")):
     d = df[df.kind == kind]; ax.plot(d.Da, d.tau_sat, mk, ms=7, label=lab)
 lo, hi = min(tau_lo, tau_hi), max(tau_lo, tau_hi)
@@ -38,5 +43,14 @@ ax.axhline(1, color="0.6", lw=0.8)
 ax.set_xscale("log"); ax.set_xlabel("Damkoehler number  (S/V) beta (vbar/4) t_res"); ax.set_ylabel("saturation time / supply-limit time t0")
 ax.set_ylim(0.8, 4.5); ax.set_title("Supply-limited ALD: simulations, theory and a measurement on one axis", fontsize=9)
 ax.legend(fontsize=7); ax.grid(True, which="both", alpha=0.3)
+# panel 2: precursor utilization vs total reactive area, all systems
+for kind, mk, lab in (("blanket", "o", "chamber model: blanket 300 mm wafer"), ("patterned", "s", "chamber model: patterned wafers (AR 20-100)")):
+    d = df[df.kind == kind]; ax2.plot(d.S_total, 1 / d.tau_sat, mk, ms=7, label=lab)
+ax2.plot([940], [0.918], "D", color="tab:red", ms=8, label="measured: fluidized bed, silica gel (Lu 2022)")
+ax2.errorbar([940], [0.918], yerr=[[0.146], [0.082]], fmt="none", ecolor="tab:red", capsize=3)
+ax2.plot(drum_S, drum_util, "^", color="tab:purple", ms=8, label="measured: rotary drum, silica gel, 120 rpm (Coile 2020, Table 2)")
+ax2.set_xscale("log"); ax2.set_xlabel("total reactive surface area in the reactor (m2)"); ax2.set_ylabel("precursor utilization up to saturation  (= 1 / tau_sat)")
+ax2.set_ylim(0, 1.05); ax2.set_title("Precursor utilization vs surface area: wafers to powders", fontsize=9); ax2.legend(fontsize=7, loc="lower right"); ax2.grid(True, which="both", alpha=0.3)
 fig.text(0.01, 0.01, "*rough: inverted from theta(t0) = 1 - ln2/Da (Lu et al. Eq. 9), i.e. the coverage reached when exactly one site-equivalent has been supplied", fontsize=6)
-fig.tight_layout(rect=(0, 0.03, 1, 1)); fig.savefig(OUT / "validation_supply_rule.png", dpi=150); print("saved", OUT / "validation_supply_rule.png")
+fig.tight_layout(rect=(0, 0.03, 1, 1)); fig.savefig(OUT / "validation_supply_rule.png", dpi=150)
+print("rotary drum tau_sat = 1/utilization:", np.round(1 / drum_util, 2), "at S =", drum_S, "m2"); print("saved", OUT / "validation_supply_rule.png")
