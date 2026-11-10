@@ -167,8 +167,10 @@ design) or surface chemistry become the levers. The radical sticking coefficient
 - Robustness checks: replacing the bare floor by a 25 mm edge ring with pumping below the wafer plane changes no
   saturation time by more than one write interval and leaves the within-wafer spread within 3 % (blanket 9-11 %,
   patterned 4 %); the pulse-time results do not depend on the chamber outboard of the wafer at this Peclet number.
-- Limitations: isothermal [temperature sweep: TODO]; frozen carrier flow; irreversible Langmuir in the main runs
-  [reversible water: TODO]; single hole size and density [hole-size sweep: TODO]; Knudsen D_K = d vbar/3 without
+- Limitations: isothermal [temperature sweep: TODO]; frozen carrier flow; irreversible Langmuir in the main runs; a first-order desorption term was added for water and shows the
+  purge-tail mechanism (desorbing water holds the exhaust above 1 % for seconds at kdes = 0.1 to 1 1/s) and the
+  equilibrium-coverage limit (above ~0.3 1/s at 1 % H2O the surface never reaches 90 %), but kdes is a parameter,
+  not a measurement, and a two-site chemisorbed/physisorbed model is the next step; single hole size and density [hole-size sweep: TODO]; Knudsen D_K = d vbar/3 without
   Clausing correction; s and N0 are literature-range inputs (PillarHall fit 8.5e-3; Arts 2019 0.5-2e-3).
 
 ## 5. Conclusions
