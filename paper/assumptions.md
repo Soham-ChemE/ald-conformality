@@ -230,3 +230,22 @@ grows linearly with patterned area because the zone delivers precursor at a flux
 raising the feed fraction. This is the quantitative form of the argument in Applied's 3D-NAND deposition patent
 literature and the premise of Olympia's separated-chemistry design; the crossover sits at A_wall/A_wafer ~ 5-10 for
 k = 30. The zone flux k is the number a tool maker knows and we do not; the figure is a design chart in k.
+
+## Night 1, part 10: PillarHall validation (coupling/fit_pillarhall.py, figures/pillarhall_fit.png)
+Zenodo 3974438, 8 long-channel profiles averaged (L = 0.5, 1, 5 mm), plateau 51.5 nm after 500 cycles (103 pm/cycle),
+half-thickness depth 107 um = AR 215 in the 500 nm channel. Two-parameter fit of the aldconf slit model with channel
+narrowing (s and the mouth TMA density; N0 = 4e18 fixed, so the pressure is really an exposure/N0 estimate):
+s_TMA = 8.5e-3 (sheet-to-sheet factor 1.5), p_TMA = 75 Pa (factor 1.02), exposure 7.5 Pa s per 0.1 s pulse, rms
+0.038 of the plateau. Comparison: Arts et al. 2019 (275 C set-point, lumped model) give 0.5-2e-3 for TMA; a thesis
+citing Ylilammi 2018 estimates that study's TMA partial pressure at about 43 Pa. Our s is 4x above Arts' upper
+bound: candidates are the higher temperature (300 C), the N0 assumption (which trades against p but also sets the
+front sharpness through the narrowing term), and the lumped vs explicit kinetics. The curves for s = 1e-3 and 1e-2
+at the same exposure bracket the data visibly (figure): the data exclude 1e-3 at this exposure. The value used in
+the chamber runs (5e-3) lies between the two literature-anchored estimates; the patterned-wafer results are
+supply-limited and insensitive to it, the blanket-wafer numbers are not (t90 ~ 1.6-2.3x the supply time at 5e-3).
+Data points beyond AR 300 rise again (membrane remnants near the far pillars, as the record warns) and were excluded.
+
+## Night 1, part 11: exhaust end-point and pattern-aware pulse control (paper/invention_note.md)
+See the note. Core numbers: exhaust 50 % breakthrough lags hole-bottom saturation by 0.2-0.7 s across 12 cases,
+never leads; early exhaust level is 5.5 % of feed for every patterned wafer (does not encode loading); cycle-1
+calibration infers A within 6 % and predicts the other feeds within 9 % and the H2O half-cycle within 6 %.
