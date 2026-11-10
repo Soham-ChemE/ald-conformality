@@ -23,3 +23,10 @@ sh scripts/fix_viennaps_libomp.sh .venv     # macOS only: one OpenMP runtime, se
 .venv/bin/python notebooks/viennaps_smoke.py
 ```
 The `objc[...]: Class vtkCocoa... is implemented in both` lines at import are the two wheels' bundled VTK copies; harmless so far.
+
+## OpenFOAM (reactor scale, macOS)
+Native Apple Silicon build from https://github.com/gerlero/openfoam-app (v2.2.3, OpenFOAM v2606, GPL-3.0, ad-hoc signed, not Apple-notarized). Installed as `~/Applications/OpenFOAM-v2606.app`; the app mounts its own read-only volume at `/Volumes/OpenFOAM-v2606`. Run a command inside the OpenFOAM environment:
+```
+~/Applications/OpenFOAM-v2606.app/Contents/Resources/etc/openfoam -c 'blockMesh && simpleFoam'
+```
+Smoke case: `reactor/smoke_pitzDaily` (tutorial copy, 50 iterations). ParaView is not bundled; figures are made in Python from the written fields instead.

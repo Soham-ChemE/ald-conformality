@@ -7,3 +7,6 @@ figures/*.png
 .venv/
 .venv*/
 figures/*.vtp
+reactor/*/[0-9]*/
+reactor/*/log.*
+reactor/*/constant/polyMesh/
