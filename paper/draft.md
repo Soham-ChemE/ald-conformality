@@ -2,7 +2,7 @@
 
 Soham Kavathekar, Department of Chemical and Biomolecular Engineering, University of Pennsylvania
 
-*Draft 0.9 (public), 2026-11-10. Every number is from a run documented in `paper/assumptions.md`.*
+*Draft 0.9.1 (public), 2026-11-10. Every number is from a run documented in `paper/assumptions.md`.*
 
 ## Abstract
 
@@ -11,7 +11,8 @@ ratio 100 carries 56 times the surface area of the wafer under it, and all of it
 built a model of a 300 mm showerhead ALD chamber in which every point on the wafer runs its own feature-scale model
 of a hole, coupled both ways to the chamber gas, and asked how long the pulse must be. The answer is a single rule:
 the saturating pulse equals 1.2 times (1 + patterned area ratio) times the time the showerhead needs to deliver one
-monolayer of precursor. It held within 25 % across aspect ratios 20 to 100 and a twenty-fold range of precursor feed.
+monolayer of precursor. It held within 25 % across aspect ratios 20 to 100 and a twenty-fold range of precursor feed;
+on non-uniform layouts the local wall-area ratio of the densest region sets the pulse, not the wafer average.
 At a typical operating point the blanket wafer saturates in 0.35 s and the product wafer in 14 s. Chamber pressure,
 showerhead gap and carrier flow do not move that number; precursor delivery rate does. The water half-cycle, fifty
 times less reactive, needs the same pulse on the product wafer and coats it more evenly. The feature model agrees
@@ -23,7 +24,8 @@ turns a day of recipe transfer into arithmetic, and says where a tool's throughp
 ## What this means for a tool (one paragraph for the process engineer)
 
 If your recipe was saturated on a monitor wafer, multiply the pulse by one plus the product wafer's wall-area ratio
-before you trust it on product. Pressure, gap and carrier flow are uniformity knobs; they buy no time. Time comes
+before you trust it on product. Size the pulse on the densest or deepest region's own wall-area ratio; the wafer
+average under-doses it. Pressure, gap and carrier flow are uniformity knobs; they buy no time. Time comes
 from precursor molecules per second: vapour pressure, bubbler flow, injector design, or an architecture that exposes
 the wafer to a denser zone (spatial ALD wins by the same factor the rule predicts). Low-sticking reactants are not
 the bottleneck on patterned wafers; their cost is on blanket wafers only. And when the deepest feature saturates,
@@ -158,7 +160,7 @@ design) or surface chemistry become the levers. The radical sticking coefficient
 ### 3.8 Operating optimum and uncertainty
 A face-centred central composite design (25 two-way runs; TMA fraction 0.5-3 %, carrier 150-600 sccm, pressure
 100-1000 Pa, gap 10-25 mm) on the AR-100 wafer, fitted as a response surface in JMP and as a Gaussian-process
-surrogate in MATLAB (leave-one-out R2 0.999 for log pulse time, 0.988 for utilization), gives the second-order
+surrogate in MATLAB and scikit-learn (leave-one-out R2 0.999 for log pulse time, 0.988 for utilization), gives the second-order
 corrections to the rule. Pulse time scales as x^-1.0, Q^-0.8 and p^-0.12; the gap is not significant. Precursor
 utilization up to saturation rises from 68 % at 100 Pa to 88 % at 1000 Pa and falls from 88 % at 150 sccm to 68 %
 at 600 sccm: carrier gas that is not needed to deliver precursor carries it past the wafer. The fastest point with
@@ -166,7 +168,30 @@ edge lag under 5 % (a constraint never active: lag stays within -3.5 to +1.1 %) 
 2.38 s. At fixed precursor flow, trading carrier gas for pressure (2.5 %, 150 sccm, 630 Pa, 10 mm) cuts the pulse
 from 11.6 to 9.8 s and raises utilization from 85 to 94 %. A Monte Carlo over the site density (lognormal, factor
 1.25) puts a 90 % band of 8.2 to 17.2 s on the 11.9 s rule prediction at the design centre; the absolute pulse
-inherits the site-density uncertainty, the ratios in this paper do not.
+inherits the site-density uncertainty, the ratios in this paper do not. The scikit-learn GP reproduces the MATLAB
+leave-one-out R2: 0.999 / 0.746 / 0.986 against 0.999 / 0.780 / 0.988 for time / edge lag / utilization. The
+cost-of-ownership front of pulse time against TMA per saturating pulse, over the factor ranges with edge lag under
+5 % (Figure, doe_pareto.png): at the centre point's pulse time (11.6 s) the front uses 1.044 times the stoichiometric
+minimum of TMA against 1.181 at the centre, a 12 % saving per wafer pass at no cost in time; the last 1 % of saving
+(to 1.030 at 48.9 s) costs 4.2 times the pulse time.
+
+### 3.9 Non-uniform layouts: the local wall-area ratio sets the pulse
+The patterned-surface boundary condition takes hole density and aspect ratio as functions of radius (ARProfile and
+holeDensityProfile tables, interpolated at each face; a face with zero hole density is a flat Langmuir surface); the
+uniform case rerun with the rebuilt library is identical to the original to the 8 written digits at every face and
+write time. Two layouts at 1 % TMA, 300 sccm, 300 Pa (Figure, pattern_layout.png): (a) a dense AR-100 centre, full
+hole density for r < 75 mm ramping to bare wafer at 100 mm, wafer-average wall-area ratio 19.2; (b) full density
+everywhere with AR 100 at the centre ramping to 60 at the edge, wafer-average ratio 41.0. The rule with the
+wafer-average ratio under-predicts both: 5.1 s against the 11.85 s the dense centre needs, 10.6 s against 12.5 s for
+the AR ramp. With the local ratio of the most demanding region (55.9 at the centre of both) it predicts 14.4 s and is
+conservative by 15 to 21 %, against 2 % on the uniform wafer; the surplus is what the less-demanding neighbourhood
+feeds back laterally. A pattern boundary produces a saturation gradient inside the array: 11.85 s at the centre and
+8.75 s at r = 74.5 mm, the last face at full density, a 26 % gradient where the uniform wafer varies by 0.4 %. The
+bare edge of layout (a) saturates 15 to 30 % slower than a blanket wafer (flat t90 0.40 to 0.50 s against 0.35 to
+0.38 s) because the array draws down the gas: surface TMA 0.163 c0 over the bare region at 0.3 s against 0.24 c0 on
+a blanket wafer. On the AR ramp the bottom time tracks the local aspect ratio (12.5 s at AR 100 to 7.6 s at AR 60)
+while the flat regions are unaffected (1.95 s): a 40 % depth variation gives a 39 % spread in saturation time, so
+the recipe is set by the deepest tier and shallower regions are over-dosed by their depth ratio.
 
 ## 4. Discussion
 - Throughput on patterned wafers is bought with precursor delivery rate (vapour pressure, bubbler carrier flow,
@@ -201,14 +226,17 @@ inherits the site-density uncertainty, the ratios in this paper do not.
    surface area spanning five orders of magnitude.
 3. A recipe saturated on a blanket wafer under-doses a product wafer by the wall-area ratio, 11 to 56 here. Blanket
    wafers are the kinetics-limited exception to the rule, not the norm.
-4. Second-order knobs: pressure up and carrier flow down raise precursor utilization from about 55 % to 95 % at
+4. On a non-uniform layout the pulse is set by the local wall-area ratio of the most demanding region, not by the
+   wafer average: the average under-predicts by 2.3x (dense centre) and 1.2x (aspect-ratio ramp), the local ratio
+   is conservative by 15 to 21 %, and a pattern boundary puts a 26 % saturation gradient inside the array.
+5. Second-order knobs: pressure up and carrier flow down raise precursor utilization from about 55 % to 95 % at
    fixed precursor flow; gap and pressure set within-wafer edge lag (5 to 18 %) but not time.
-5. The water half-cycle needs the same pulse as TMA on patterned wafers despite a 50x lower sticking coefficient,
+6. The water half-cycle needs the same pulse as TMA on patterned wafers despite a 50x lower sticking coefficient,
    and coats deep features more evenly; reversible adsorption, not chamber flushing, governs its purge.
-6. Plasma ALD adds a hard ceiling: above a wall recombination probability of about 3e-3, aspect ratio 100 is
+7. Plasma ALD adds a hard ceiling: above a wall recombination probability of about 3e-3, aspect ratio 100 is
    unreachable by dose. Separated-chemistry (spatial) architectures beat temporal pulsing by the same wall-area
    factor the rule predicts.
-7. All of this runs on a laptop in open-source tools, with the feature model verified against an independent code
+8. All of this runs on a laptop in open-source tools, with the feature model verified against an independent code
    and fitted to public measurements, and every number traceable to a script in the repository.
 
 ## Acknowledgements
@@ -216,8 +244,9 @@ Validation data by R. L. Puurunen and O. M. E. Ylivaara (Aalto University, Zenod
 A. Yanguas-Gil and J. W. Elam (Argonne). OpenFOAM v2606 (OpenCFD) via the gerlero/openfoam-app build.
 
 ## Code and data availability
-OpenFOAM v2606 cases, the `aldWallKinetics` boundary-condition library, the Python `aldconf` solver, tests and all
-figures: GitHub (to be published). Validation data: Zenodo 3974438 (CC BY 4.0).
+OpenFOAM v2606 cases, the `aldWallKinetics` boundary-condition library, the Python `aldconf` solver and its command
+line (`python -m aldconf` evaluates the rule, the surrogate and the Pareto front), tests and all
+figures: https://github.com/Soham-ChemE/ald-conformality. Validation data: Zenodo 3974438 (CC BY 4.0).
 
 ## References (to format)
 Gordon, Hausmann, Kim, Shepard, Chem. Vap. Deposition 9, 73 (2003). Yanguas-Gil and Elam, Chem. Vap. Deposition

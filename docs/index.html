@@ -1,0 +1,250 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ALD chamber-to-feature model</title>
+<meta name="description" content="A 300 mm showerhead ALD chamber in OpenFOAM in which every point on the wafer runs its own feature-scale model of a high-aspect-ratio hole, two-way coupled. The saturating pulse on a patterned wafer is a one-line supply rule, checked against measured ALD on 940 m² of powder.">
+<meta property="og:title" content="Every blanket-wafer ALD recipe hides a 40x under-dose">
+<meta property="og:description" content="OpenFOAM showerhead chamber with a custom patterned-wafer boundary condition, Knudsen/Langmuir hole model, PillarHall and fluidized-bed validation, 25-run DOE in JMP, Gaussian-process surrogate in MATLAB and Python.">
+<meta property="og:image" content="https://soham-cheme.github.io/ald-conformality/assets/social-preview.png">
+<meta name="theme-color" content="#0b1220">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='13' fill='%2334d399'/%3E%3Crect x='12' y='6' width='8' height='20' rx='2' fill='%230b1220'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="assets/site.css">
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.186.1/build/three.module.min.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.186.1/examples/jsm/"}}</script>
+<link rel="modulepreload" href="https://cdn.jsdelivr.net/npm/three@0.186.1/build/three.module.min.js">
+<script defer src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/gsap.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/ScrollTrigger.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/lenis@1.3.27/dist/lenis.min.js"></script>
+<script defer src="assets/data.js"></script>
+<script defer src="assets/site.js"></script>
+<script type="module">if(!(window.SITE&&window.SITE.softGL)){import('./assets/scene.js');import('./assets/body.js');}</script>
+<style>
+.readout{position:absolute;right:16px;top:66px;background:var(--glass);border:1px solid var(--line);border-radius:16px;padding:12px 14px;backdrop-filter:blur(8px);min-width:250px;font-size:13px;color:var(--muted)}
+.readout .big{font-size:34px;font-weight:800;letter-spacing:-.03em;color:var(--ink);line-height:1;font-variant-numeric:tabular-nums}.readout .big small{font-size:14px;color:var(--muted);font-weight:600;margin-left:4px}
+.readout .row{display:flex;justify-content:space-between;gap:12px;margin-top:6px}.readout b{color:var(--ink);font-variant-numeric:tabular-nums}
+.readout .track{height:6px;border-radius:3px;background:var(--line);margin:10px 0 2px;overflow:hidden;position:relative}.readout .track i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--c-cool),var(--c-green))}.readout .track em{position:absolute;top:-3px;width:2px;height:12px;background:var(--c-rose)}
+.readout .two{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}.readout .two div{background:color-mix(in srgb,var(--card) 60%,transparent);border:1px solid var(--line);border-radius:10px;padding:6px 8px}.readout .two b{display:block;font-size:20px;letter-spacing:-.02em}.readout .two span{font-size:11px}
+@media (max-width:640px){.readout{top:60px;right:8px;left:8px;min-width:0;padding:8px 10px}.readout .big{font-size:24px}.readout .two b{font-size:16px}}
+.sticky-fig{padding:18px;height:auto;min-height:0}@media (max-width:820px){.sticky-fig{height:auto}}
+.sticky-fig h3{margin:0 0 4px;font-size:15px}.note a,.vizfoot a,.lead a{text-decoration:underline;text-underline-offset:2px}.sticky-fig .sub{color:var(--muted);font-size:13px;margin-bottom:10px}
+.sticky-fig .sig{font-size:40px;font-weight:800;letter-spacing:-.03em;line-height:1;margin-top:10px;font-variant-numeric:tabular-nums}.sticky-fig .sig small{font-size:14px;color:var(--muted);font-weight:600;margin-left:6px}
+.eq{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:clamp(15px,1.6vw,19px);background:var(--card);border:1px solid var(--line);border-left:4px solid var(--acc2);border-radius:14px;padding:16px 18px;margin:0 0 18px}.eq b{color:var(--acc2)}
+.three{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}@media (max-width:900px){.three{grid-template-columns:1fr}}
+tr.hl td{color:var(--acc2);font-weight:700}
+.calc{display:grid;grid-template-columns:1fr 1fr;gap:28px;align-items:start}@media (max-width:820px){.calc{grid-template-columns:1fr}}
+.calc label{display:grid;grid-template-columns:1fr 110px;gap:10px;align-items:center;font-size:14px;color:var(--muted);padding:6px 0;border-bottom:1px solid var(--line)}.calc label span b{color:var(--ink);font-weight:600}
+.calc input{width:100%;padding:7px 9px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink);font-size:14px;font-variant-numeric:tabular-nums}
+.calc .out{display:grid;grid-template-columns:1fr 1fr;gap:12px}.calc .out div{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px}.calc .out b{display:block;font-size:26px;letter-spacing:-.02em;font-variant-numeric:tabular-nums}.calc .out span{font-size:12px;color:var(--muted)}.calc .out div.wide{grid-column:1/-1}
+.calc .warn{font-size:13px;color:var(--c-warm);margin-top:8px;min-height:1.4em}
+.papers a{display:inline-flex;align-items:center;gap:8px;margin:6px 10px 0 0}
+</style>
+<noscript><style>.hero .fallback{opacity:1}.reveal{opacity:1;transform:none}.viz img.fallback{opacity:1}</style></noscript>
+</head>
+<body>
+<nav><div class="wrap"><a class="brand" href="#top">ALD: the 40× under-dose</a>
+<div class="links"><a href="#rule">Rule</a><a href="#layout" class="hide-sm">Layouts</a><a href="#validation">Validation</a><a href="#knobs" class="hide-sm">Knobs</a><a href="#try">Try it</a><a href="#robust" class="hide-sm">Limits</a><a href="https://github.com/Soham-ChemE/ald-conformality">GitHub</a></div>
+<button class="toggle" id="themeBtn" aria-label="Toggle dark or light theme" title="Toggle theme">◐</button></div></nav>
+
+<div class="hero-track" id="top"><div class="hero">
+<canvas id="heroCanvas" role="img" aria-label="3D view of a 300 mm showerhead ALD chamber: TMA flows down from the showerhead into a 15 mm gap above a wafer patterned with 100 nm holes of aspect ratio 100. Scrolling runs the pulse from 0 to 16 seconds; the flat wafer surface turns green within two seconds while a magnified cut-open hole beside the chamber fills from the top down and its bottom reaches 90 percent coverage at 14 seconds."></canvas>
+<img class="fallback" alt="" data-src="assets/hero.png" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==">
+<div class="shade"></div>
+<div class="readout" aria-live="polite"><div>TMA pulse, 1 % in N₂ at 300 Pa</div><div class="big"><span id="roT">0.00</span><small>s</small></div><div class="track"><i id="roBar"></i><em style="left:2.2%" title="blanket wafer saturates: 0.35 s"></em><em style="left:87.8%;background:var(--c-green)" title="hole bottoms saturate: 14.05 s"></em></div>
+<div class="two"><div><b id="roFlat">0 %</b><span>flat surface coverage</span></div><div><b id="roBot">0 %</b><span>hole-bottom coverage, wafer centre</span></div></div>
+<div class="row"><span>monolayers delivered to the patterned area</span><b id="roML">0.00</b></div><div class="row"><span id="roHint">scroll to run the pulse</span></div></div>
+<div class="copy"><div class="wrap">
+<h1>Every blanket-wafer ALD recipe hides a 40× under-dose.</h1>
+<p>A 3D-NAND wafer carries 56 times the surface area of the wafer under it, and all of it has to saturate in one pulse. This is a 300 mm showerhead ALD chamber in OpenFOAM in which every point on the wafer runs its own feature-scale model of a hole, coupled both ways to the gas. The answer it gives is one line of arithmetic, and it reproduces a measured saturation time on 940 m² of powder.</p>
+<div class="cta"><a class="btn" href="#rule">Read the rule</a><a class="btn ghost" href="https://github.com/Soham-ChemE/ald-conformality">Cases, code and paper</a></div>
+</div></div><div class="scrollhint">Scroll</div>
+</div></div>
+
+<div class="stats over"><div class="wrap"><div class="grid">
+<div class="stat reveal"><div class="n" data-count="40.7" data-format="1">0.0<small>×</small></div><div class="l">longer pulse for the patterned wafer than the blanket wafer it was tuned on: 14.05 s against 0.345 s</div></div>
+<div class="stat reveal"><div class="n" data-count="55.9" data-format="1">0.0<small>×</small></div><div class="l">wall area over wafer area for 100 nm holes at aspect ratio 100, 14 % open area, half the wafer patterned</div></div>
+<div class="stat reveal"><div class="n" data-count="25" data-format="int">0<small>%</small></div><div class="l">the rule holds within this over aspect ratios 20 to 100 and a 20× range of precursor feed (12 chamber runs, 1.05 to 1.27× the supply limit)</div></div>
+<div class="stat reveal"><div class="n" data-count="1.12" data-format="2">0.00</div><div class="l">measured saturation time over supply-limit time for a fluidized-bed ALD run on 940 m² of silica gel (Argonne, 2022)</div></div>
+</div></div></div>
+
+<section class="story" id="model"><div class="wrap">
+<div class="eyebrow reveal">01 · The wafer is not blank</div>
+<h2 class="reveal">A chamber model in which every wafer face runs its own hole.</h2>
+<p class="lead reveal">The chamber is an axisymmetric wedge of a 300 mm showerhead reactor: N₂ at 300 Pa and 573 K, 300 sccm, Reynolds number 0.045, a total-flux (Danckwerts) inlet so the TMA entering is exactly what the showerhead delivers. The wafer is a custom OpenFOAM boundary condition: on each of its 150 faces a one-dimensional Knudsen-diffusion, Langmuir-adsorption model of a 100 nm hole of aspect ratio 100 is advanced every time step from the local gas density, and its uptake is returned to the gas as a mixed boundary condition. Flat and hole fluxes blend by open-area fraction. Nothing is fitted to the chamber; the hole model was checked against Argonne's Machball code to 0.3 to 7 % and fitted to published lateral-structure thickness profiles.</p>
+<div class="vizcard reveal" style="margin-bottom:28px"><div class="vizhead"><b>The chamber and the pattern, exploded</b><span class="legend"><span><i style="background:var(--c-blue)"></i>showerhead, 300 mm</span><span><i style="background:var(--c-violet)"></i>wafer, 150 faces</span><span><i style="background:var(--c-green)"></i>one hole model per face</span><span><i style="background:var(--c-hot)"></i>outlet at r = 200 mm</span></span></div><div class="viz wide" data-viz="stack" role="img" aria-label="Exploded 3D cross-section of the axisymmetric ALD chamber: wafer on its stage, 15 mm gap, showerhead, chamber wall and outlet ring assembling on scroll, then a magnified patch of the wafer surface with its array of 100 nm holes rising above it"><img class="fallback" alt="" data-viz-fig="viz_stack" loading="lazy"></div><div class="vizfoot">6,000 cells, 5° wedge, 15 mm gap (drawn 3× for legibility). The magnified patch is the pattern every face carries: 100 nm holes at 180 nm hexagonal pitch, half the wafer patterned. Drag to orbit.</div></div>
+<div class="two">
+<div class="tablewrap reveal"><table><thead><tr><th>Layer</th><th>Tool</th><th>What it does</th></tr></thead><tbody>
+<tr><td>Chamber flow</td><td>OpenFOAM v2606, simpleFoam</td><td>steady N₂ flow through the 15 mm gap; frozen for the pulse</td></tr>
+<tr><td>Precursor pulse</td><td>scalarTransportFoam</td><td>TMA as a passive scalar with Chapman–Enskog diffusivity; Danckwerts inlet</td></tr>
+<tr><td>Wafer</td><td><code>aldWallKinetics</code> (C++)</td><td><code>langmuirSticking</code> for blanket wafers, <code>patternedSurface</code> with one hole model per face</td></tr>
+<tr><td>Feature</td><td><code>aldconf</code> (Python)</td><td>standalone Knudsen/Langmuir solver: fits, Machball cross-check, plasma recombination</td></tr>
+<tr><td>Statistics</td><td>JMP 19, MATLAB R2025b, scikit-learn</td><td>25-run response surface, Gaussian-process surrogates, Monte Carlo</td></tr>
+</tbody></table></div>
+<div class="card reveal"><b>Why two-way coupling matters</b><p class="note">A patterned wafer is a sink 56 times stronger than a blanket one. One-way coupling (chamber first, hole after) misses the depletion of the gas over the wafer; here the hole uptake feeds back into the gas every time step, and the embedded model agrees with the standalone solver driven by the same face concentration to within 1 % at all times (the 14.05 s saturation is reproduced by both). The flat surface between the holes, which saturates in 0.35 s on a blanket wafer, takes 1.95 s here because it shares the precursor with the holes.</p></div>
+</div></div></section>
+
+<section class="story alt" id="rule"><div class="wrap">
+<div class="eyebrow reveal">02 · One rule</div>
+<h2 class="reveal">The saturating pulse is 1.2 times one monolayer of supply to the patterned area.</h2>
+<p class="lead reveal">Twelve patterned runs over aspect ratios 20, 50 and 100 and TMA fractions from 0.5 to 10 % all land between 1.05 and 1.27 times the time the showerhead needs to deliver one monolayer to the whole patterned area. Blanket wafers do not: they sit at 1.5 to 4.3 times, because on a blank wafer the sticking coefficient, not the supply, sets the time. Patterned wafers are supply-limited, and that is what makes the rule simple.</p>
+<div class="eq reveal">t<sub>pulse</sub> ≈ <b>1.2</b> × (1 + A<sub>wall</sub>/A<sub>wafer</sub>) × N<sub>0</sub> / (U · c<sub>0</sub>) &nbsp;&nbsp;&nbsp; <span style="color:var(--muted)">N₀ sites per m², U c₀ precursor molecules per m² per second at the showerhead</span></div>
+<div class="two">
+<div class="vizcard reveal"><div class="vizhead"><b>The pulse-time map</b><span class="legend"><span><i style="background:var(--c-grey)"></i>blanket</span><span><i style="background:var(--c-green)"></i>AR 20</span><span><i style="background:var(--c-warm)"></i>AR 50</span><span><i style="background:var(--c-rose)"></i>AR 100</span><span><i style="background:var(--c-cool)"></i>supply limit</span></span></div><div class="viz" data-viz="map" role="img" aria-label="3D ribbons of the saturating pulse against TMA fraction on log axes for a blanket wafer and for patterned wafers of aspect ratio 20, 50 and 100, each patterned ribbon lying just above its dashed supply-limit line"><img class="fallback" alt="" data-viz-fig="viz_map" loading="lazy"></div><div class="vizfoot">Time for the worst hole bottom on the wafer to reach 90 % coverage, 16 chamber runs. The thin blue ribbons are the supply limit (1 + A<sub>wall</sub>/A<sub>wafer</sub>) N₀/(U c₀) for each aspect ratio. Hover a point.</div></div>
+<div class="tablewrap reveal"><table><thead><tr><th>TMA fraction</th><th class="num">blanket</th><th class="num">AR 20</th><th class="num">AR 50</th><th class="num">AR 100</th></tr></thead><tbody id="mapTable"></tbody></table>
+<p class="note">Saturating pulse in seconds, worst point on the wafer, from <code>figures/pulse_time_map.csv</code>. Doubling the hole depth doubles the pulse; doubling the precursor fraction halves it. Pressure, gap and carrier flow are missing from the rule because the runs below show they do not enter it.</p></div>
+</div>
+<div class="vizcard reveal" style="margin-top:28px"><div class="vizhead"><b>What an under-dose looks like on the wafer</b><span class="legend"><span><i style="background:var(--c-rose)"></i>pulse cut at 8 s</span><span><i style="background:var(--c-warm)"></i>10 s</span><span><i style="background:var(--c-cyan)"></i>12 s</span><span><i style="background:var(--c-green)"></i>14 s</span></span></div><div class="viz wide" data-viz="wiwnu" role="img" aria-label="3D ribbons of hole-bottom coverage against wafer radius for a TMA pulse stopped at 8, 10, 12 and 14 seconds: nearly zero at 8 seconds, rising uniformly across the wafer at 12 and 14 seconds, with a slight centre-to-edge lag"><img class="fallback" alt="" data-viz-fig="viz_wiwnu" loading="lazy"></div><div class="vizfoot">Hole-bottom coverage across the wafer if the pulse stops early. The deficit is nearly flat across the radius (edge lag 0.4 % at this operating point), because the whole wafer is starved by the same supply. Uniformity in supply-limited ALD is about when you stop, not where the gas goes.</div></div>
+</div></section>
+
+<section class="story" id="layout"><div class="wrap">
+<div class="eyebrow reveal">02b · The wafer is not uniform either</div>
+<h2 class="reveal">Size the pulse on the densest region, not the wafer average.</h2>
+<p class="lead reveal">Real device wafers mix dense arrays, open field and tiers of different depth. The boundary condition takes the hole density and aspect ratio as functions of radius, so two layouts were run: a dense AR-100 array in the centre with bare wafer beyond 100 mm, and a wafer whose hole depth ramps from AR 100 at the centre to AR 60 at the edge. The rule evaluated with the wafer-average wall area under-predicts both (5.1 s against 11.85 s needed; 10.6 s against 12.5 s). Evaluated with the local wall-area ratio of the most demanding region it is conservative by 15 to 21 %, the surplus being precursor the less-demanding neighbourhood feeds back laterally. The showerhead supplies molecules per unit area, so the local ratio is the one that counts.</p>
+<div class="two">
+<div class="vizcard reveal"><div class="vizhead"><b>Saturating pulse across the wafer for three layouts</b><span class="legend"><span><i style="background:var(--c-grey)"></i>uniform AR 100</span><span><i style="background:var(--c-rose)"></i>dense centre, bare edge</span><span><i style="background:var(--c-warm)"></i>AR 100 → 60 ramp</span></span></div><div class="viz" data-viz="layout" role="img" aria-label="3D ribbons of the hole-bottom saturation time against wafer radius: flat at 14 seconds for the uniform wafer, falling from 11.9 to 8.8 seconds across the dense array and absent over the bare edge for the dense-centre layout, and falling from 12.5 to 7.6 seconds for the aspect-ratio ramp; thin ribbons show each pattern"><img class="fallback" alt="" data-viz-fig="viz_layout" loading="lazy"></div><div class="vizfoot">Hole-bottom time to 90 % coverage against radius. A pattern boundary puts a 26 % saturation gradient inside the array (11.85 s at the centre, 8.75 s at its outer edge) where the uniform wafer varies by 0.4 %. The bare edge is itself 15 to 30 % slower than a blanket wafer because the array drains the gas. Hover.</div></div>
+<div class="tablewrap reveal"><table><thead><tr><th>Layout</th><th class="num">wall ratio, wafer avg.</th><th class="num">rule, wafer avg.</th><th class="num">rule, local</th><th class="num">needed</th></tr></thead><tbody>
+<tr><td>Uniform AR 100</td><td class="num">55.9</td><td class="num">14.4 s</td><td class="num">14.4 s</td><td class="num">14.05 s</td></tr>
+<tr><td>Dense centre (r &lt; 75 mm), bare beyond 100 mm</td><td class="num">19.2</td><td class="num" style="color:var(--c-rose)">5.1 s</td><td class="num">14.4 s</td><td class="num">11.85 s</td></tr>
+<tr><td>AR 100 at the centre → 60 at the edge</td><td class="num">41.0</td><td class="num" style="color:var(--c-rose)">10.6 s</td><td class="num">14.4 s</td><td class="num">12.5 s</td></tr>
+</tbody></table>
+<p class="note">A 40 % tier-to-tier depth variation gives a 39 % spread in saturation time (12.5 s at AR 100, 7.6 s at AR 60): the recipe is set by the deepest tier and the shallower ones are over-dosed by their depth ratio. The uniform path of the boundary condition was regression-checked to the eighth digit after the change. Files: <code>figures/pattern_layout.csv</code>, <code>reactor/make_layout_cases.py</code>.</p></div>
+</div>
+</div></section>
+
+<section class="story" id="validation"><div class="wrap">
+<div class="eyebrow reveal">03 · Checked against measurement</div>
+<h2 class="reveal">Wafers and powders on one curve.</h2>
+<p class="lead reveal">The same normalisation puts a measured fluidized-bed ALD run (Argonne, 10 g of silica gel, 940 m²) at 1.12 supply-limit times, inside the 1.05 to 1.27 band of the chamber runs, and orders the measured precursor utilization of a rotary-drum reactor with its loading. Precursor utilization against total reactive area spans five orders of magnitude on one curve. Separately, the hole model fits the published saturation profiles from 500 nm lateral test channels with a TMA sticking coefficient of 8.5 × 10⁻³.</p>
+<div class="two">
+<div class="vizcard reveal"><div class="vizhead"><b>Precursor utilization against reactive area</b><span class="legend"><span><i style="background:var(--c-grey)"></i>blanket wafer (model)</span><span><i style="background:var(--c-green)"></i>patterned wafers (model)</span><span><i style="background:var(--c-rose)"></i>fluidized bed, measured</span><span><i style="background:var(--c-violet)"></i>rotary drum, measured</span></span></div><div class="viz" data-viz="rule" role="img" aria-label="3D scatter of precursor utilization up to saturation against total reactive surface area on a log axis: blanket wafers at 25 to 65 percent, patterned wafers at 79 to 95 percent, the measured fluidized bed at 92 percent at 940 square metres and the rotary drum rising from 25 to 71 percent with loading"><img class="fallback" alt="" data-viz-fig="viz_rule" loading="lazy"></div><div class="vizfoot">Utilization = 1 / (saturation time over supply-limit time). Fluidized bed: Lu et al., JVST A 40 (2022). Rotary drum: Coile et al., JVST A 38, 052403 (2020), Table 2. Hover a point.</div></div>
+<div class="vizcard reveal"><div class="vizhead"><b>The hole model against measured profiles</b><span class="legend"><span><i style="background:var(--c-grey)"></i>Zenodo 3974438, 8 profiles</span><span><i style="background:var(--c-rose)"></i>fit, s = 8.5e-3</span><span><i style="background:var(--c-cool)"></i>s = 1e-3 and 1e-2</span></span></div><div class="viz" data-viz="pillar" role="img" aria-label="3D ribbons of film thickness over plateau against depth over gap: the measured PillarHall profile with its scatter, the fitted model falling at aspect ratio 150 to 200, and two alternative sticking coefficients that fall too early or too late"><img class="fallback" alt="" data-viz-fig="viz_pillar" loading="lazy"></div><div class="vizfoot">Al₂O₃ from TMA/H₂O at 300 °C, 500 cycles of 0.1 s, 500 nm lateral channel (Puurunen and Ylivaara, Aalto, CC BY 4.0). Fitted: s = 8.5 × 10⁻³ (×/÷ 1.5), 75 Pa TMA; rms 0.038 of the plateau. Hover.</div></div>
+</div>
+<p class="note reveal" style="margin-top:14px">The chamber runs use s = 5 × 10⁻³; Arts et al. report 0.5 to 2 × 10⁻³ from the same kind of structure. The patterned-wafer conclusions are supply-limited and do not move with s. The blanket-wafer numbers do, and are quoted with that caveat.</p>
+</div></section>
+
+<section class="story alt" id="hole"><div class="wrap">
+<div class="eyebrow reveal">04 · Inside the hole</div>
+<h2 class="reveal">The front moves down one monolayer at a time.</h2>
+<p class="lead reveal">One hole at the wafer centre, driven by the gas density the chamber model computes at its mouth. Coverage is a front: the mouth saturates in the first second, the front marches down as the supply arrives, and the bottom sees nothing until the walls above it are full. Stop the pulse at any time and the depth of the front is the depth of the film.</p>
+<div class="sticky-wrap">
+<div class="sticky-fig"><h3 id="sfTitle" style="margin:0 0 4px;font-size:15px">One hole, aspect ratio 100, cut open</h3><div class="sub" id="sfSub">t = 0.5 s</div><div class="viz" data-viz="hole" style="position:relative;inset:auto;aspect-ratio:16/11;border:1px solid var(--line);border-radius:14px" role="img" aria-label="A cut-open 3D hole of aspect ratio 100 whose wall is coloured by coverage from mouth to bottom, next to a ribbon of coverage against depth; the step in view sets the time in the pulse"><img class="fallback" alt="" data-viz-fig="viz_hole" loading="lazy"></div><div class="sig"><span id="sfBot">0</span><small>% at the bottom</small> <span style="margin-left:14px" id="sfFront">0</span><small>% of depth coated</small></div></div>
+<div class="steps" id="steps">
+<div class="step active" data-step="0.5"><h3>0.5 s: the mouth</h3><p>On a blanket wafer this is already saturation. Here the first 3 % of the depth is coated and the gas over the wafer has dropped to a fraction of the showerhead value: the holes are draining it.</p></div>
+<div class="step" data-step="2"><h3>2 s: the flat surface is done</h3><p>The surface between the holes reaches 90 % at 1.95 s, late by blanket standards because it competes with the holes. Inside, the front is a tenth of the way down.</p></div>
+<div class="step" data-step="5"><h3>5 s: one third</h3><p>The front is at a third of the depth and moving at a steady pace: the rate at which the showerhead delivers molecules, divided by the wall area still to fill.</p></div>
+<div class="step" data-step="10"><h3>10 s: two thirds</h3><p>Nothing about the chamber has changed; the front is simply where the supply integral puts it. Pressure or gap would not move it. Precursor fraction would.</p></div>
+<div class="step" data-step="14"><h3>14 s: the bottom reaches 90 %</h3><p>14.05 s at the centre, 14.10 s at the worst point on the wafer. The rule said 14.4 s. On a blanket wafer the recipe would have stopped 13.7 s earlier.</p></div>
+</div></div>
+</div></section>
+
+<section class="story" id="knobs"><div class="wrap">
+<div class="eyebrow reveal">05 · Which knobs matter</div>
+<h2 class="reveal">Precursor delivery sets the time. Pressure and carrier flow set what it costs.</h2>
+<p class="lead reveal">A face-centred central composite design, 25 OpenFOAM runs over TMA fraction (0.5 to 3 %), carrier flow (150 to 600 sccm), pressure (100 to 1,000 Pa) and gap (10 to 25 mm), fitted in JMP: log₁₀ of the saturating pulse scales as x⁻¹·⁰ Q⁻⁰·⁸ p⁻⁰·¹², R² 0.993, and the gap term is not significant. Utilization of the delivered precursor runs from 51 to 97 %: pressure up and carrier flow down raise it, because a slower gas spends longer over the wafer. A Gaussian-process surrogate on the same 25 runs (MATLAB fitrgp, leave-one-out R² 0.999 on time and 0.988 on utilization) finds the operating point that uses the same precursor supply as the centre and saturates faster.</p>
+<div class="two">
+<div class="vizcard reveal"><div class="vizhead"><b>The response surface</b><span class="legend"><span><i style="background:var(--c-cyan)"></i>100 Pa</span><span><i style="background:var(--c-green)"></i>316 Pa</span><span><i style="background:var(--c-warm)"></i>1,000 Pa</span></span></div><div class="viz" data-viz="doe" role="img" aria-label="3D surface of the saturating pulse over TMA fraction and carrier flow from the JMP response-surface fit, with the 25 runs as spheres coloured by pressure sitting on or just off the surface"><img class="fallback" alt="" data-viz-fig="viz_doe" loading="lazy"></div><div class="vizfoot">log₁₀ t₉₀ from the JMP fit at the centre pressure and gap, with every run as a sphere. Pressure moves a point off the surface by at most ×1.15; gap by less than the fit's residual. Hover a run.</div></div>
+<div class="vizcard reveal"><div class="vizhead"><b>Cost of ownership: precursor per wafer against pulse time</b><span class="legend"><span><i style="background:var(--c-grey)"></i>the 25 runs</span><span><i style="background:var(--c-green)"></i>surrogate front, edge lag ≤ 5 %</span></span></div><div class="viz" data-viz="coo" role="img" aria-label="3D scatter of precursor consumed per saturating pulse, relative to the stoichiometric minimum, against pulse time for the 25 runs, with the Pareto front from the Gaussian-process surrogate as a ribbon along the lower edge"><img class="fallback" alt="" data-viz-fig="viz_coo" loading="lazy"></div><div class="vizfoot" id="cooFoot">Precursor use is 1 / utilization: how many times the stoichiometric minimum the showerhead had to deliver before the deepest hole saturated. Hover a run.</div></div>
+</div>
+<div class="tablewrap reveal" style="margin-top:24px"><table><thead><tr><th>Operating point (GP surrogate)</th><th class="num">TMA</th><th class="num">carrier</th><th class="num">pressure</th><th class="num">gap</th><th class="num">pulse</th><th class="num">edge lag</th><th class="num">utilization</th></tr></thead><tbody>
+<tr><td>Centre of the design</td><td class="num">1.22 %</td><td class="num">300 sccm</td><td class="num">316 Pa</td><td class="num">17.5 mm</td><td class="num">11.6 s</td><td class="num">−0.2 %</td><td class="num">85 %</td></tr>
+<tr class="hl"><td>Same precursor supply, edge lag ≤ 5 %, fastest</td><td class="num">2.51 %</td><td class="num">150 sccm</td><td class="num">631 Pa</td><td class="num">10 mm</td><td class="num">9.8 s</td><td class="num">0.9 %</td><td class="num">94 %</td></tr>
+<tr><td>Fastest anywhere in the box, edge lag ≤ 5 %</td><td class="num">3.00 %</td><td class="num">600 sccm</td><td class="num">1,000 Pa</td><td class="num">10 mm</td><td class="num">2.4 s</td><td class="num">1.0 %</td><td class="num">85 %</td></tr>
+</tbody></table>
+<p class="note">Monte Carlo on the rule's one uncertain constant, the site density N₀ (log-normal, ×/÷ 1.25, 10,000 draws): the 11.9 s centre-point pulse carries a 90 % band of 8.2 to 17.2 s. That band, not the chamber geometry, is what a recipe transfer has to absorb. Reports: <code>figures/doe_rsm_report.txt</code>, <code>figures/doe_gp_report.txt</code>.</p></div>
+</div></section>
+
+<section class="story alt" id="try"><div class="wrap">
+<div class="eyebrow reveal">06 · Try it</div>
+<h2 class="reveal">Your wafer, your chamber, the rule and the surrogate.</h2>
+<p class="lead reveal">The rule needs the pattern and the showerhead supply. The surrogate is the Gaussian process fitted to the 25 chamber runs, evaluated here in the browser from the exported hyperparameters; it is only meaningful inside the design box, and the page says so when you leave it.</p>
+<div class="calc reveal">
+<div>
+<label><span><b>Hole diameter</b> d, nm</span><input id="cD" type="number" value="100" step="10" min="10"></label>
+<label><span><b>Aspect ratio</b> depth / d</span><input id="cAR" type="number" value="100" step="5" min="1"></label>
+<label><span><b>Hole density</b>, 10¹³ per m² of wafer</span><input id="cDen" type="number" value="1.78" step="0.1" min="0"></label>
+<label><span><b>TMA fraction</b>, %</span><input id="cX" type="number" value="1.22" step="0.1" min="0.05"></label>
+<label><span><b>Carrier flow</b>, sccm</span><input id="cQ" type="number" value="300" step="10" min="10"></label>
+<label><span><b>Pressure</b>, Pa</span><input id="cP" type="number" value="316" step="10" min="10"></label>
+<label><span><b>Gap</b>, mm (surrogate only)</span><input id="cG" type="number" value="17.5" step="0.5" min="5"></label>
+<label><span><b>Temperature</b>, °C</span><input id="cT" type="number" value="300" step="10" min="50"></label>
+<label><span><b>Site density</b> N₀, 10¹⁸ per m²</span><input id="cN0" type="number" value="4" step="0.5" min="0.5"></label>
+</div>
+<div>
+<div class="out">
+<div><b id="oWall">—</b><span>wall area / wafer area</span></div><div><b id="oSupply">—</b><span>one monolayer of supply, s</span></div>
+<div class="wide" style="border-left:4px solid var(--acc2)"><b id="oRule">—</b><span>rule: saturating pulse for the deepest hole, s (1.2 × supply time)</span></div>
+<div><b id="oGP">—</b><span>surrogate: pulse, s (GP on 25 runs; ×/÷ sd shown)</span></div><div><b id="oUtil">—</b><span>surrogate: precursor utilization</span></div>
+<div><b id="oLag">—</b><span>surrogate: centre-to-edge lag, %</span></div><div><b id="oML">—</b><span>precursor delivered per saturating pulse, monolayers of the patterned area</span></div>
+</div>
+<div class="warn" id="oWarn"></div>
+<p class="note">Same arithmetic as <code>python -m aldconf rule …</code> and <code>python -m aldconf surrogate …</code> in the repository. U is the showerhead face velocity from the carrier flow at the chamber pressure and temperature; c₀ is the TMA number density at the inlet.</p>
+</div>
+</div>
+</div></section>
+
+<section class="story" id="beyond"><div class="wrap">
+<div class="eyebrow reveal">07 · Water, plasma, spatial</div>
+<h2 class="reveal">The rule has consequences past the TMA pulse.</h2>
+<div class="three">
+<div class="vizcard reveal"><div class="vizhead"><b>Water: same pulse, 50× less reactive</b><span class="legend"><span><i style="background:var(--c-cyan)"></i>k<sub>des</sub> 0</span><span><i style="background:var(--c-green)"></i>0.1 /s</span><span><i style="background:var(--c-warm)"></i>1 /s</span><span><i style="background:var(--c-rose)"></i>10 /s</span></span></div><div class="viz tall" data-viz="water" role="img" aria-label="3D ribbons of water coverage against time on a blanket wafer for four desorption rate constants during a 5 second pulse and purge, with the outlet water signal behind each; at 1 and 10 per second the surface never reaches 90 percent"><img class="fallback" alt="" data-viz-fig="viz_water" loading="lazy"></div><div class="vizfoot">On the patterned wafer the H₂O half-cycle (s = 10⁻⁴) saturates in 13.4 s against 14.05 s for TMA: supply, not kinetics, again. With reversible adsorption above about 0.3 /s the surface cannot reach 90 % at 1 % H₂O, and the desorbing water keeps the exhaust wet through the purge.</div></div>
+<div class="vizcard reveal"><div class="vizhead"><b>Plasma: the recombination ceiling</b><span class="legend"><span><i style="background:var(--c-rose)"></i>largest AR reached in 5 s</span><span><i style="background:var(--c-grey)"></i>AR 100</span></span></div><div class="viz tall" data-viz="peald" role="img" aria-label="3D ribbon of the largest aspect ratio whose bottom reaches 90 percent coverage in a 5 second radical exposure against the wall recombination probability on log axes, falling from 79 at zero recombination to 18 at one percent, crossing the aspect ratio 100 reference nowhere"><img class="fallback" alt="" data-viz-fig="viz_peald" loading="lazy"></div><div class="vizfoot">Radicals lost on every wall collision cannot be bought back with dose: at a recombination probability above about 3 × 10⁻³, aspect ratio 100 is unreachable in any exposure. Measured values for O on SiO₂ and TiO₂ sit near 6 × 10⁻⁵ (Arts et al.).</div></div>
+<div class="vizcard reveal"><div class="vizhead"><b>Temporal against spatial ALD</b><span class="legend"><span><i style="background:var(--c-grey)"></i>temporal, 1 % and 3 %</span><span><i style="background:var(--c-cyan)"></i>spatial, zone 10×</span><span><i style="background:var(--c-green)"></i>30×</span><span><i style="background:var(--c-warm)"></i>100×</span></span></div><div class="viz tall" data-viz="spatial" role="img" aria-label="3D ribbons of ALD cycle time against patterned wall-area ratio on log axes: temporal showerhead pulsing rises linearly with area while spatial separated-chemistry tools with denser zones stay flat until higher area ratios"><img class="fallback" alt="" data-viz-fig="viz_spatial" loading="lazy"></div><div class="vizfoot">Cycle time from the rule for a temporal tool (two half-cycles plus two 0.5 s purges) and for a spatial tool whose precursor zone runs at an assumed 10 to 100× the showerhead flux. The zone flux is assumed, not measured; the shape of the comparison is not.</div></div>
+</div>
+</div></section>
+
+<section class="story alt" id="robust"><div class="wrap">
+<div class="eyebrow reveal">08 · What does not move it, and what is not settled</div>
+<h2 class="reveal">Nine things that were supposed to matter.</h2>
+<div class="two">
+<div class="vizcard reveal"><div class="vizhead"><b>Saturating pulse for the AR-100 wafer under every idealization removed</b><span class="legend"><span><i style="background:var(--c-green)"></i>within one write interval of 14.05 s</span><span><i style="background:var(--c-cyan)"></i>water half-cycle</span></span></div><div class="viz wide" data-viz="robust" role="img" aria-label="3D bar field of the saturating pulse for the patterned wafer: bare wafer, with an edge ring, at 200, 300 and 400 degrees Celsius, with 50, 100 and 200 nanometre holes at fixed wall area, all between 14.0 and 14.1 seconds, and the water half-cycle at 13.4 seconds"><img class="fallback" alt="" data-viz-fig="viz_robust" loading="lazy"></div><div class="vizfoot">Edge ring, wafer temperature at fixed sccm and fraction, and hole diameter at fixed wall area each change the saturating pulse by less than one write interval (0.05 s). Hover a bar.</div></div>
+<div class="reveal"><div class="box" style="margin-bottom:14px"><b>Open items, stated</b><p class="note">The TMA sticking coefficient fitted here (8.5 × 10⁻³) is higher than Arts et al.'s 0.5 to 2 × 10⁻³; the chamber runs used 5 × 10⁻³. The water model is single-site with one desorption constant. The spatial-ALD comparison rests on an assumed zone flux. The chamber is a wedge; azimuthal showerhead non-uniformity is not in it. Every one of these is listed with the run that would close it in <code>paper/assumptions.md</code>.</p></div>
+<div class="box"><b>What the rule is not</b><p class="note">It is not a kinetics model: on a blanket wafer it under-predicts the pulse by 1.5 to 4×, because there the sticking coefficient sets the time. It applies when the wafer's wall area is large enough that the chamber, not the surface, is the bottleneck, which is every production wafer with a 3D array on it.</p></div></div>
+</div>
+</div></section>
+
+<section class="story" id="run"><div class="wrap">
+<div class="eyebrow reveal">09 · Reproduce it</div>
+<h2 class="reveal">Every number from a script, on a laptop.</h2>
+<pre class="reveal"><code>git clone https://github.com/Soham-ChemE/ald-conformality.git &amp;&amp; cd ald-conformality
+python3.12 -m venv .venv &amp;&amp; .venv/bin/pip install -e . &amp;&amp; PYTHONPATH=src .venv/bin/python -m pytest -q tests
+# chamber: OpenFOAM v2606 (gerlero/openfoam-app on Apple silicon), then
+cd reactor/lib/aldWallKinetics &amp;&amp; wmake &amp;&amp; cd ../.. &amp;&amp; ./Allrun          # steady flow, blanket pulse, Langmuir wafer
+python sweep_pattern_map.py &amp;&amp; python doe_patterned.py                        # the 16-run map and the 25-run DOE
+python ../analysis/make_doe_jsl.py &amp;&amp; ../scripts/run_jsl.sh ../analysis/doe_rsm.jsl   # JMP response surface
+matlab -batch "run('../analysis/doe_gp.m')"                                   # MATLAB GP, optimum, Monte Carlo
+python ../docs/build_assets.py                                                # this page's data and figures</code></pre>
+<p class="note reveal">The validation data (Zenodo 3974438) ships in <code>data/</code>; the Argonne numbers are quoted from the papers. <code>CLAIMS.md</code> maps every number on this page and in the paper to the file that produces it. The paper: <a href="https://github.com/Soham-ChemE/ald-conformality/blob/main/paper/draft.md">draft 0.9</a>, LaTeX in <code>paper/</code>.</p>
+</div></section>
+
+<footer><div class="wrap"><div><b style="color:var(--ink)">Soham Kavathekar</b> · MS Chemical &amp; Biomolecular Engineering, University of Pennsylvania<br><a href="mailto:stg3719@seas.upenn.edu">stg3719@seas.upenn.edu</a> · <a href="https://www.linkedin.com/in/soham-kavathekar-cheme">linkedin.com/in/soham-kavathekar-cheme</a> · <a href="https://github.com/Soham-ChemE">github.com/Soham-ChemE</a></div><div>OpenFOAM v2606 · JMP 19 · MATLAB R2025b · three.js 0.186 · GSAP 3.15 · Lenis 1.3 · <a href="DESIGN.md">design notes</a></div></div></footer>
+
+<script>
+document.addEventListener('siteready',()=>{
+  const D=window.ALD; if(!D) return;
+  // pulse-time table from the map
+  const xs=[...new Set(D.map.rows.map(r=>r.x))].sort((a,b)=>a-b); const cell=(x,ar,kind)=>{const r=D.map.rows.find(q=>Math.abs(q.x-x)<1e-9&&(kind==='blanket'?q.kind==='blanket':q.AR===ar));return r?r.t90_worst.toFixed(r.t90_worst<1?3:2):'';};
+  window.SITE.table('mapTable',xs.map(x=>[`${(x*100).toFixed(1)} %`,cell(x,0,'blanket'),cell(x,20),cell(x,50),cell(x,100)]));
+  // sticky steps drive the hole scene
+  window.SITE.steps('.step',k=>{document.getElementById('sfSub').textContent=`t = ${k} s`;document.dispatchEvent(new CustomEvent('ald-step',{detail:+k}))});
+  // calculator
+  const KB=1.380649e-23,$=id=>document.getElementById(id),num=id=>+$(id).value;
+  function rule(){const d=num('cD')*1e-9,AR=num('cAR'),den=num('cDen')*1e13,x=num('cX')/100,Q=num('cQ'),p=num('cP'),T=num('cT')+273.15,N0=num('cN0')*1e18;
+    const wall=den*Math.PI*d*AR*d, c0=x*p/(KB*T), U=Q*1.6667e-8*(101325/p)*(T/273.15)/(Math.PI*.15*.15), ts=(1+wall)*N0/(U*c0);
+    return {wall,c0,U,ts,tp:1.2*ts,x,Q,p,g:num('cG'),T};}
+  function gp(x,Q,p,g){const G=D.gp; if(!G) return null; const z=[2*Math.log(x/.005)/Math.log(6)-1, 2*Math.log(Q/150)/Math.log(4)-1, 2*Math.log10(p/100)-1, (g-10)/7.5-1];
+    const out={inside:Math.max(...z.map(Math.abs))<=1.0001};
+    for(const m of G.responses){ let lin=m.linear[0]; for(let i=0;i<4;i++) lin+=m.linear[i+1]*z[i];
+      const ks=m.X.map(row=>{let q=0; for(let i=0;i<4;i++){const dd=(z[i]-row[i])/m.length_scale[i]; q+=dd*dd;} return m.constant*Math.exp(-.5*q);});
+      let s=0; for(let n=0;n<ks.length;n++) s+=m.alpha[n]*ks[n]; out[m.name]=lin+m.y_mean+m.y_std*s;
+      let v=m.constant+m.noise; for(let a=0;a<ks.length;a++){let acc=0; for(let b=0;b<ks.length;b++) acc+=m.K_inv[a][b]*ks[b]; v-=ks[a]*acc;} out[m.name+'_sd']=m.y_std*Math.sqrt(Math.max(v,0)); }
+    return out;}
+  function calc(){const r=rule(); $('oWall').textContent=r.wall.toFixed(1)+'×'; $('oSupply').textContent=r.ts.toFixed(2); $('oRule').textContent=r.tp.toFixed(2)+' s'; $('oML').textContent='1.20';
+    const g=gp(r.x,r.Q,r.p,r.g); const warn=[]; if(Math.abs(r.wall-55.9)/55.9>.02) warn.push('the surrogate was fitted for the AR-100 reference wafer (wall ratio 55.9); for your pattern use the rule');
+    if(g&&g.log10_t90_worst!=null){const t=Math.pow(10,g.log10_t90_worst); $('oGP').textContent=t.toFixed(2)+' s'+(g.log10_t90_worst_sd?` ×/÷ ${Math.pow(10,g.log10_t90_worst_sd).toFixed(2)}`:''); $('oUtil').textContent=(100*g.utilization).toFixed(0)+' %'; $('oLag').textContent=g.edge_lag_pct.toFixed(1)+' %'; if(!g.inside) warn.push('outside the 25-run design box (0.5–3 % TMA, 150–600 sccm, 100–1,000 Pa, 10–25 mm): the surrogate is extrapolating');}
+    else {$('oGP').textContent='—'; $('oUtil').textContent='—'; $('oLag').textContent='—'; if(!D.gp) warn.push('surrogate export not loaded; the rule still applies');}
+    $('oWarn').textContent=warn.join(' · ');}
+  document.querySelectorAll('.calc input').forEach(i=>i.addEventListener('input',calc)); calc();
+});
+</script>
+</body>
+</html>

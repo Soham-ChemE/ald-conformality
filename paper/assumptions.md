@@ -354,3 +354,62 @@ transfer factor, 1/x scaling, utilization ordering) do not depend on it.
 Reading for a tool: the supply-limit rule is the first-order answer; the second-order knobs are pressure (up) and
 carrier flow (down), which together move utilization from ~55 % to ~95 % without changing precursor flow. Gap is a
 uniformity knob only. These are the two sentences the DOE adds to the paper.
+
+## Night 3, part 1: spatially varying pattern (reactor/make_layout_cases.py, coupling/postprocess_layout.py; figures/pattern_layout.png, .csv)
+BC change: patternedSurface keeps the scalar AR and holeDensity as wafer-wide defaults and accepts optional
+ARProfile and holeDensityProfile entries, each a table of (radius_m value) pairs, e.g.
+`ARProfile table ((0 100) (0.075 100) (0.1 60) (0.15 60));`, interpolated linearly at each face centre's radius
+sqrt(y^2 + z^2) (wedge axis x) and clamped outside the table. The per-face values enter the hole length AR d, the
+open-area fraction holeDensity pi d^2/4, the blending of flat and hole fluxes, and the wall-area ratio
+holeDensity pi d AR d. A face with holeDensity 0 (or AR 0) is a flat Langmuir surface: no hole is solved there, its
+hole coverages stay 0 and the open-area fraction is 0. The per-face values are written as ARField and
+holeDensityField beside thetaFlat etc.; the scalar entries are written unchanged, so coupling/patterned_lib.py
+reads old and new cases alike (it now also returns ARField and holeDensityField). Face-centre radii are the area
+centroids of the wedge faces (0.67 mm for the innermost face, r + 0.003 mm elsewhere, times cos 2.5 deg), so a
+table value at radius r lands within 0.1 % of r.
+Regression: reactor/showerhead_pulse_layout_regress is a copy of showerhead_pulse_patterned_check (AR 50,
+holeDensity 1, 1 s pulse, 2 s run) rerun with the rebuilt library. thetaBottom, thetaFlat, thetaMid, Keff and the
+face value are identical to the original case to the 8 written digits at all 201 write times and all 150 faces
+(maximum absolute difference 0). The uniform path is unchanged. 32 s wall time.
+Two layouts, both copies of showerhead_pulse_patterned_AR100_long (1 % TMA, 300 sccm, 300 Pa, 15 mm gap, same
+frozen flow in 0/U and 0/phi, s 5e-3, N0 4e18, c0 3.79e20, d 100 nm, 200 hole cells) with the pulse shortened to
+16 s and the run to 17 s, writes every 0.05 s, 133 and 139 s wall time each:
+(a) dense centre: AR 100 everywhere, 1.78e13 holes/m2 for r < 75 mm ramping linearly to 0 between 75 and 100 mm,
+    bare wafer beyond (wafer-average open area 4.8 %, wafer-average wall-area ratio 19.2);
+(b) AR ramp: 1.78e13 holes/m2 everywhere, AR 100 at the centre ramping linearly to 60 at r = 150 mm (area-averaged
+    wall-area ratio 41.0).
+Rule t = 1.2 (1 + A_wall/A_wafer) N0/(U c0) with U = 0.0501 m/s, c0 = 3.79e20 /m3 (monolayer supply time 0.211 s),
+evaluated with the wafer-average ratio and with the local ratio of the face in question:
+| layout | wafer-average ratio, rule | hole-bottom t90 centre (deepest holes) | worst t90 on wafer | rule (wafer avg) / worst | local rule at the worst face, ratio to actual | hole-bottom t90 at r = 149.5 mm vs local rule | flat t90 centre / edge |
+| uniform AR 100 (reference run, 20 s pulse) | 55.9, 14.39 s | 14.05 s | 14.10 s (r = 128.5 mm) | 1.02 | 14.39 s, 1.02 | 13.30 s vs 14.39 s | 1.95 / 1.55 s |
+| (a) dense centre | 19.2, 5.10 s | 11.85 s | 11.85 s (centre) | 0.43 | 14.39 s, 1.21 | bare (no holes); last holes at 99.5 mm: 5.10 s | 1.95 / 0.45 s |
+| (b) AR ramp | 41.0, 10.62 s | 12.50 s | 12.50 s (centre) | 0.85 | 14.36 s, 1.15 | 7.60 s vs 8.76 s (AR 60.2, local ratio 33.7) | 1.95 / 1.55 s |
+Within-layout profiles (figures/pattern_layout.csv): (a) hole-bottom t90 11.85 s at the centre, 11.60 at 25 mm,
+10.75 at 50 mm, 8.75 at 74.5 mm (the last face at full density), 5.10 s at 99.5 mm (density 4.2e11 /m2); flat
+t90 1.95 s at the centre, 1.35 s at 74.5 mm, 0.50 s at 100.5 mm, 0.40-0.45 s over the bare wafer beyond 110 mm.
+(b) hole-bottom t90 12.50 s at the centre, 11.40 at 50 mm, 10.45 at 80 mm, 9.05 at 125 mm, 8.50 at 140 mm, 7.60 s
+at 149.5 mm; flat t90 1.95 s everywhere except the outermost faces (1.55 s), as on the uniform wafer.
+Reading:
+- The rule with the wafer-average wall-area ratio fails for a non-uniform layout: it predicts 5.1 s for the
+  dense-centre wafer whose array needs 11.85 s, and 10.6 s for the AR ramp whose centre needs 12.5 s. The showerhead
+  supplies precursor per unit area, so the pulse time is set by the LOCAL wall-area ratio at the most demanding
+  location, not by the wafer total. With the local ratio the rule is conservative by 15-21 % on both layouts
+  (14.4 s predicted vs 11.85 and 12.5 s measured) against 2 % on the uniform wafer: the surplus is what the
+  less-demanding neighbourhood feeds back laterally. For a tool recipe: size the pulse on the densest/deepest
+  region's own wall-area ratio; the wafer average under-doses it.
+- Open-field question, layout (a): the bare edge does not saturate at the blanket time. Its flat t90 is 0.50 s
+  next to the array (r = 100.5 mm) and 0.40-0.45 s beyond 110 mm, against 0.35 s (centre) / 0.38 s (edge) on a
+  blanket wafer: 15-30 % slower. The surface TMA density at 0.3 s is 0.163 c0 over the bare region (0.108 c0 at
+  100.5 mm, 0.019 c0 over the array) against 0.24 c0 on a blanket wafer, i.e. the dense centre draws down the gas
+  that would have reached the edge. The reverse transfer is larger in absolute terms: the array's hole bottoms
+  saturate in 11.85 s at the centre and 8.75 s at its outer edge instead of 14.05 s on the uniform wafer, because
+  the bare region leaves precursor that diffuses back inward (gap Peclet 0.09; lateral diffusion over 50 mm takes
+  about L^2/D = 0.3 s, short against 14 s). A pattern boundary therefore produces a saturation gradient inside the
+  array: 26 % between the centre and r = 74.5 mm, where the uniform wafer varies by 0.4 %.
+- Layout (b): the bottom t90 tracks the local AR (12.5 s at AR 100 down to 7.6 s at AR 60); the flat regions are
+  unaffected (1.95 s), because the open area and therefore the loading of the gas phase are the same everywhere.
+  A tier-to-tier depth variation of 40 % across the wafer gives a 39 % spread in saturation time, so the recipe must
+  be set by the deepest tier; shallower regions are over-dosed by exactly their depth ratio.
+Caveats: 16 s pulse (all faces saturate before 12.6 s, so the shortened pulse does not truncate anything); t90
+resolution 0.05 s; the face radius uses the wedge face centroid; the chamber floor outside the wafer is a
+non-absorbing zeroGradient wall in both layouts as in all earlier runs.

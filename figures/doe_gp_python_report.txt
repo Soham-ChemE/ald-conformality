@@ -1,0 +1,30 @@
+Python 3.12.14, scikit-learn 1.9.1, numpy 2.5.4: GP surrogates on 25 DOE runs (OLS linear mean + GP on residuals, ARD RBF + white noise, n_restarts_optimizer=8, random_state=0)
+Leave-one-out (25 refits per response), Python vs MATLAB fitrgp (figures/doe_gp_report.txt):
+  response              R2 py  R2 MATLAB   RMSE py  RMSE MATLAB
+  log10_t90_worst       0.999      0.999    0.0139       0.0140
+  edge_lag_pct          0.746      0.780    0.5454       0.5076
+  utilization           0.986      0.988    0.0154       0.0147
+  Length-scale bounds on the coded factors are (0.3, 30.0) (three-level design, levels 1.0 apart). The t90 and utilization LOO statistics do not depend on them (t90's c_p length scale sits at the lower bound, 0.18 when unbounded, with the same LOO R^2 and RMSE to the digits shown); edge lag does: with bounds (0.01, 100.0) its c_p length scale collapses to 0.04 and the LOO R^2 falls to 0.554 (RMSE 0.7226).
+
+Fitted hyperparameters (coded factors c_x, c_Q, c_p, c_g):
+  log10_t90_worst: linear = [ 1.0973 -0.3827 -0.2402 -0.0621  0.0124], const = 0.8784, length scales = [9.399 0.955 0.3   5.314], noise = 0.028, LML = -14.48
+  edge_lag_pct: linear = [-0.4048  0.5349 -0.0502  0.0182 -0.7634], const = 0.86, length scales = [ 0.814 30.     0.3    1.284], noise = 0.188, LML = -29.15
+  utilization: linear = [ 0.7947 -0.0119 -0.1011  0.1037 -0.0224], const = 2.109, length scales = [3.233 1.895 1.147 4.07 ], noise = 1.04e-10, LML = -16.59
+
+Centre point: x=1.22 %, Q=300 sccm, p=316 Pa, g=17.5 mm -> t90 11.62 s (sd factor 1.01), edge lag -0.2 %, utilization 85 %
+    MATLAB: x=1.22 %, Q=300 sccm, p=316 Pa, g=17.5 mm -> t90 11.62 s, edge lag -0.2 %, utilization 85 %   (t90 difference +0.0 %)
+Fastest with edge lag <= 5 %: x=3.00 %, Q=600 sccm, p=1000 Pa, g=10.0 mm -> t90 2.38 s (sd factor 1.02), edge lag 1.0 %, utilization 85 %
+    MATLAB: x=3.00 %, Q=600 sccm, p=1000 Pa, g=10.0 mm -> t90 2.38 s, edge lag 1.0 %, utilization 85 %   (t90 difference -0.1 %)
+Same precursor supply as centre (x*Q within 5 % in log), edge lag <= 5 %, fastest: x=2.51 %, Q=150 sccm, p=562 Pa, g=10.0 mm -> t90 9.94 s, edge lag 0.9 %, utilization 94 %
+    MATLAB: x=2.51 %, Q=150 sccm, p=631 Pa, g=10.0 mm -> t90 9.83 s, edge lag 0.9 %, utilization 94 %   (t90 difference +1.1 %)
+
+Monte Carlo (N0 lognormal x/÷1.25, 10000 draws, seed 1) on the rule at the centre point (x=1.225 %, Q=300 sccm, p=316 Pa, T=573.15 K, wall ratio 55.9, U=0.0476 m/s): t_pulse = 11.7 s, 90 % band 8.2 to 16.9 s
+    MATLAB (rounded constants x=1.22 %, p=300 Pa, U=0.0501 m/s): t_pulse = 11.9 s, 90 % band 8.2 to 17.2 s
+
+JSON check: numpy re-implementation from figures/doe_gp_python.json vs sklearn predict at 10 random points, worst |difference| in mean and sd = 1.5e-13
+
+Pareto front (41 points from 194481 feasible of 194481 grid points, figures/doe_pareto.csv, figures/doe_pareto.png):
+  At the centre point's pulse time (11.6 s) the centre uses 1.181x the stoichiometric minimum of TMA per saturating pulse (85 % utilization); the front reaches 1.044x (96 % utilization) at the same or shorter pulse, a saving of 12 % of the precursor per wafer pass at no cost in time.
+  The front runs from 2.38 s at 1.177x (x=3.00 %, Q=600 sccm, p=1000 Pa, g=10.0 mm) to 48.87 s at 1.030x (x=0.50 %, Q=150 sccm, p=1000 Pa, g=10.0 mm): the last 1 % of precursor saving beyond the centre-time optimum costs 4.2x the pulse time.
+  Same-supply optimum sits at 9.94 s, 1.067x; fastest feasible at 2.38 s, 1.177x.
+  TMA delivered per saturating pulse (x*Q*t90, sccm*s) is in the csv column tma_sccm_s.

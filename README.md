@@ -1,6 +1,8 @@
 # ald-conformality
 
-![hero](docs/assets/hero.svg)
+<p align="center"><a href="https://soham-cheme.github.io/ald-conformality/"><img src="docs/assets/hero.svg" alt="ald-conformality: the TMA pulse that saturates a blanket wafer against the pulse the patterned wafer needs" width="100%"></a></p>
+
+<p align="center"><b><a href="https://soham-cheme.github.io/ald-conformality/">Open the live page</a></b> · scrub a 16-second pulse through the chamber, watch one hole fill from the mouth down, and run the rule and the surrogate on your own wafer</p>
 
 **A chamber-to-feature digital twin of atomic layer deposition, and the one-line rule it produced.**
 
@@ -37,8 +39,9 @@ published PillarHall thickness profiles.
 | Cross-checks | `tests/` | Scaling laws, embedded-BC vs standalone solver, Machball (Argonne) ballistic model |
 | Validation data | `data/zenodo_3974438` | PillarHall LHAR Al2O3 profiles (CC BY 4.0); fit in `coupling/fit_pillarhall.py` |
 | Studies | `coupling/`, `reactor/sweep_*.py`, `reactor/doe_patterned.py` | One-way and two-way coupling, pulse-time map, operating sweep, DOE, PEALD ceiling, temporal-vs-spatial chart |
-| Analysis | `analysis/` | JMP (JSL) response surface and MATLAB Gaussian-process surrogate with Monte Carlo bands |
-| Paper | `paper/draft.md`, `paper/assumptions.md` | The write-up and the complete run log with every assumption |
+| Analysis | `analysis/` | JMP (JSL) response surface, MATLAB and scikit-learn Gaussian-process surrogates with Monte Carlo bands, cost-of-ownership front |
+| Live page | `docs/` | The interactive 3D page (three.js) with the rule-and-surrogate calculator; `docs/build_assets.py` rebuilds its data from the cases, `docs/DESIGN.md` explains it |
+| Paper | `paper/main.tex`, `paper/main.pdf`, `paper/draft.md`, `paper/assumptions.md` | The write-up (LaTeX and Markdown) and the complete run log with every assumption |
 | Audit | `CLAIMS.md` | Every number in this README traced to a file and a script |
 
 ## Reproduce
@@ -60,6 +63,22 @@ $OF -c '.venv/bin/python reactor/sweep_pattern_map.py'   # the headline map, 16 
 
 Every figure in `figures/` is produced by a script named in `CLAIMS.md`.
 
+### Try the surrogate in Python
+
+The DOE surrogate is also fitted with scikit-learn (`analysis/doe_gp.py`, needs `pip install scikit-learn`) and
+exported to `figures/doe_gp_python.json`, which `aldconf` evaluates with numpy alone:
+
+```bash
+PYTHONPATH=src .venv/bin/python -m aldconf rule --x 0.01 --Q 300 --p 300 --T 573 --AR 100 --d 100e-9 --density 1.78e13
+PYTHONPATH=src .venv/bin/python -m aldconf surrogate --x 0.012 --Q 300 --p 316 --g 17.5
+PYTHONPATH=src .venv/bin/python -m aldconf pareto --max-lag 5
+```
+
+The scikit-learn GP reproduces the MATLAB fitrgp leave-one-out R^2: 0.999 / 0.986 / 0.746 (Python) against 0.999 /
+0.988 / 0.780 (MATLAB) for log10 pulse time / utilization / edge lag (`figures/doe_gp_python_report.txt`). The Pareto
+front of pulse time against precursor use (`figures/doe_pareto.png`) cuts the TMA per wafer pass by 12 % at the
+centre point's pulse time.
+
 ## Method in one paragraph
 
 Chamber: steady laminar N2 (300 Pa, 573 K, 300 sccm, Re 0.045), frozen for the species step; precursor as a passive
@@ -69,10 +88,19 @@ each hole, quasi-steady Knudsen diffusion with a Langmuir sink (Ylilammi 2018), 
 step; net uptake blends flat and hole-mouth fluxes by open-area fraction and enters OpenFOAM as a mixed condition.
 Parameters: s = 5e-3 (TMA), 1e-4 (H2O), N0 = 4e18 /m2, 100 nm holes at 180 nm pitch, half the wafer patterned.
 
+The pattern can also vary across the wafer: `patternedSurface` takes optional `ARProfile` and `holeDensityProfile`
+tables of (radius, value) pairs, interpolated at each wafer face, so hole depth and hole density become functions of
+radius (`reactor/make_layout_cases.py`, `coupling/postprocess_layout.py`). A dense AR-100 array confined to r < 75 mm
+with bare wafer beyond 100 mm saturates its hole bottoms in 11.85 s at the centre instead of the uniform wafer's
+14.05 s, while the bare edge takes 0.40-0.50 s instead of the blanket wafer's 0.35-0.38 s: the array draws down the gas
+over the edge and the edge feeds the array back. A depth ramp from AR 100 at the centre to AR 60 at the edge gives
+12.5 s at the centre and 7.6 s at the edge, tracking the local aspect ratio. In both cases the supply rule holds only
+with the local wall-area ratio of the most demanding region (conservative by 15-21 %), not the wafer average
+(`figures/pattern_layout.png`).
+
 ## Status
 
-Paper at draft 0.9 (complete first version; LaTeX and arXiv to follow). Definition of done tracked in the project notes. Private material is excluded from this
-repository by design.
+Paper at draft 0.9.1: complete, typeset in `paper/main.tex` (`paper/main.pdf`, 14 pages); arXiv submission to follow. Live page at https://soham-cheme.github.io/ald-conformality/ with the rule-and-surrogate calculator.
 
 ## Citation
 
