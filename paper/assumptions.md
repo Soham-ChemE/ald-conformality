@@ -244,3 +244,21 @@ at the same exposure bracket the data visibly (figure): the data exclude 1e-3 at
 the chamber runs (5e-3) lies between the two literature-anchored estimates; the patterned-wafer results are
 supply-limited and insensitive to it, the blanket-wafer numbers are not (t90 ~ 1.6-2.3x the supply time at 5e-3).
 Data points beyond AR 300 rise again (membrane remnants near the far pillars, as the record warns) and were excluded.
+
+## Night 2, part 1 (2026-11-10 ~02:10): validation of the supply-limit rule against a measurement
+Source: Lu, Yanguas-Gil, Kang, Darapaneni, Mane, Marshall, Elam, "Scalable synthesis of supported catalysts using
+fluidized bed ALD", J. Vac. Sci. Technol. A 40 (2022) (OSTI 1902316). Al2O3 ALD on 10 g silica gel, 940 m2 total
+area, Forge Nano fluidized bed, 50 sccm N2, 14.5 Torr, TMA at 1.6 +/- 0.3 Torr, 200 C. Measured by in-situ QMS: TMA
+breakthrough (saturation) at 24 min, H2O at 13 min. Their numbers: TMA supplied during the 24 min dose 0.0115 +/-
+0.0020 mol; TMA needed for saturation 0.0103 mol (from the deposited Al2O3); utilization 91.8 +/- 14.6 %.
+Normalised: t0 = sites / supply rate = 0.0103 / (0.0115 / 24 min) = 21.5 min, so tau_sat = 24 / 21.5 = 1.12
+(0.92 to 1.31 over their stated supply uncertainty). Their Damkoehler number ~1e4; their own plug-flow model (Eqs. 3-9 of
+the report; Yanguas-Gil and Elam, arXiv 2408.13116) predicts tau_sat -> 1 from above as Da grows.
+Our two-way chamber model, same normalisation: tau_sat = 1.05 to 1.27 for the twelve patterned-wafer cases
+(Da = 124 to 581 by their definition with S the total reactive area and V the chamber volume), and 1.5 to 4.3 for
+the blanket wafers (Da = 10, kinetics-limited). Figure: figures/validation_supply_rule.png.
+Reading: a wafer carrying tens of wafer-areas of holes behaves like a powder bed: saturation arrives when roughly
+1.1 to 1.2 site-equivalents of precursor have been delivered, in the measurement and in the model alike. This is
+the measured anchor for the "1.2" in the design rule; the model was not tuned to it (N0, s and the chamber were fixed
+before the comparison). One point is one point: the Strempel et al. 2018 fixed-bed data (Davisil silica, 506 m2/g,
+atmospheric, 50 mL/min) has the breakthrough curves in its reference 15 and would add a second, lower-Da point.

@@ -2,7 +2,7 @@
 
 Soham Kavathekar, Department of Chemical and Biomolecular Engineering, University of Pennsylvania
 
-*Draft 0.5 (public), 2026-11-10. Every number is from a run documented in `paper/assumptions.md`.*
+*Draft 0.6 (public), 2026-11-10. Every number is from a run documented in `paper/assumptions.md`.*
 
 ## Abstract
 
@@ -15,7 +15,9 @@ monolayer of precursor. It held within 25 % across aspect ratios 20 to 100 and a
 At a typical operating point the blanket wafer saturates in 0.35 s and the product wafer in 14 s. Chamber pressure,
 showerhead gap and carrier flow do not move that number; precursor delivery rate does. The water half-cycle, fifty
 times less reactive, needs the same pulse on the product wafer and coats it more evenly. The feature model agrees
-with an independent Argonne code to 7 % and fits published thickness profiles from lateral test structures. The rule
+with an independent Argonne code to 7 % and fits published thickness profiles from lateral test structures,
+and the rule itself reproduces the measured saturation time of a fluidized-bed ALD run on 940 m2 of silica gel
+to 7 %. The rule
 turns a day of recipe transfer into arithmetic, and says where a tool's throughput actually comes from.
 
 ## What this means for a tool (one paragraph for the process engineer)
@@ -88,6 +90,16 @@ A_wall/A_wafer = 11, 28, 56 for AR 20, 50, 100.
   Published values: 0.5-2e-3 (Arts 2019, 275 C set-point); our value is higher, with temperature, the site-density
   assumption and lumped-vs-explicit kinetics as candidate reasons; s = 1e-3 at the same exposure is visibly excluded
   by the data. The chamber runs use 5e-3; the patterned-wafer conclusions are supply-limited and insensitive to it.
+
+### 2.4 Validation against a measured high-surface-area ALD run
+A patterned wafer with tens of wafer-areas of holes is, to the chamber, a powder bed. The cleanest published
+measurement of supply-limited ALD is Argonne's fluidized-bed Al2O3 run on 940 m2 of silica gel [Lu et al. 2022]:
+in-situ mass spectrometry put TMA breakthrough at 24 min, and the authors' own accounting gives 0.0115 +/- 0.0020 mol
+of TMA supplied in that time against 0.0103 mol needed. In the normalisation used throughout this paper, saturation
+arrived at 1.12 (0.92 to 1.31) times the supply-limit time. Our twelve patterned-wafer cases, with nothing tuned to
+that experiment, saturate at 1.05 to 1.27 times theirs (Figure, validation_supply_rule.png); the blanket wafers, at
+a Damkoehler number of 10 instead of hundreds, sit at 1.5 to 4.3 and are the kinetics-limited exception. Argonne's
+plug-flow theory [Lu 2022; Yanguas-Gil and Elam 2024] predicts the same approach to unity from above.
 
 ## 3. Results
 
