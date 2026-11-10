@@ -1,0 +1,33 @@
+blanket x=0.005: t_supply 0.421 s, t90 0.607 s (worst 0.649), rc=0, 34s
+patterned AR=20 x=0.005: wall 11x, t_supply 5.13 s, pulse 8.71 s -> bottom t90 5.32 s (worst 5.37), flat 3.65, rc=0, 79s
+patterned AR=50 x=0.005: wall 28x, t_supply 12.20 s, pulse 20.02 s -> bottom t90 13.40 s (worst 13.40), flat 3.90, rc=0, 159s
+patterned AR=100 x=0.005: wall 56x, t_supply 23.97 s, pulse 38.86 s -> bottom t90 27.94 s (worst 28.13), flat 3.88, rc=0, 277s
+blanket x=0.01: t_supply 0.211 s, t90 0.341 s (worst 0.383), rc=0, 26s
+patterned AR=20 x=0.01: wall 11x, t_supply 2.57 s, pulse 4.61 s -> bottom t90 2.69 s (worst 2.71), flat 1.84, rc=0, 49s
+patterned AR=50 x=0.01: wall 28x, t_supply 6.10 s, pulse 10.26 s -> bottom t90 6.73 s (worst 6.73), flat 1.94, rc=0, 90s
+patterned AR=100 x=0.01: wall 56x, t_supply 11.99 s, pulse 19.68 s -> bottom t90 14.01 s (worst 14.11), flat 1.96, rc=0, 155s
+blanket x=0.03: t_supply 0.070 s, t90 0.154 s (worst 0.182), rc=0, 22s
+patterned AR=20 x=0.03: wall 11x, t_supply 0.86 s, pulse 1.87 s -> bottom t90 0.93 s (worst 0.95), flat 0.63, rc=0, 30s
+patterned AR=50 x=0.03: wall 28x, t_supply 2.03 s, pulse 3.75 s -> bottom t90 2.28 s (worst 2.32), flat 0.67, rc=0, 43s
+patterned AR=100 x=0.03: wall 56x, t_supply 4.00 s, pulse 6.89 s -> bottom t90 4.73 s (worst 4.79), flat 0.68, rc=0, 65s
+blanket x=0.1: t_supply 0.021 s, t90 0.074 s (worst 0.090), rc=0, 21s
+patterned AR=20 x=0.1: wall 11x, t_supply 0.26 s, pulse 0.91 s -> bottom t90 0.30 s (worst 0.33), flat 0.20, rc=0, 23s
+patterned AR=50 x=0.1: wall 28x, t_supply 0.61 s, pulse 1.48 s -> bottom t90 0.72 s (worst 0.75), flat 0.22, rc=0, 27s
+patterned AR=100 x=0.1: wall 56x, t_supply 1.20 s, pulse 2.42 s -> bottom t90 1.48 s (worst 1.51), flat 0.22, rc=0, 33s
+         kind      x   AR  wall_ratio   t_supply      pulse  t90_centre  t90_worst  rc  t90_flat
+0     blanket  0.005    0    0.000000   0.421194   2.527166       0.607      0.649   0       NaN
+1   patterned  0.005   20   11.184070   5.131862   8.710000       5.324      5.368   0     3.652
+2   patterned  0.005   50   27.960175  12.197863  20.020000      13.400     13.400   0     3.900
+3   patterned  0.005  100   55.920349  23.974532  38.860000      27.936     28.130   0     3.880
+4     blanket  0.010    0    0.000000   0.210597   1.263583       0.341      0.383   0       NaN
+5   patterned  0.010   20   11.184070   2.565931   4.610000       2.691      2.714   0     1.840
+6   patterned  0.010   50   27.960175   6.098932  10.260000       6.732      6.732   0     1.938
+7   patterned  0.010  100   55.920349  11.987266  19.680000      14.014     14.112   0     1.960
+8     blanket  0.030    0    0.000000   0.070199   0.421194       0.154      0.182   0       NaN
+9   patterned  0.030   20   11.184070   0.855310   1.870000       0.927      0.954   0     0.630
+10  patterned  0.030   50   27.960175   2.032977   3.750000       2.280      2.318   0     0.665
+11  patterned  0.030  100   55.920349   3.995755   6.890000       4.726      4.794   0     0.680
+12    blanket  0.100    0    0.000000   0.021060   0.300000       0.074      0.090   0       NaN
+13  patterned  0.100   20   11.184070   0.256593   0.910000       0.305      0.325   0     0.205
+14  patterned  0.100   50   27.960175   0.609893   1.480000       0.721      0.749   0     0.217
+15  patterned  0.100  100   55.920349   1.198727   2.420000       1.476      1.512   0     0.216

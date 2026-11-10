@@ -177,3 +177,24 @@ Reading:
 - Cycle time at this operating point (1 % precursors, 300 sccm, 300 Pa): about 14 + 13.4 s of pulses plus purges,
   i.e. ~30 s per cycle for an AR-100 3D-NAND-like wafer, against ~2.5 s for a blanket wafer. At 3 % precursors the TMA
   half drops to 4.75 s; the water half should scale the same way (to be run).
+
+## Night 1, part 7: the pulse-time map (reactor/sweep_pattern_map.py, figures/pulse_time_map.png, .csv)
+16 two-way multiscale runs: blanket wafer and 3D-NAND-like wafers with AR 20 / 50 / 100 holes (wall area 11 / 28 / 56
+x wafer area) at 0.5, 1, 3, 10 % TMA; baseline chamber (300 Pa, 300 sccm, 15 mm), s = 5e-3, N0 = 4e18.
+| TMA | blanket t90 | AR 20 bottoms | AR 50 bottoms | AR 100 bottoms | (worst point on the wafer) |
+| 0.5 % | 0.65 s | 5.37 s | 13.4 s | 28.1 s |
+| 1 % | 0.38 s | 2.71 s | 6.73 s | 14.1 s |
+| 3 % | 0.18 s | 0.95 s | 2.32 s | 4.79 s |
+| 10 % | 0.09 s | 0.33 s | 0.75 s | 1.51 s |
+Design rule that falls out: the patterned wafers sit at 1.05-1.25 x the pure supply limit everywhere on the map,
+    t_pulse ~ 1.2 x (1 + A_wall/A_wafer) x N0 / (U c0),
+with U c0 the precursor molecules delivered per unit wafer area per second. Every patterned point scales as 1/x within
+a few percent, and the aspect ratio enters only through the wall-area ratio: the Knudsen transport inside a 100 nm
+hole is not the bottleneck even at AR 100 once the chamber is supply-limited. The blanket wafer is the exception: it
+sits at 1.4-3.5 x its (much smaller) supply limit because with so little area to fill the finite sticking (5e-3) and
+the Langmuir tail dominate; at 10 % TMA it is purely kinetics-limited.
+Why this matters to a tool: throughput on a 3D-NAND wafer is bought with precursor delivery rate (vapour pressure,
+carrier flow through the bubbler, injector design), not with chamber pressure, gap or carrier flow; and a recipe tuned
+on blanket monitor wafers under-doses the product wafer by the wall-area ratio (11 to 56 x here).
+Caveats: single hole size and density (14 % open area, 50 % patterned); s, N0 literature-range; isothermal; frozen
+carrier flow; irreversible Langmuir; no desorption; H2O map not yet run (expect the same 1/x law from part 6).

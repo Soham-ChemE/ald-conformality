@@ -34,3 +34,5 @@ Smoke case: `reactor/smoke_pitzDaily` (tutorial copy, 50 iterations). ParaView i
 Reactor cases: `reactor/showerhead_steady` (laminar N2 flow) and `reactor/showerhead_pulse` (0.1 s TMA pulse, Danckwerts inlet, absorbing wafer); `reactor/postprocess_pulse.py` turns the written fields into dose-vs-radius. Assumptions and first results: `paper/assumptions.md`.
 
 Multiscale wall: `reactor/lib/aldWallKinetics` provides `langmuirSticking` (self-limiting flat surface) and `patternedSurface` (a 1D Knudsen/Langmuir hole model on every wafer face, two-way coupled). Build with `wmake libso` inside the OpenFOAM environment. `coupling/` holds the one-way (Python) and two-way (BC) post-processing.
+
+Headline result so far: `figures/pulse_time_map.png`, the saturating TMA pulse versus feed fraction for blanket and 3D-NAND-like wafers (AR 20/50/100), with the supply-limit line. Driver `reactor/sweep_pattern_map.py`.
