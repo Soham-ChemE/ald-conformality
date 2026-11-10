@@ -198,3 +198,35 @@ carrier flow through the bubbler, injector design), not with chamber pressure, g
 on blanket monitor wafers under-doses the product wafer by the wall-area ratio (11 to 56 x here).
 Caveats: single hole size and density (14 % open area, 50 % patterned); s, N0 literature-range; isothermal; frozen
 carrier flow; irreversible Langmuir; no desorption; H2O map not yet run (expect the same 1/x law from part 6).
+
+## Night 1, part 8: plasma-ALD recombination ceiling (coupling/peald_ceiling.py, figures/peald_ceiling.png)
+Feature solver, 100 nm hole, radical mass 16, s = 0.05 (assumed: radicals react readily on the methyl-terminated
+surface), 0.3 Pa-equivalent radical density at the mouth, loss probability r on every wall collision.
+Time to 90 % bottom coverage (s):
+| r | 0 | 1e-5 | 3e-5 | 1e-4 | 3e-4 | 1e-3 | 3e-3 | 1e-2 |
+| AR 20 | 0.31 | 0.31 | 0.31 | 0.31 | 0.32 | 0.35 | 0.46 | 1.07 |
+| AR 50 | 1.90 | 1.91 | 1.94 | 2.03 | 2.31 | 3.54 | 10.6 | 206 |
+| AR 100 | 7.98 | 8.18 | 8.59 | 10.2 | 16.2 | 64.5 | not reached | not reached |
+Largest AR whose bottom reaches 90 % within a 5 s exposure: 79 (r = 1e-5), 75 (1e-4), 56 (1e-3), 29 (1e-2).
+Reading: for O atoms on SiO2/TiO2 (r ~ 6e-5, Arts 2019) recombination costs AR-100 holes only ~10-25 % extra time;
+the ceiling bites between r = 3e-4 and 3e-3, i.e. on surfaces with high recombination (metals, some nitrides), where
+AR 100 becomes unreachable by dose alone. This is the regime where plasma source design (radical flux) and surface
+choice, not pulse time, decide conformality. Caveat: s for radicals assumed; results scale with s vbar/4 vs D_K.
+
+## Night 1, part 9: temporal vs spatial ALD from the design rule (coupling/temporal_vs_spatial.py)
+Molecules required per unit wafer area per half-cycle Phi_req = 1.2 (1 + A_wall/A_wafer) N0. Temporal: whole wafer
+under the showerhead flux J_T = U c0 (1.9e19 /m2/s at 1 %), two half-cycles plus two 0.5 s purges. Spatial
+(separated-chemistry, Olympia-type): precursor zone flux J_S = k J_T for a dwell t_d = f_zone tau_rot per pass,
+passes n = ceil(Phi_req/(J_S t_d)), no purge steps; k = 10, 30, 100, f_zone = 0.25, tau_rot = 1 s (assumptions to
+sweep, not measurements).
+| A_wall/A_wafer | temporal 1 % | temporal 3 % | spatial k = 30 |
+| 1 (blanket) | 2.0 s | 1.3 s | 2 s |
+| 11 (AR 20) | 6.8 s | 2.9 s | 2 s |
+| 28 (AR 50) | 16.3 s | 6.1 s | 4 s |
+| 56 (AR 100) | 29.9 s | 10.6 s | 4 s |
+| 112 | 55.9 s | 19.3 s | 8 s |
+Reading: on blanket wafers the two architectures tie (purge overhead vs rotation overhead); the spatial advantage
+grows linearly with patterned area because the zone delivers precursor at a flux the showerhead cannot match without
+raising the feed fraction. This is the quantitative form of the argument in Applied's 3D-NAND deposition patent
+literature and the premise of Olympia's separated-chemistry design; the crossover sits at A_wall/A_wafer ~ 5-10 for
+k = 30. The zone flux k is the number a tool maker knows and we do not; the figure is a design chart in k.

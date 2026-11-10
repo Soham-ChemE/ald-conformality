@@ -2,7 +2,7 @@
 
 Soham Kavathekar, Department of Chemical and Biomolecular Engineering, University of Pennsylvania
 
-*Draft 0.1, 2026-11-10. Numbers below are from the runs in `paper/assumptions.md`; sections marked [TODO] await runs.*
+*Draft 0.2, 2026-11-10. Numbers below are from the runs in `paper/assumptions.md`; sections marked [TODO] await runs.*
 
 ## Abstract
 
@@ -101,14 +101,24 @@ feed fraction as kinetics takes over. Design rule: t_pulse ~ 1.2 (1 + A_wall/A_w
 Blanket: 1.74 s (5x TMA; s vbar/4 = 0.02 m/s < U). Patterned AR 100: 13.4 s (TMA 14.05 s), flat-to-bottom lag
 2.6 s against 12 s for TMA. Cycle time ~30 s at 1 % precursors vs ~2.5 s blanket.
 
-### 3.6 [TODO] Temporal versus spatial ALD
-Convert the design rule to a spatial tool: exposure per pass = (precursor flux under the injector) x (dwell time);
-passes needed = ceil(t_pulse / dwell); throughput crossover versus A_wall/A_wafer. Olympia-style separated-chemistry
-architecture as the reference case [cite AMAT release].
+### 3.6 Temporal versus spatial ALD
+The design rule gives the molecules required per unit wafer area per half-cycle, Phi_req = 1.2 (1 + A_wall/A_wafer) N0.
+A temporal showerhead tool delivers them at U c0 over the whole wafer and pays two purges per cycle; a
+separated-chemistry (spatial) tool delivers them in passes through a precursor zone at a flux k times the showerhead
+flux and pays rotation time instead of purges. With k = 30, a 1 s rotation and a 25 % zone, the two architectures tie
+on blanket wafers (2 s per cycle) and diverge linearly with patterned area: 6.8 vs 2 s at A_wall/A_wafer = 11
+(AR 20), 29.9 vs 4 s at 56 (AR 100), 55.9 vs 8 s at 112. The crossover lies at A_wall/A_wafer of 5 to 10 for
+k = 30; k is the one quantity a tool maker knows and we do not, so Figure X is a design chart in k. This is the
+quantitative form of the argument behind separated-chemistry ALD architectures for 3D NAND [AMAT Olympia release;
+AMAT gap-fill patent].
 
-### 3.7 [TODO] Plasma ALD: the recombination ceiling
-Radical loss probability r in the hole model; map of achievable AR vs r at 90 % bottom coverage; compare r values
-from Arts 2019/2021 (6e-5 on SiO2, material-dependent).
+### 3.7 Plasma ALD: the recombination ceiling
+With a wall loss probability r for radicals, the time to 90 % bottom coverage in a 100 nm AR-100 hole rises from
+8.0 s (r = 0) to 8.6 s (3e-5), 10.2 s (1e-4), 16 s (3e-4) and 64 s (1e-3), and the bottom is not reached at
+r >= 3e-3; the largest aspect ratio saturating within a 5 s exposure falls from 79 (r = 1e-5) to 56 (1e-3) and 29
+(1e-2). For O atoms on SiO2 and TiO2 (r ~ 6e-5 [Arts 2019]) recombination is a 10 to 25 % penalty at AR 100; on
+high-recombination surfaces it is a hard ceiling that no pulse length removes, and radical flux (plasma source
+design) or surface chemistry become the levers. The radical sticking coefficient (0.05) is assumed.
 
 ## 4. Discussion
 - Throughput on patterned wafers is bought with precursor delivery rate (vapour pressure, bubbler carrier flow,
