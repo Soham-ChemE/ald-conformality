@@ -275,3 +275,17 @@ authors' explanation), i.e. transport to the surface, not supply, caps it; its D
 definition is not meaningful, so the drum points appear on the utilization-vs-area panel only.
 Figure: validation_supply_rule.png now has two panels: tau_sat vs Da (chamber, theory, fluidized bed) and precursor
 utilization vs total reactive area across five orders of magnitude (0.07 m2 blanket wafer to 1500 m2 of powder).
+
+## Night 2, part 2: edge-ring chamber geometry (reactor/edgering_*, figures/edgering_comparison.png)
+Geometry change: a 25 mm non-absorbing edge ring at the wafer plane (r 150-175 mm) and an annular pumping slot whose
+outlet sits 25 mm below the wafer plane (r 175-200 mm), replacing the bare floor with the outlet at gap height.
+Mass balance exact (4.90e-5 m3/s per wedge in and out). Same baseline conditions, 1 % TMA.
+| | blanket t90 centre / r=140 / r=149 (s) | spread | patterned AR-100 bottom t90 centre / r=140 / r=149 (s) | spread |
+| bare floor | 0.350 / 0.380 / 0.380 | 8.6 % | 14.01 / 14.01 / 13.33 | 4.2 % |
+| edge ring | 0.350 / 0.380 / 0.390 | 11.4 % | 14.05 / 14.05 / 13.35 | 3.9 % |
+Reading: the outboard geometry moves the saturation times by at most one write interval (0.01 s blanket, 0.05 s
+patterned). The blanket edge lag stays 9-11 %, the patterned edge still saturates slightly early (gas over the
+un-absorbing ring feeds it laterally), and the within-wafer spread is unchanged within 3 %. The dose-profile edge
+spike seen in part 1 was a feature of the dose integral, not of the saturation time. Conclusion for the paper: the
+pulse-time results are insensitive to the chamber geometry outboard of the wafer at this Peclet number; the lever
+on edge lag is gap and pressure (part 3), not the ring design.

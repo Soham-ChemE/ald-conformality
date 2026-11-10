@@ -164,9 +164,12 @@ design) or surface chemistry become the levers. The radical sticking coefficient
   is pumped after saturation. Shorter pulses with feedback (end-point on surface density) would recover it [TODO
   estimate].
 - Low sticking is a conformality asset and a throughput cost only on blanket wafers.
-- Limitations: isothermal; frozen carrier flow; irreversible Langmuir (no desorption, which governs the real water
-  purge); single hole size and density; Knudsen D_K = d vbar/3 without Clausing correction; s and N0 from the
-  literature, not fitted (until the PillarHall validation is in); idealised bare floor at the wafer edge.
+- Robustness checks: replacing the bare floor by a 25 mm edge ring with pumping below the wafer plane changes no
+  saturation time by more than one write interval and leaves the within-wafer spread within 3 % (blanket 9-11 %,
+  patterned 4 %); the pulse-time results do not depend on the chamber outboard of the wafer at this Peclet number.
+- Limitations: isothermal [temperature sweep: TODO]; frozen carrier flow; irreversible Langmuir in the main runs
+  [reversible water: TODO]; single hole size and density [hole-size sweep: TODO]; Knudsen D_K = d vbar/3 without
+  Clausing correction; s and N0 are literature-range inputs (PillarHall fit 8.5e-3; Arts 2019 0.5-2e-3).
 
 ## 5. Conclusions
 [Write after 3.6, 3.7 and the validation.]
