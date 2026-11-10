@@ -1,0 +1,18 @@
+cff-version: 1.2.0
+message: "If you use this model or its results, please cite it as below."
+title: "ald-conformality: a chamber-to-feature digital twin of supply-limited atomic layer deposition"
+authors:
+  - family-names: Kavathekar
+    given-names: Soham
+    affiliation: "Department of Chemical and Biomolecular Engineering, University of Pennsylvania"
+version: 0.7.0
+date-released: 2026-11-10
+license: MIT
+repository-code: "https://github.com/Soham-ChemE/ald-conformality"
+keywords:
+  - atomic layer deposition
+  - 3D NAND
+  - OpenFOAM
+  - multiscale modeling
+  - digital twin
+  - conformality

@@ -1,0 +1,4 @@
+FoamFile { version 2.0; format ascii; class dictionary; object transportProperties; }
+// N2 carrier at 300 Pa, 573 K: rho = pM/RT = 1.76e-3 kg/m3, mu = 2.9e-5 Pa s -> nu = 1.65e-2 m2/s
+transportModel  Newtonian;
+nu              0.021624;
