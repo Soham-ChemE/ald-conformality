@@ -74,13 +74,20 @@ context with `failIfMajorPerformanceCaveat`, which a software renderer refuses a
 its renderer string; creating a SwiftShader context cost 2.4 s of main thread before first paint in the audit environment.
 Pinned CDN builds: three.js 0.186.1, GSAP 3.15.0, Lenis 1.3.27.
 
-## 6. Night three: static figure cards and the layout-to-recipe tool
+## 6. Night three: eleven more scenes and the layout-to-recipe tool
 
-Section 11 ("The reviewer's questions, answered with runs") shows eight of the repository's own matplotlib figures as cards
-(`assets/fig_*.png`, copied and quantised from `figures/` by `build_assets.py --figs`, since GitHub Pages serves `docs/` only),
-each with a caption whose numbers trace to `CLAIMS.md`: the sticking-coefficient sensitivity, step coverage and thickness,
-purge and throughput, the blanket saturation against published exposures, the Fiji F200 reproduction, the 3D chamber map,
-tapered holes and word-line recesses. They are deliberately static: these are audit figures, and a 3D restaging would add
-nothing to what the plot says. Section 10 is the layout-to-recipe tool (`assets/layout-tool.js`, markup from
+Section 11 ("The reviewer's questions, answered with runs") restages the seven follow-up packages as scenes drawn by the
+shared renderer from `window.ALD.n3` (`assets/body2.js`): `sticking` (saturating pulse against the sticking coefficient on
+log axes, supply limits as thin ribbons, the published range as a translucent slab), `stepcov` (step coverage and
+thickness after 50 cycles against pulse time), `cycle` (the four segments of the Al₂O₃ cycle as stacked boxes for three
+recipes), `wph` (wafers per hour against wall-area ratio with the chamber run as a point), `exposure` (this model among
+published saturating exposures, with Langmuir lines), `gakis` (coverage across the 200 mm wafer of the Fiji F200
+approximation against the digitised measured points with error bars), `wafer3d` (the 3D chamber's 2,048-face wafer as a
+triangulated height map, colour and height the deviation from the wedge, the pump port as an arc), `azimuth` (saturation
+time against azimuth at three radii), `taper` (four cut-open frustums coloured by coverage at 10 s), `recess` (a word-line
+stack: slit walls and 800 instanced recess segments coloured by coverage at 9 s) and `chemistry` (the rule per chemistry
+with the TDMAH run). Each card links the audit figure (`assets/fig_*.png`, copied and quantised from `figures/` by
+`build_assets.py --figs`). Section 10 is the layout-to-recipe tool (`assets/layout-tool.js`, markup from
 `partials/layout-tool.html`): zones in, per-zone local rule out, the lateral-feed margin calibrated on the two non-uniform
 runs and labelled as such, an SVG wafer map, CSV in and out; it has its own Playwright checks (`partials/README.md`).
+The data file grew to about 380 KB; the 3D-chamber block is every third wafer face with its Delaunay triangulation.
