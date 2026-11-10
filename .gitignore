@@ -28,3 +28,15 @@ reactor/sweep/*/*/log.*
 reactor/sweep/*/*/postProcessing/
 reactor/sweep_operating.log
 private/
+
+# OpenFOAM outputs anywhere under reactor/ (any depth): time directories except 0/, solver logs, postProcessing, meshes,
+# and the frozen-flow fields copied into derived cases (the steady cases' own 0/U are the inputs and stay tracked)
+reactor/**/[0-9]*/
+!reactor/**/0/
+reactor/**/log.*
+reactor/**/postProcessing/
+reactor/**/polyMesh/
+reactor/**/0/U
+reactor/**/0/phi
+!reactor/showerhead_steady/0/U
+!reactor/edgering_steady/0/U
