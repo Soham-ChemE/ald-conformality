@@ -156,3 +156,24 @@ Same inputs (s = 5e-3, N0 = 4e18, 573 K, 0.3 Pa TMA, 100 nm cylinder), no fittin
 bottom: AR 20: aldconf 1.20 s vs Machball 1.29 s (7 %); AR 50: 4.45 s vs 4.46 s (0.3 %); AR 100: 16.2 s vs 15.6 s (4 %). Two different transport
 descriptions (Knudsen continuum with Langmuir sink vs ballistic transport with cosine re-emission) agree, which is the
 same kind of two-method check as the Monte Carlo comparison in Jarvilehto et al. 2023. Test: tests/test_machball_crosscheck.py.
+
+## Night 1, part 6: the H2O half-cycle (reactor/make_h2o_cases.py; figures/coupling_patterned_h2o_vs_tma.png)
+H2O at 573 K: vbar = 821 m/s, D(H2O-N2) = 2.5e-2 m2/s at 300 Pa (Chapman-Enskog scaling of 2.4e-5 at 1 atm, 300 K,
+an estimate), s = 1e-4 on the TMA-terminated surface (Arts et al. 2019 JVSTA give 0.8-2e-4), N0 = 4e18 (one H2O
+reaction per TMA site, a simplification), 1 % H2O in the feed. Irreversible Langmuir only: reversible water
+adsorption and its slow desorption, which is what really sets the water purge in practice, is not modelled.
+| | blanket wafer t90 (centre / r = 140) | patterned AR-100 wafer: flat regions t90 | hole bottom t90 (centre / r = 140 / r = 149) |
+| TMA, 1 % | 0.35 / 0.38 s | 1.95 s | 14.05 / 14.0 / 13.3 s |
+| H2O, 1 % | 1.74 / 1.82 s | 10.8 s | 13.4 / 13.6 / 13.4 s |
+Reading:
+- Blanket wafer: water is 5 x slower than TMA (1.74 vs 0.35 s) because with s = 1e-4 the kinetic uptake coefficient
+  s vbar/4 = 0.02 m/s is below the inlet speed 0.05 m/s: the surface, not the supply, is the bottleneck (29 % capture
+  at zero coverage, falling as the surface fills).
+- Patterned wafer: water and TMA need almost the same pulse (13.4 vs 14.05 s). With 57 monolayer-equivalents of area
+  to fill, both half-cycles are supply-limited and the sticking coefficient stops mattering for the total.
+- Conformality inverts between the two: TMA's hole bottoms lag its flat regions by 12 s (1.95 -> 14.05 s), water's by
+  only 2.6 s (10.8 -> 13.4 s). Low sticking penetrates deep features more evenly (the classic result), which here shows
+  up as a small flat-to-bottom lag.
+- Cycle time at this operating point (1 % precursors, 300 sccm, 300 Pa): about 14 + 13.4 s of pulses plus purges,
+  i.e. ~30 s per cycle for an AR-100 3D-NAND-like wafer, against ~2.5 s for a blanket wafer. At 3 % precursors the TMA
+  half drops to 4.75 s; the water half should scale the same way (to be run).
