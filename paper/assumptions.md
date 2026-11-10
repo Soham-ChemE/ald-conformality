@@ -95,3 +95,27 @@ Reading:
   last point to saturate sets the recipe pulse time, so every knob that raises the edge lag costs throughput twice.
 - Caveats: one-factor-at-a-time, s and N0 from literature ranges, bare-floor edge, isothermal, frozen carrier flow,
   no H2O half-cycle. A central composite design over (Q, x, g, p) with the GP surrogate is the next layer.
+
+## Night 1, part 4: reactor -> feature coupling (coupling/reactor_to_feature.py, figures/coupling_hole_coverage.png)
+Method: the TMA number density at the wafer surface from the chamber model (wall value of the langmuirSticking patch,
+times c0) at four radii drives the feature-scale Knudsen + Langmuir model (aldconf.simulate_driven) of a 100 nm hole
+at AR 20, 50, 100, s = 5e-3, N0 = 4e18. One-way coupling: holes do not feed back on the chamber (no loading effect yet).
+Benchmarks of the feature solver alone at constant 0.3 Pa TMA (the surface density of the unsaturated base case):
+95 % step coverage needs 1.20 s (AR 20), 4.45 s (AR 50), 16.2 s (AR 100): ratio 3.7 per doubling, the AR^2 law.
+Results, base case (300 sccm, 1 % TMA, 1 s pulse):
+- Flat wafer saturates at 0.35 s. AR 20 hole bottom: 0.49 s. AR 50: 0.92 s. AR 100: 3 % coverage at the bottom after
+  the full 1 s pulse plus 1 s purge; the saturation front stops about 60 diameters deep.
+- The hole fills far faster than the constant-density benchmark predicts (AR 50: 0.92 s vs 4.45 s). Mechanism: once
+  the flat surface saturates at 0.35 s, the wafer stops consuming TMA, the gas density at the surface rises from 0.1 c0
+  to c0, and the holes see ten times the precursor. The flat wafer "shields" its own holes until it is full. Neither
+  model alone shows this; it is a reactor-feature interaction.
+- Radius matters little for the holes: centre vs r = 149 mm shifts the AR 50 bottom t90 from 0.92 to 1.01 s (10 %),
+  the same edge lag as the flat wafer. At this operating point the aspect ratio, not the wafer position, is the
+  bottleneck.
+- 3 % TMA fills AR 100 in 0.89 s (centre) to 0.99 s (edge); 600 sccm at 1 % does not (6 % at the bottom). Supply of
+  precursor molecules, not carrier flow, is what deep features need: tripling the TMA fraction did what doubling the
+  flow could not.
+Caveats: single hole, no loading (a real 3D NAND wafer with ~1e9 holes of AR 100 has ~400 x the flat area and would
+depress the surface density far more, which makes the "shielding" effect stronger and the pulse longer); H2O half-cycle
+not modelled; hole-scale D_K uses d vbar/3 without the Clausing correction; Machball cross-check still to be wired
+(its saturation() needs a Structure built from view factors, see machball.structure / vf).

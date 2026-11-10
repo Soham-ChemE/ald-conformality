@@ -152,3 +152,38 @@ def dose_for_coverage(proc: Process, target: float = 0.95, t_lo: float = 1e-4, t
     if f(lo) > 0:
         return t_lo
     return float(np.exp(brentq(f, lo, hi, xtol=1e-3)))
+
+
+def simulate_driven(proc: Process, t_series, n0_series, substeps_per_sample: int = 5, record_depths=(0.0, 1.0)):
+    """One half-cycle with a time-varying precursor density at the feature mouth, n0(t) [1/m3].
+
+    `t_series` / `n0_series` come from the reactor model (gas density at the wafer surface vs time at one radius).
+    Each reactor sample interval is split into `substeps_per_sample` coverage updates. Returns the final coverage
+    profile and the coverage history at the requested relative depths (0 = mouth, 1 = bottom)."""
+    g = proc.geometry
+    pr = proc.precursor
+    L = g.length
+    N = proc.n_cells
+    x = (np.arange(N) + 0.5) * L / N
+    opening = np.full(N, g.gap, dtype=float)
+    theta = np.zeros(N)
+    vbar = mean_speed(proc.T, pr.mass_amu)
+    t_series = np.asarray(t_series, float); n0_series = np.asarray(n0_series, float)
+    idx = [min(N - 1, int(round(d * (N - 1)))) for d in record_depths]
+    hist_t = []; hist = []
+    d_h = g.hydraulic_diameter(opening)
+    D = knudsen_diffusivity(d_h, proc.T, pr.mass_amu, proc.knudsen_factor)
+    if proc.p_total is not None:
+        D = bosanquet(D, gas_diffusivity(proc.T, proc.p_total, pr.mass_amu, pr.sigma))
+    D_face = np.empty(N + 1); D_face[1:-1] = 2.0 * D[:-1] * D[1:] / (D[:-1] + D[1:]); D_face[0] = D[0]; D_face[-1] = D[-1]
+    sv = g.surface_to_volume(opening)
+    for i in range(1, len(t_series)):
+        dt = (t_series[i] - t_series[i - 1]) / substeps_per_sample
+        for k in range(substeps_per_sample):
+            tt = t_series[i - 1] + (k + 0.5) * dt
+            n0 = float(np.interp(tt, t_series, n0_series))
+            kx = sv * (vbar / 4.0) * (pr.sticking * (1.0 - theta) + pr.recombination)
+            n = _solve_gas(x, D_face, kx, n0) if n0 > 0 else np.zeros(N)
+            theta = 1.0 - (1.0 - theta) * np.exp(-pr.sticking * (vbar / 4.0) * n * dt / pr.site_density)
+        hist_t.append(t_series[i]); hist.append(theta[idx].copy())
+    return x, theta, np.array(hist_t), np.array(hist)
