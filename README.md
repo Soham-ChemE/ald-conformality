@@ -1,5 +1,7 @@
 # ald-conformality
 
+![hero](docs/assets/hero.svg)
+
 **A chamber-to-feature digital twin of atomic layer deposition, and the one-line rule it produced.**
 
 ALD recipes are tuned on blank wafers. A 3D-NAND wafer carries 56x the surface area of the wafer under it. This
