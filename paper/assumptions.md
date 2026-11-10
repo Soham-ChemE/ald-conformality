@@ -244,8 +244,3 @@ at the same exposure bracket the data visibly (figure): the data exclude 1e-3 at
 the chamber runs (5e-3) lies between the two literature-anchored estimates; the patterned-wafer results are
 supply-limited and insensitive to it, the blanket-wafer numbers are not (t90 ~ 1.6-2.3x the supply time at 5e-3).
 Data points beyond AR 300 rise again (membrane remnants near the far pillars, as the record warns) and were excluded.
-
-## Night 1, part 11: exhaust end-point and pattern-aware pulse control (paper/invention_note.md)
-See the note. Core numbers: exhaust 50 % breakthrough lags hole-bottom saturation by 0.2-0.7 s across 12 cases,
-never leads; early exhaust level is 5.5 % of feed for every patterned wafer (does not encode loading); cycle-1
-calibration infers A within 6 % and predicts the other feeds within 9 % and the H2O half-cycle within 6 %.

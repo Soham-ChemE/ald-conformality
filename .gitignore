@@ -28,3 +28,4 @@ reactor/sweep/*/*/constant/polyMesh/
 reactor/sweep/*/*/log.*
 reactor/sweep/*/*/postProcessing/
 reactor/sweep_operating.log
+private/

@@ -2,7 +2,7 @@
 
 Soham Kavathekar, Department of Chemical and Biomolecular Engineering, University of Pennsylvania
 
-*Draft 0.3, 2026-11-10. Numbers below are from the runs in `paper/assumptions.md`; sections marked [TODO] await runs.*
+*Draft 0.4 (public), 2026-11-10. Numbers below are from the runs in `paper/assumptions.md`; sections marked [TODO] await runs.*
 
 ## Abstract
 
@@ -124,19 +124,6 @@ r >= 3e-3; the largest aspect ratio saturating within a 5 s exposure falls from 
 (1e-2). For O atoms on SiO2 and TiO2 (r ~ 6e-5 [Arts 2019]) recombination is a 10 to 25 % penalty at AR 100; on
 high-recombination surfaces it is a hard ceiling that no pulse length removes, and radical flux (plasma source
 design) or surface chemistry become the levers. The radical sticking coefficient (0.05) is assumed.
-
-### 3.8 The exhaust as an end-point, and pattern-aware pulse control
-In every two-way run the precursor fraction at the chamber outlet sits near 5 % of the feed while the wafer absorbs
-and rises sharply when it saturates. Across the 12 patterned cases the 50 % breakthrough lags the time at which the
-hole bottoms reach 90 % by 0.2 to 0.7 s and never leads it, so a downstream sensor is a conservative end-point for
-the deepest features. The early exhaust level does not encode the loading (5.5 % of feed for every patterned wafer),
-but the breakthrough time does: inferring the area ratio from the first cycle's TMA breakthrough with the design
-rule reproduces the true ratio within 6 % and predicts the saturating pulse at other feed fractions within 9 % and
-the H2O half-cycle within 6 %. One calibration cycle out of several hundred thus sets the recipe for the wafer that
-is actually in the chamber, and a shift in breakthrough time against the prediction flags delivery drift.
-Prior work sensed ALD half-cycles downstream by QMS and end-pointed doses on flat wafers [Lei 2006] and confirmed
-saturation on powders by breakthrough [Argonne]; the pattern-aware prediction, the model-derived exhaust-to-feature
-lag and the cycle-1 transfer across half-cycles are, to our knowledge, new (see paper/invention_note.md).
 
 ## 4. Discussion
 - Throughput on patterned wafers is bought with precursor delivery rate (vapour pressure, bubbler carrier flow,
