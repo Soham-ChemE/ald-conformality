@@ -15,3 +15,8 @@ reactor/*/postProcessing/
 reactor/showerhead_pulse/0/U
 reactor/showerhead_pulse/0/phi
 **/dynamicCode/
+reactor/lib/*/Make/darwin*/
+reactor/lib/*/lnInclude/
+reactor/lib/*/log.wmake
+reactor/showerhead_pulse*/0/U
+reactor/showerhead_pulse*/0/phi

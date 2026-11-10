@@ -44,3 +44,30 @@ a parameter to vary, not a measured value). Gap Peclet number U g / D = 0.09: tr
 finite sticking and Langmuir saturation on the wafer; pressure and gap sweep; edge-ring geometry; temperature;
 coupling the dose(r) curve into the feature-scale model (aldconf solver and ViennaPS) for step coverage vs radius;
 H2O half-cycle; DOE and GP surrogate in MATLAB.
+
+## Night 1, part 2: finite sticking and the self-limiting wafer
+Sticking sweep (mixed BC, j = s (vbar/4) c_face, vbar = 410 m/s for TMA at 573 K; figures/reactor_sticking_sweep.png):
+| wafer | captured % | centre dose/c0 (m) | spread r<140 mm | gas clears (flux < 1 % peak) |
+| absorbing | 96.5 | 4.79e-3 | 7.1 % | 0.15 s |
+| s = 1 | 96.5 | 4.79e-3 | 6.9 % | 0.15 s |
+| s = 0.1 | 96.0 | 4.77e-3 | 5.6 % | 0.16 s |
+| s = 0.01 | 91.9 | 4.57e-3 | 1.6 % | 0.21 s |
+| s = 0.001 | 65.4 | 3.26e-3 | 0.2 % | 0.58 s |
+Reading: the lower the sticking, the more uniform the dose (the gas phase homogenises when uptake is slow) and the
+longer the purge tail (unreacted TMA sits in the chamber). Realistic TMA sticking is 1e-3 to 1e-2 (Arts 2019,
+Ylilammi 2018), so expect ~65-90 % capture, sub-2 % within-wafer dose spread, and a 0.2-0.6 s gas-phase purge.
+
+Self-limiting wafer: custom OpenFOAM boundary condition `langmuirSticking` (reactor/lib/aldWallKinetics, compiled with
+wmake against OpenFOAM v2606): per-face coverage theta integrated in time, uptake (vbar/4) s (1 - theta) c_face,
+optional recombination term r for plasma radicals. Parameters used: s = 5e-3, N0 = 4e18 sites/m2 (about one
+TMA-saturated monolayer on Al2O3), c0 = 3.79e20 /m3 (3 Pa TMA at 573 K). Both N0 and the TMA partial pressure are
+assumptions to be swept; the sticking value is literature-range, not fitted yet.
+Results (figures/reactor_langmuir_coverage.png):
+- The showerhead delivers U c0 = 1.9e19 molecules/m2/s: one monolayer's worth every 0.21 s at 100 % capture. A 0.1 s
+  pulse therefore cannot saturate the wafer at this flow and partial pressure: final coverage 0.40 everywhere, of
+  which 0.25 arrived during the pulse and the rest during the purge from TMA still in the chamber.
+- A 0.5 s pulse saturates: 90 % coverage at 0.345 s in the centre and 0.385 s at r = 140 mm; the edge saturates
+  last, 12 % later than the centre. The minimum pulse for a saturated wafer at this operating point is set by the
+  wafer edge, about 0.4 s, not by the 0.1 s recipe value from the tube-reactor dataset.
+- Interpretation: at 300 Pa, 300 sccm and 3 Pa TMA the process is supply-limited; pulse time scales inversely with
+  TMA partial pressure x flow. This is the knob map the DOE will quantify (pressure, flow, TMA fraction, gap).

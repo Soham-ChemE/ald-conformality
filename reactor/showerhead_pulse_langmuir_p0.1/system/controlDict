@@ -1,0 +1,30 @@
+FoamFile { version 2.0; format ascii; class dictionary; object controlDict; }
+application     scalarTransportFoam;
+libs            ("libaldWallKinetics.dylib");
+startFrom       startTime;
+startTime       0;
+stopAt          endTime;
+endTime         1.1;        // 0.1 s pulse + 1 s purge (gas clears in < 0.6 s)
+deltaT          0.001;
+writeControl    runTime;
+writeInterval   0.005;
+writeFormat     ascii;
+writePrecision  8;
+timeFormat      general;
+timePrecision   6;
+runTimeModifiable true;
+functions
+{
+    // TMA at the wafer-adjacent cell centres (nearCellValue). Wall flux = DT * T_cell / delta, delta = 0.25 mm
+    // (half the uniform 0.5 mm axial cell), which is the finite-volume snGrad on this orthogonal mesh.
+    waferFlux
+    {
+        type            surfaces;
+        libs            (sampling);
+        writeControl    writeTime;
+        surfaceFormat   raw;
+        interpolationScheme cell;
+        fields          (T);
+        surfaces        ( wafer { type patch; patches (wafer); interpolate false; nearCellValue true; } );
+    }
+}

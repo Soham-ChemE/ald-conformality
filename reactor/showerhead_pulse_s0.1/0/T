@@ -1,0 +1,24 @@
+FoamFile { version 2.0; format ascii; class volScalarField; object T; }
+// T is the TMA mole fraction normalised to its showerhead value during the pulse (dimensionless carrier).
+dimensions [0 0 0 1 0 0 0];
+internalField   uniform 0;
+boundaryField
+{
+    // 0.1 s pulse at unit concentration, then purge
+    // Danckwerts total-flux inlet: U (c_face - c0(t)) = D (c_face - c_cell)/delta, so the TMA entering the chamber is
+    // exactly U*c0*A during the pulse. As a mixed BC: value fraction f = U/(U + D/delta) = 0.050/(0.050 + 33.6) = 1.486e-3.
+    showerhead
+    {
+        type                 uniformMixed;
+        uniformValue         table ((0 1) (0.1 1) (0.1001 0) (10 0));
+        uniformGradient      constant 0;
+        uniformValueFraction constant 1.486e-3;
+    }
+    topWall    { type zeroGradient; }
+    wafer      { type mixed; refValue uniform 0; refGradient uniform 0; valueFraction uniform 0.233751; value uniform 0; }  // finite sticking, see sweep_sticking.sh
+    floor      { type zeroGradient; }
+    outlet     { type inletOutlet; inletValue uniform 0; value uniform 0; }
+    axis       { type empty; }
+    front      { type wedge; }
+    back       { type wedge; }
+}
