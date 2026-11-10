@@ -119,3 +119,16 @@ Caveats: single hole, no loading (a real 3D NAND wafer with ~1e9 holes of AR 100
 depress the surface density far more, which makes the "shielding" effect stronger and the pulse longer); H2O half-cycle
 not modelled; hole-scale D_K uses d vbar/3 without the Clausing correction; Machball cross-check still to be wired
 (its saturation() needs a Structure built from view factors, see machball.structure / vf).
+
+## Night 1, part 5: concurrent multiscale wall (reactor/lib/aldWallKinetics, patternedSurface BC)
+Every wafer face now carries a flat Langmuir surface plus a 200-cell Knudsen/Langmuir model of a 100 nm hole; the
+face's net uptake K_eff c_face = (1 - phi) flat uptake + phi x hole-mouth flux, two-way coupled to the chamber.
+Verification: with a negligible hole density (one-way limit) the BC's hole-bottom coverage matches the Python
+aldconf.simulate_driven model driven by the same face density to within 1 % at every time (t90 0.92 s in both).
+3D-NAND-like array: 100 nm holes, 180 nm hex pitch, half the wafer patterned -> 1.78e13 holes/m2, 14 % open area,
+wall area 56 x wafer area at AR 100 (28 x at AR 50).
+Loading result, 1 s pulse at 1 % TMA: the surface density collapses to 0.019 c0 (0.24 c0 on a blanket wafer), the
+wafer captures 94 % of everything injected, and nothing saturates: flat regions and hole bottoms both stay far from
+90 % after 1 s pulse + 5 s purge. Supply arithmetic: the pulse delivers 1.9e19 molecules/m2 against a demand of
+57 x 4e18 = 2.3e20, i.e. 8 % of a monolayer-equivalent. A blanket-wafer recipe (0.35 s) under-doses a 3D NAND wafer
+by more than an order of magnitude at this precursor supply. Long-pulse runs (20 s at 1 %, 8 s at 3 %) are next.
