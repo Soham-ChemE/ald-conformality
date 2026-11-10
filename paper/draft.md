@@ -2,7 +2,7 @@
 
 Soham Kavathekar, Department of Chemical and Biomolecular Engineering, University of Pennsylvania
 
-*Draft 0.8 (public), 2026-11-10. Every number is from a run documented in `paper/assumptions.md`.*
+*Draft 0.9 (public), 2026-11-10. Every number is from a run documented in `paper/assumptions.md`.*
 
 ## Abstract
 
@@ -154,6 +154,19 @@ r >= 3e-3; the largest aspect ratio saturating within a 5 s exposure falls from 
 (1e-2). For O atoms on SiO2 and TiO2 (r ~ 6e-5 [Arts 2019]) recombination is a 10 to 25 % penalty at AR 100; on
 high-recombination surfaces it is a hard ceiling that no pulse length removes, and radical flux (plasma source
 design) or surface chemistry become the levers. The radical sticking coefficient (0.05) is assumed.
+
+### 3.8 Operating optimum and uncertainty
+A face-centred central composite design (25 two-way runs; TMA fraction 0.5-3 %, carrier 150-600 sccm, pressure
+100-1000 Pa, gap 10-25 mm) on the AR-100 wafer, fitted as a response surface in JMP and as a Gaussian-process
+surrogate in MATLAB (leave-one-out R2 0.999 for log pulse time, 0.988 for utilization), gives the second-order
+corrections to the rule. Pulse time scales as x^-1.0, Q^-0.8 and p^-0.12; the gap is not significant. Precursor
+utilization up to saturation rises from 68 % at 100 Pa to 88 % at 1000 Pa and falls from 88 % at 150 sccm to 68 %
+at 600 sccm: carrier gas that is not needed to deliver precursor carries it past the wafer. The fastest point with
+edge lag under 5 % (a constraint never active: lag stays within -3.5 to +1.1 %) is 3 %, 600 sccm, 1000 Pa, 10 mm at
+2.38 s. At fixed precursor flow, trading carrier gas for pressure (2.5 %, 150 sccm, 630 Pa, 10 mm) cuts the pulse
+from 11.6 to 9.8 s and raises utilization from 85 to 94 %. A Monte Carlo over the site density (lognormal, factor
+1.25) puts a 90 % band of 8.2 to 17.2 s on the 11.9 s rule prediction at the design centre; the absolute pulse
+inherits the site-density uncertainty, the ratios in this paper do not.
 
 ## 4. Discussion
 - Throughput on patterned wafers is bought with precursor delivery rate (vapour pressure, bubbler carrier flow,

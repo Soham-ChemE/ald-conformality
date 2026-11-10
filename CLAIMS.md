@@ -22,3 +22,12 @@ Known limitations and open items are listed in paper/assumptions.md and the pape
 site density (4e18 /m2) in the chamber runs are literature-range inputs; the PillarHall fit gives 8.5e-3 and Arts et
 al. 2019 give 0.5-2e-3. The patterned-wafer conclusions are supply-limited and insensitive to this; the blanket-wafer
 numbers are not.
+| DOE response surface (JMP) | log10 t90: R2 0.993; exponents x^-1.0, Q^-0.8, p^-0.12 | figures/doe_rsm_report.txt | analysis/make_doe_jsl.py then scripts/run_jsl.sh analysis/doe_rsm.jsl |
+| GP surrogate (MATLAB) | LOO R2 0.999 / 0.988 / 0.78 (time / utilization / edge lag) | figures/doe_gp_report.txt | matlab -batch "run('analysis/doe_gp.m')" |
+| Same-supply optimum | 11.6 s, 85 % -> 9.8 s, 94 % (2.5 %, 150 sccm, 630 Pa, 10 mm) | figures/doe_gp_report.txt | same |
+| Monte Carlo band on the rule (N0 x/÷1.25) | 11.9 s, 90 % band 8.2-17.2 s | figures/doe_gp_report.txt | same |
+| Edge ring geometry | saturation times unchanged within one write interval | figures/edgering_comparison.png | reactor/edgering_* |
+| Reversible water | kdes > ~0.3 1/s prevents 90 % coverage at 1 % H2O; purge tail at 0.1-1 1/s | figures/h2o_desorption.png | reactor/make_h2o_desorption_cases.py |
+| Temperature 200-400 C | pulse times unchanged at fixed sccm and fraction | figures/temperature_sweep.csv | reactor/make_temperature_cases.py |
+| Hole size 50-200 nm at fixed wall area | bottom t90 14.0-14.1 s for all | paper/assumptions.md part 4 | reactor/holesize_* |
+| Second measured set | rotary drum utilization 24.7-70.7 % vs loading | figures/validation_supply_rule.png | literature: Coile 2020 Table 2 |

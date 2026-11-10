@@ -1,0 +1,10 @@
+MATLAB 25.2.0.3123386 (R2025b) Update 3 GP surrogates on 25 DOE runs
+log10_t90_worst: LOO R^2 = 0.999, LOO RMSE = 0.0140
+edge_lag_pct: LOO R^2 = 0.780, LOO RMSE = 0.5076
+utilization: LOO R^2 = 0.988, LOO RMSE = 0.0147
+
+Centre point: x=1.22 %, Q=300 sccm, p=316 Pa, g=17.5 mm -> t90 11.62 s (sd factor 1.01), edge lag -0.2 %, utilization 85 %
+Fastest with edge lag <= 5 %: x=3.00 %, Q=600 sccm, p=1000 Pa, g=10.0 mm -> t90 2.38 s (sd factor 1.02), edge lag 1.0 %, utilization 85 %
+Same precursor supply as centre, edge lag <= 5 %, fastest: x=2.51 %, Q=150 sccm, p=631 Pa, g=10.0 mm -> t90 9.83 s, edge lag 0.9 %, utilization 94 %
+
+Monte Carlo (N0 lognormal x/÷1.25, 10000 draws) on the rule at the centre point: t_pulse = 11.9 s, 90 % band 8.2 to 17.2 s

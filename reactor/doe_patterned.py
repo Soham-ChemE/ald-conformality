@@ -20,6 +20,9 @@ TPL_PULSE = ROOT / "showerhead_pulse_langmuir_p0.5"
 N0, S, HOLES, D_HOLE, AR = 4e18, 5e-3, 1.78e13, 100e-9, 100
 WALL = HOLES * np.pi * D_HOLE * AR * D_HOLE          # 55.9
 KB, T = 1.380649e-23, 573.15
+import os
+PULSE_FACTOR = float(os.environ.get("PULSE_FACTOR", "1.6"))
+ONLY = [int(v) for v in os.environ.get("ONLY_RUNS", "").split(",") if v.strip()]
 
 LO = dict(x=np.log10(0.005), Q=np.log10(150.0), p=np.log10(100.0), g=10.0)
 HI = dict(x=np.log10(0.03), Q=np.log10(600.0), p=np.log10(1000.0), g=25.0)
@@ -47,7 +50,7 @@ def build_pulse(case, c, d):
     shutil.copy(TPL_PULSE / "constant/transportProperties", pu / "constant/transportProperties")
     so.sub(pu / "constant/transportProperties", [("DT              8.4e-3;", f"DT              {d['D']:.5g};")])
     t_supply = (1 + WALL) * N0 / (d["U"] * d["c0"])
-    pulse = round(1.6 * t_supply + 0.5, 2)
+    pulse = round(PULSE_FACTOR * t_supply + 0.5, 2)
     t = pu / "0/T"; s = t.read_text()
     s, n1 = re.subn(r"    wafer      \{ type langmuirSticking;[^\n]*\n",
         f"    wafer      {{ type patternedSurface; s {S:g}; r 0; vbar 410; N0 {N0:g}; c0 {d['c0']:.4g}; d {D_HOLE:g}; AR {AR}; holeDensity {HOLES:g}; nCells 150; value uniform 0; }}\n", s)
@@ -68,6 +71,7 @@ rows = []
 for i, c in enumerate(runs):
     dec = decode(c); d = so.derived(dec)
     case = DOE / f"run{i:02d}"
+    if ONLY and i in ONLY and (case / "pulse").exists(): shutil.rmtree(case / "pulse")
     done = (case / "pulse" / "log.scalarTransportFoam").exists() and "End" in (case / "pulse" / "log.scalarTransportFoam").read_text()[-200:]
     t0 = time.time()
     if not done:
@@ -78,7 +82,7 @@ for i, c in enumerate(runs):
         rc, dt, err = so.run(case)
         if rc: print(f"run{i:02d} FAILED: {err}", flush=True); continue
     else:
-        t_supply = (1 + WALL) * N0 / (d["U"] * d["c0"]); pulse = round(1.6 * t_supply + 0.5, 2)
+        t_supply = (1 + WALL) * N0 / (d["U"] * d["c0"]); pulse = float(re.search(r"\(\(0 1\) \(([0-9.]+) 1\)", (case / "pulse/0/T").read_text()).group(1))
     t, f, prm, _ = load_patterned(case / "pulse")
     tb = np.array([t90(f["thetaBottom"], j, t) for j in range(150)])
     t90c, t90w, t90e = tb[0], np.nanmax(tb[:149]), tb[140]
