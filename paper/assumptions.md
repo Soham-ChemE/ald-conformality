@@ -150,3 +150,9 @@ Reading:
 Caveats unchanged (isothermal, frozen carrier, no H2O half-cycle, Knudsen D_K = d vbar/3, s and N0 literature-range,
 hole density and pattern coverage assumed). Next: a 2D map of saturating pulse time versus TMA fraction and AR,
 the H2O half-cycle (s ~ 1e-4, which will dominate cycle time), the edge-ring geometry, and DOE/GP over the knob set.
+
+## Cross-check of the hole model against Machball (Argonne, ballistic view-factor model)
+Same inputs (s = 5e-3, N0 = 4e18, 573 K, 0.3 Pa TMA, 100 nm cylinder), no fitting. Time for 95 % coverage at the
+bottom: AR 20: aldconf 1.20 s vs Machball 1.29 s (7 %); AR 50: 4.45 s vs 4.46 s (0.3 %). Two different transport
+descriptions (Knudsen continuum with Langmuir sink vs ballistic transport with cosine re-emission) agree, which is the
+same kind of two-method check as the Monte Carlo comparison in Jarvilehto et al. 2023. Test: tests/test_machball_crosscheck.py.
