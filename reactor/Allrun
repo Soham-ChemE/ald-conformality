@@ -1,0 +1,11 @@
+#!/bin/sh
+# Run the reactor chain end to end: steady N2 flow -> frozen-flow TMA pulse -> dose vs radius.
+# Usage: ~/Applications/OpenFOAM-v2606.app/Contents/Resources/etc/openfoam -c 'sh reactor/Allrun'
+set -e
+cd "$(dirname "$0")"
+( cd showerhead_steady && blockMesh > log.blockMesh 2>&1 && checkMesh > log.checkMesh 2>&1 && simpleFoam > log.simpleFoam 2>&1 )
+LAST=$(ls -d showerhead_steady/[0-9]* | sort -t/ -k2 -g | tail -1)
+rm -rf showerhead_pulse/constant/polyMesh && cp -r showerhead_steady/constant/polyMesh showerhead_pulse/constant/
+cp "$LAST/U" "$LAST/phi" showerhead_pulse/0/
+( cd showerhead_pulse && rm -rf postProcessing && ls -d [0-9]* | grep -v '^0$' | xargs rm -rf; scalarTransportFoam > log.scalarTransportFoam 2>&1 )
+echo "reactor chain done; now: .venv/bin/python reactor/postprocess_pulse.py"
