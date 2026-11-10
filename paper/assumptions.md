@@ -290,7 +290,7 @@ spike seen in part 1 was a feature of the dose integral, not of the saturation t
 pulse-time results are insensitive to the chamber geometry outboard of the wafer at this Peclet number; the lever
 on edge lag is gap and pressure (part 3), not the ring design.
 
-## Night 2, part 3: reversible water adsorption (reactor/lib/aldWallKineticsDev, kdes; figures/h2o_desorption.png)
+## Night 2, part 3: reversible water adsorption (kdes parameter of langmuirSticking, developed in a side library and since merged into reactor/lib/aldWallKinetics; figures/h2o_desorption.png)
 The flat-surface BC now carries a first-order desorption rate kdes (1/s): dtheta/dt = (vbar/4) s (1-theta) c_s/N0 -
 kdes theta, with the desorbed flux returned to the gas through the mixed-condition reference value. Blanket wafer,
 H2O at 1 % (s = 1e-4, vbar 821 m/s), 5 s pulse, 3 s purge:

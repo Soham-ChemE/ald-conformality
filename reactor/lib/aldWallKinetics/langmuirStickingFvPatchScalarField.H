@@ -9,6 +9,7 @@
     Coverage per face advances once per time step:
         dtheta/dt = (vbar/4) s (1 - theta) c0 T_face / N0
     s   sticking coefficient on an open site      [-]
+    kdes first-order desorption rate of the adsorbed layer [1/s]; 0 = irreversible Langmuir
     r   loss probability on every collision (radical recombination; 0 for thermal ALD) [-]
     vbar mean thermal speed of the precursor      [m/s]
     N0  adsorption sites filled by one saturated half-cycle [1/m2]
@@ -29,6 +30,7 @@ class langmuirStickingFvPatchScalarField
 {
     scalar s_;
     scalar r_;
+    scalar kdes_;   // first-order desorption rate of adsorbed species, 1/s (0 = irreversible)
     scalar vbar_;
     scalar N0_;
     scalar c0_;

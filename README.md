@@ -22,8 +22,10 @@ published PillarHall thickness profiles.
 |---|---|
 | ![pulse-time map](figures/pulse_time_map.png) | ![validation](figures/validation_supply_rule.png) |
 | Saturating pulse vs feed fraction, blank and patterned wafers, with the supply limit dotted | Simulations, theory and two measured systems on one axis |
-| ![loading](figures/coupling_patterned_long.png) | ![sweep](figures/reactor_sweep_operating.png) |
-| Loading: the patterned wafer starves the gas phase; hole bottoms saturate at 14 s (1 %) or 4.75 s (3 %) | Operating sweep: pressure and gap move uniformity, not time |
+| ![loading](figures/coupling_patterned_long.png) | ![doe](figures/doe_results.png) |
+| Loading: the patterned wafer starves the gas phase; hole bottoms saturate at 14 s (1 %) or 4.75 s (3 %) | 25-run DOE: pulse time follows supply; pressure up and carrier flow down raise utilization from 55 to 95 % |
+| ![water](figures/h2o_desorption.png) | ![peald](figures/peald_ceiling.png) |
+| Water half-cycle with reversible adsorption: desorbing water sets the purge | Plasma ALD: radical recombination caps the reachable aspect ratio |
 
 ## What is in the box
 
@@ -69,7 +71,7 @@ Parameters: s = 5e-3 (TMA), 1e-4 (H2O), N0 = 4e18 /m2, 100 nm holes at 180 nm pi
 
 ## Status
 
-Draft 0.7 of the paper; definition of done tracked in the project notes. Private material is excluded from this
+Paper at draft 0.9 (complete first version; LaTeX and arXiv to follow). Definition of done tracked in the project notes. Private material is excluded from this
 repository by design.
 
 ## Citation

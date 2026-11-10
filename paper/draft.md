@@ -191,7 +191,29 @@ inherits the site-density uncertainty, the ratios in this paper do not.
   Clausing correction; s and N0 are literature-range inputs (PillarHall fit 8.5e-3; Arts 2019 0.5-2e-3).
 
 ## 5. Conclusions
-[Write after 3.6, 3.7 and the validation.]
+
+1. On a patterned wafer, the ALD pulse that saturates the deepest feature is set by precursor supply:
+   t_pulse = 1.2 (1 + A_wall/A_wafer) N0/(U c0), within 25 % over aspect ratios 20-100 and a twenty-fold range of
+   feed fraction, and independent of hole diameter at fixed wall area, of temperature at fixed sccm and fraction,
+   and of the chamber geometry outboard of the wafer.
+2. The same normalisation puts a measured fluidized-bed ALD run at 1.12 supply-limit times and orders the measured
+   utilization of a rotary-drum reactor with loading; wafers and powders sit on one curve of utilization against
+   surface area spanning five orders of magnitude.
+3. A recipe saturated on a blanket wafer under-doses a product wafer by the wall-area ratio, 11 to 56 here. Blanket
+   wafers are the kinetics-limited exception to the rule, not the norm.
+4. Second-order knobs: pressure up and carrier flow down raise precursor utilization from about 55 % to 95 % at
+   fixed precursor flow; gap and pressure set within-wafer edge lag (5 to 18 %) but not time.
+5. The water half-cycle needs the same pulse as TMA on patterned wafers despite a 50x lower sticking coefficient,
+   and coats deep features more evenly; reversible adsorption, not chamber flushing, governs its purge.
+6. Plasma ALD adds a hard ceiling: above a wall recombination probability of about 3e-3, aspect ratio 100 is
+   unreachable by dose. Separated-chemistry (spatial) architectures beat temporal pulsing by the same wall-area
+   factor the rule predicts.
+7. All of this runs on a laptop in open-source tools, with the feature model verified against an independent code
+   and fitted to public measurements, and every number traceable to a script in the repository.
+
+## Acknowledgements
+Validation data by R. L. Puurunen and O. M. E. Ylivaara (Aalto University, Zenodo 3974438, CC BY 4.0). Machball by
+A. Yanguas-Gil and J. W. Elam (Argonne). OpenFOAM v2606 (OpenCFD) via the gerlero/openfoam-app build.
 
 ## Code and data availability
 OpenFOAM v2606 cases, the `aldWallKinetics` boundary-condition library, the Python `aldconf` solver, tests and all
