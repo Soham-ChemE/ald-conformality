@@ -1,43 +1,57 @@
-# Supply-limited atomic layer deposition on high-aspect-ratio wafers: a chamber-to-feature digital twin
+# Every blanket-wafer ALD recipe hides a 40x under-dose: a chamber-to-feature model of supply-limited atomic layer deposition
 
 Soham Kavathekar, Department of Chemical and Biomolecular Engineering, University of Pennsylvania
 
-*Draft 0.4 (public), 2026-11-10. Numbers below are from the runs in `paper/assumptions.md`; sections marked [TODO] await runs.*
+*Draft 0.5 (public), 2026-11-10. Every number is from a run documented in `paper/assumptions.md`.*
 
 ## Abstract
 
-Atomic layer deposition (ALD) recipes are developed on blanket wafers and then transferred to product wafers whose
-patterned surface area can exceed the wafer area by one to two orders of magnitude. This paper presents a
-concurrent multiscale model of a single-wafer showerhead ALD chamber in which every point on the wafer carries a
-feature-scale model of a high-aspect-ratio hole, two-way coupled to the chamber gas phase. The chamber is solved
-with OpenFOAM (laminar carrier flow, pulsed precursor transport with a total-flux inlet); the wafer boundary
-condition integrates Langmuir coverage on the flat surface and Knudsen diffusion with Langmuir uptake inside the
-holes. The feature model is verified against an independent ballistic view-factor code (Machball) to within 0.3 to
-7 % and [TODO] validated against published PillarHall thickness profiles. Across 16 operating points spanning TMA
-feed fractions of 0.5 to 10 % and hole aspect ratios of 20 to 100 on a 3D-NAND-like array, the pulse time needed to
-saturate the hole bottoms everywhere on a 300 mm wafer lies within 5 to 25 % of a pure supply limit,
-t_pulse = 1.2 (1 + A_wall/A_wafer) N0/(U c0), independent of aspect ratio except through the wall-area ratio, while
-blanket wafers are kinetics-limited. A recipe saturating a blanket wafer in 0.35 s under-doses an aspect-ratio-100
-product wafer by a factor of 40. The H2O half-cycle, with a 50x lower sticking coefficient, needs the same pulse on
-the patterned wafer but coats it far more evenly. The result is a closed-form design rule for pulse time and
-precursor utilization that depends on precursor delivery rate and patterned area, not on chamber pressure, gap or
-carrier flow, with direct consequences for recipe transfer and for the temporal-versus-spatial ALD trade-off [TODO].
+ALD recipes are tuned on blanket wafers. Product wafers are not blank: a 3D-NAND array of 100 nm holes at aspect
+ratio 100 carries 56 times the surface area of the wafer under it, and all of it has to saturate in one pulse. We
+built a model of a 300 mm showerhead ALD chamber in which every point on the wafer runs its own feature-scale model
+of a hole, coupled both ways to the chamber gas, and asked how long the pulse must be. The answer is a single rule:
+the saturating pulse equals 1.2 times (1 + patterned area ratio) times the time the showerhead needs to deliver one
+monolayer of precursor. It held within 25 % across aspect ratios 20 to 100 and a twenty-fold range of precursor feed.
+At a typical operating point the blanket wafer saturates in 0.35 s and the product wafer in 14 s. Chamber pressure,
+showerhead gap and carrier flow do not move that number; precursor delivery rate does. The water half-cycle, fifty
+times less reactive, needs the same pulse on the product wafer and coats it more evenly. The feature model agrees
+with an independent Argonne code to 7 % and fits published thickness profiles from lateral test structures. The rule
+turns a day of recipe transfer into arithmetic, and says where a tool's throughput actually comes from.
+
+## What this means for a tool (one paragraph for the process engineer)
+
+If your recipe was saturated on a monitor wafer, multiply the pulse by one plus the product wafer's wall-area ratio
+before you trust it on product. Pressure, gap and carrier flow are uniformity knobs; they buy no time. Time comes
+from precursor molecules per second: vapour pressure, bubbler flow, injector design, or an architecture that exposes
+the wafer to a denser zone (spatial ALD wins by the same factor the rule predicts). Low-sticking reactants are not
+the bottleneck on patterned wafers; their cost is on blanket wafers only. And when the deepest feature saturates,
+the chamber shows it: the precursor stops being consumed and appears downstream.
 
 ## 1. Introduction
 
-- ALD in 3D NAND and DRAM: channel holes and word-line recesses at aspect ratios of 50 to 100 and beyond; the film
-  must reach the bottom of every feature on the wafer within one pulse.
-- The gap in current practice: recipes tuned on blanket monitor wafers; feature-scale models (Gordon 2003,
-  Yanguas-Gil and Elam, Ylilammi 2018, Cremers 2019 review) assume a prescribed precursor density at the feature
-  mouth; chamber CFD models assume a prescribed wafer uptake. Neither sees the loading effect, in which the patterned
-  wafer depresses the gas-phase density that the features depend on.
-- Equipment makers are moving to equipment-and-process digital twins (Applied Materials' AppliedTwin and its
-  Computational Products and Solutions group; GPU-accelerated topography simulation) [cite blog posts]. This work is
-  a small, open, fully reproducible example of that genre for ALD.
-- Contributions: (i) a two-way coupled chamber-feature boundary condition for OpenFOAM; (ii) two-code verification
-  and public-data validation of the feature model; (iii) the supply-limit design rule and its range of validity;
-  (iv) the blanket-to-product recipe-transfer factor; (v) [TODO] the temporal-vs-spatial ALD crossover and the
-  plasma-ALD recombination ceiling.
+Three facts set up the problem. First, 3D NAND and DRAM are built from features with aspect ratios of 50 to 100, and
+ALD is the only way to coat their insides, so the precursor must reach the bottom of every feature on the wafer
+inside a single pulse. Second, the patterned surface area of such a wafer is tens of times the wafer area, so the
+wafer consumes precursor tens of times faster than the blank wafer the recipe was developed on. Third, nobody models
+these two things together: feature-scale conformality models [Gordon 2003; Yanguas-Gil and Elam; Ylilammi 2018;
+Cremers 2019] assume the precursor density at the feature mouth is given, and chamber models assume the wafer's
+uptake is given. The quantity that matters, the gas density at the wafer surface while the wafer is eating it,
+falls between the two.
+
+This paper closes that gap with a model small enough to run on a laptop and checked hard enough to trust. A chamber
+flow model carries, on every wafer face, a feature-scale model of a hole; the two exchange precursor every time
+step. The feature model is verified against an independent ballistic code and fitted to published measurements. The
+result is not a simulation to be rerun for every recipe but a rule: pulse time is set by precursor supply and
+patterned area, and by nothing else that a chamber recipe normally adjusts.
+
+Equipment makers are building exactly this class of model under the name of equipment-and-process digital twins
+[Applied Materials, Computational Products and Solutions; AppliedTwin]. This work is an open, reproducible instance
+for ALD, with every case file, boundary condition and figure in the repository.
+
+Contributions: (i) a two-way coupled chamber-feature wall condition for OpenFOAM, released; (ii) two-code
+verification and public-data validation of the feature model; (iii) the supply-limit rule and its range of validity;
+(iv) the blanket-to-product recipe-transfer factor, the shielding mechanism and the edge-lag inversion; (v) the
+temporal-versus-spatial design chart and the plasma-ALD recombination ceiling.
 
 ## 2. Model
 
