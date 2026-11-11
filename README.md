@@ -150,7 +150,7 @@ with the local wall-area ratio of the most demanding region (conservative by 15-
 
 ## Status
 
-Paper at draft 0.9.1: complete, typeset in `paper/main.tex` (`paper/main.pdf`, 14 pages); arXiv submission to follow. Live page at https://soham-cheme.github.io/ald-conformality/ with the rule-and-surrogate calculator.
+Paper at draft 0.9.4: complete, typeset in `paper/main.tex` (`paper/main.pdf`, 41 pages); arXiv submission to follow. Live page at https://soham-cheme.github.io/ald-conformality/ with the rule-and-surrogate calculator.
 
 ## Citation
 
