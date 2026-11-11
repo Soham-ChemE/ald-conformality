@@ -96,14 +96,25 @@ A_wall/A_wafer = 11, 28, 56 for AR 20, 50, 100.
 - Embedded-BC check: with negligible hole density the boundary condition's hole-bottom coverage matches the
   standalone solver driven by the same surface density to 1 % at all times.
 - Validation against the Zenodo 3974438 PillarHall Al2O3 profiles (TMA/H2O, 300 C, 500 cycles x 0.1 s, 500 nm
-  lateral channel, eight profiles averaged): the slit model with channel narrowing fits the saturation front to an rms
-  of 0.038 of the plateau with s_TMA = 8.5e-3 (profile-to-profile factor 1.5) and a mouth exposure of 7.5 Pa s per
-  pulse (75 Pa TMA for 0.1 s). The front position (AR 215 at half thickness) fixes the exposure; its width fixes s.
-  Published values: 0.5-2e-3 (Arts 2019, 275 C set-point); our value is higher, with temperature, the site-density
-  assumption and lumped-vs-explicit kinetics as candidate reasons; s = 1e-3 at the same exposure is visibly excluded
-  by the data. The chamber runs use 5e-3; the patterned-wafer conclusions are supply-limited and insensitive to it.
-  The slit model's Knudsen diffusivity D_K = 2 w vbar/3 is about 24 % slow against the ballistic solvers (Section 2.6),
-  which this fit absorbed into s; a refit with the corrected slit transport follows.
+  lateral channel, eight profiles averaged): the slit model with channel narrowing fits the saturation front to an
+  rms of 0.038 of the plateau (Figure, pillarhall_fit.png). The front position (AR 215 at half thickness) fixes the
+  exposure and its width fixes s, but both depend on the slit's Knudsen diffusivity. With the hydraulic-diameter
+  value D_K = 2 w vbar/3 the fit gives s_TMA = 8.5e-3 (profile-to-profile factor 1.5) and 7.5 Pa s per pulse (75 Pa
+  TMA for 0.1 s). That value of D_K is exact for a cylinder but not for parallel plates, where grazing flights make
+  the free-molecular diffusivity grow as (w vbar/4) ln(L/w) (Clausing; Berman 1965): the 1D slit model is 24 % slow
+  against Machball's ballistic trench and the voxel solver at AR 50 and 61 % at AR 100, and with the factor
+  (3/8) ln(L/w) on D_K it is within 5 % of Machball from AR 20 to 100 and reproduces the ballistic front width to
+  about 10 % at AR 500. With that correction (a factor 2.33 at AR 500) the same data give s_TMA = 1.96e-2
+  (sheet-to-sheet x/÷ 1.46) and 3.23 Pa s per pulse (32.3 Pa), at the same rms (Figure, pillarhall_fit_corrected.png):
+  the profile cannot distinguish the two transport models, it only re-labels the parameters, s by the factor D rose
+  and the exposure by its inverse. Published values are 0.5-2e-3 (Arts 2019, 275 C set-point, extracted with a
+  continuum slit model of the hydraulic-diffusivity family), 4e-3 (Vandalon and Kessels 2016, SFG, 300 C) and 5.72e-3
+  (Ylilammi 2018, 300 C). The corrected value lies farther from all of them than the uncorrected one; the measured
+  front is sharper than a ballistic slit with the literature s would make it. The ideal-plate factor is an upper bound
+  for the real cavity, which is 140-200 gaps wide and carries support pillars that interrupt the grazing flights
+  (finite width alone removes 8-13 % of the factor), so s from this profile lies between 8.5e-3 and 1.96e-2 depending
+  on the cut-off length of the cavity; the chamber runs use 5e-3 and the patterned-wafer conclusions are
+  supply-limited and insensitive to it (Section 4).
 
 ### 2.4 Validation against a measured high-surface-area ALD run
 A patterned wafer with tens of wafer-areas of holes is, to the chamber, a powder bed. The cleanest published
@@ -210,7 +221,7 @@ regions and a somewhat sharper front at 5, 10 and 13 s. For slits the two ballis
 correction of the parallel-plate Knudsen diffusivity; the word-line recess structure therefore saturates 27 % sooner
 in the voxel solver (10.7 s against 14.5 s at 0.3 Pa) with the same ordering of slit bottom and recess ends. The
 chamber results rest on the hole model, whose Knudsen diffusivity d vbar/3 is exact; the slit-based numbers of
-Section 3.11 are conservative by this factor. The 24 voxel runs behind these numbers used 6.1e8 particles and 93 min
+Section 3.11 are conservative by this factor (the parallel-plate correction of Section 2.3 removes it). The 24 voxel runs behind these numbers used 6.1e8 particles and 93 min
 of wall time in all on 7 to 8 threads, no single run above 10 min, against under a second per 1D solve and 1 to
 131 s per converged Machball run.
 
@@ -449,10 +460,13 @@ wall), so the rule's area-only treatment of recesses holds up to recess aspect r
 recipe is in the area: a wafer tiled with these slits at a 1 to 2.3 um pitch carries 150 to 189 wafer-areas of wall,
 2.7 to 3.4 x the AR-100 hole wafer, and the rule puts its TMA pulse at 38 to 48 s (fully patterned) at 1 %. Closing
 this with a recessed-slit boundary condition in the chamber is the natural next step; the nested model says the
-correction it would find inside the structure is below 10 %. The voxel Monte Carlo solver of Section 2.6 shows the
-1D slit transport behind these numbers to be about 24 % slow against the ballistic solvers (the same structure
-saturates in 10.7 s there against 14.5 s at 0.3 Pa), so the absolute recess times above are conservative by about
-that factor while the ordering and the area-equivalence hold; a refit with the corrected slit transport follows.
+correction it would find inside the structure is below 10 %. The 1D slit transport behind these numbers (the
+hydraulic-diameter diffusivity, as in the table) was 24 % slow against the ballistic solvers (Section 2.6); with the
+parallel-plate correction of Section 2.3 the chamber-driven times become 5.1 / 8.0 s (250 nm slits) and 11.0 / 15.4 s
+(100 nm slits), the recess lags 0.1-0.5 s (1-7 %), the area-equivalent slit holds within 3 %, and the
+constant-density w100_Lr365 structure saturates in 10.0 / 10.2 s against the voxel solver's 10.7 / 10.9 s (6 % fast,
+the continuum-versus-ballistic offset of an AR-50 slit) instead of 14.5 / 14.7 s (36 % slow); the wall-area ratios
+and the rule are geometry only and unchanged.
 
 | slit width w_s | recess length L_r (AR_r) | area factor A_f | chamber-driven t90: plain slit bottom | slit bottom (flat wall) | recess bottom at mouth / mid / stack bottom | delay of the last recess bottom behind the slit bottom | area-equivalent slit bottom | constant 0.3 Pa: slit bottom / last recess bottom; exposure | ratio to the effusion-limit exposure |
 |---|---|---|---|---|---|---|---|---|---|
@@ -664,8 +678,9 @@ driven, 7.754 s constant:
 - The TMA sticking coefficient is the least certain input of the chamber model: the published values at or near this
   temperature span 0.5-2e-3 (Arts et al. 2019, lateral-high-aspect-ratio front slope at a 275 C set-point), 4 +/- 1e-3
   (Vandalon and Kessels 2016, sum-frequency generation at 300 C), 5.72e-3 (Ylilammi et al. 2018, fit to a lateral
-  channel profile at 300 C) and 8.5e-3 (this work, fit to the Zenodo 3974438 profiles at 300 C, factor 1.5
-  sheet-to-sheet). We reran the baseline operating point (1 % TMA, 300 sccm, 300 Pa, 573 K) at s = 5e-4, 1e-3, 2e-3,
+  channel profile at 300 C) and 8.5e-3 to 1.96e-2 (this work, fit to the Zenodo 3974438 profiles at 300 C, factor
+  1.5 sheet-to-sheet; the lower value with the hydraulic-diameter slit diffusivity of the literature extractions, the
+  upper with the parallel-plate diffusivity that matches the ballistic solvers, Section 2.3). We reran the baseline operating point (1 % TMA, 300 sccm, 300 Pa, 573 K) at s = 5e-4, 1e-3, 2e-3,
   5e-3 and 8.5e-3 for the blanket wafer and the AR-100 patterned wafer (Figure, sticking_sensitivity.png). On the
   patterned wafer the hole bottoms reach 90 % coverage at 14.00-14.15 s (centre) and 14.05-14.20 s (worst face) for
   every value, 1.17-1.18 times the supply-limit time of 11.99 s, with 84-85 % precursor utilization: a seventeen-fold
@@ -684,8 +699,10 @@ driven, 7.754 s constant:
   the exposure per site, so the unknown TMA partial pressure trades against the assumed site density, not against s.
   It sits a factor 1.5 to 2 above the two other 300 C values and a factor 4 above the upper bound of the 275 C
   set-point data, a spread that also reflects three different kinetic definitions (initial sticking probability,
-  lumped Langmuir coefficient with an equilibrium constant, irreversible first-order Langmuir on 4e18 sites). A
-  profile grown at a known TMA partial pressure at 300 C, with the site density taken from the measured growth per
+  lumped Langmuir coefficient with an equilibrium constant, irreversible first-order Langmuir on 4e18 sites).
+  Correcting the slit transport does not close that gap: the 1D slit diffusivity was 24 % low at AR 50 and a factor
+  2.3 low at the channel's AR 500, and with the exact ballistic front width the same measured profile needs a larger
+  s, not a smaller one. A profile grown at a known TMA partial pressure at 300 C, with the site density taken from the measured growth per
   cycle, would remove the trade-off and fix s to the sheet-to-sheet scatter.
 - Byproducts: at Knudsen numbers of 100 to 1,000 a byproduct cannot block the precursor in the gas, only on the
   surface. For TMA/H2O (methane) the single-species model is exact to the purposes of this paper; for chlorides the
@@ -736,8 +753,8 @@ driven, 7.754 s constant:
    chemistry-agnostic through s, N0 and c0, with the HfO2/TDMAH chamber run at 1.17 times its rule and TiN and W
    predicted at 4.4 and 57 s per cycle on the same wafer.
 7. A 3D voxel Monte Carlo feature solver agrees with converged Machball within 2 % and places the 1D hole model 3 to
-   11 % fast between AR 100 and AR 20; the 1D slit model is 24 % slow, so slit-based absolute numbers are
-   conservative by that factor. A second species cannot block the precursor in the gas at Knudsen numbers of 100 to
+   11 % fast between AR 100 and AR 20; the 1D slit model with the hydraulic-diameter diffusivity is 24 % slow, and
+   with the parallel-plate correction the word-line recess numbers come within 6 % of the ballistic solver. A second species cannot block the precursor in the gas at Knudsen numbers of 100 to
    1,000: for TMA/H2O the methane byproduct leaves every result as computed, while for chlorides the HCl desorption
    rate decides between no effect (k_B >= 100 1/s), a 10 to 50 % longer pulse (k_B ~ 1 1/s) and failure of the rule
    (k_B <= 0.1 1/s or etching).
