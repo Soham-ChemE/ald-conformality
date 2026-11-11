@@ -44,7 +44,7 @@ tr.hl td{color:var(--acc2);font-weight:700}
 </head>
 <body>
 <nav><div class="wrap"><a class="brand" href="#top">ALD: the 40× under-dose</a>
-<div class="links"><a href="#rule">Rule</a><a href="#layout" class="hide-sm">Layouts</a><a href="#validation">Validation</a><a href="#knobs" class="hide-sm">Knobs</a><a href="#try">Try it</a><a href="#night3" class="hide-sm">Checks</a><a href="#layout-tool" class="hide-sm">Layouts tool</a><a href="#robust" class="hide-sm">Limits</a><a href="https://github.com/Soham-ChemE/ald-conformality">GitHub</a></div>
+<div class="links"><a href="#rule">Rule</a><a href="#layout" class="hide-sm">Layouts</a><a href="#validation">Validation</a><a href="#knobs" class="hide-sm">Knobs</a><a href="#try">Try it</a><a href="#night3" class="hide-sm">Checks</a><a href="#layout-tool" class="hide-sm">Layouts tool</a><a href="#gpu-solver" class="hide-sm">GPU solver</a><a href="#robust" class="hide-sm">Limits</a><a href="https://github.com/Soham-ChemE/ald-conformality">GitHub</a></div>
 <button class="toggle" id="themeBtn" aria-label="Toggle dark or light theme" title="Toggle theme">◐</button></div></nav>
 
 <div class="hero-track" id="top"><div class="hero">
@@ -299,6 +299,255 @@ python ../docs/build_assets.py                                                # 
 </div>
 </div>
 </div></section>
+
+<section class="story alt" id="gpu-solver"><div class="wrap">
+<style>
+#gpu-solver .calc>div{min-width:0}
+#gpu-solver .gs-btns{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 12px}
+#gpu-solver .gs-btn{border:1px solid var(--line);background:var(--card);color:var(--ink);font:inherit;font-size:13px;font-weight:600;padding:6px 12px;border-radius:999px;cursor:pointer}#gpu-solver .gs-btn:hover{border-color:var(--acc)}#gpu-solver .gs-btn.pri{background:var(--ink);color:var(--bg);border-color:var(--ink)}#gpu-solver .gs-btn:disabled{opacity:.45;cursor:default}
+#gpu-solver .gs-sub{font-size:13px;color:var(--muted);margin:14px 0 6px;font-weight:600}
+#gpu-solver .gs-run{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:14px 0 6px}#gpu-solver .gs-run .btn{padding:9px 18px}#gpu-solver .gs-run .btn:disabled{opacity:.45;cursor:default}
+#gpu-solver .gs-msg{font-size:12.5px;color:var(--muted);min-height:2.9em;margin:6px 0 0}
+#gpu-solver .gs-card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:12px;box-shadow:var(--shadow);margin-bottom:14px}
+#gpu-solver .gs-stage{position:relative;aspect-ratio:4/3;border-radius:14px;background:var(--stage);border:1px solid var(--line);overflow:hidden;touch-action:none;user-select:none;-webkit-user-select:none;cursor:grab}#gpu-solver .gs-stage:active{cursor:grabbing}
+#gpu-solver .gs-stage canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+#gpu-solver .gs-stage .gs-empty{position:absolute;inset:0;display:grid;place-items:center;text-align:center;color:var(--muted);font-size:14px;padding:24px;pointer-events:none}#gpu-solver .gs-stage .gs-empty b{display:block;color:var(--ink);font-size:16px;margin-bottom:4px}
+#gpu-solver .gs-ramp{display:inline-block;width:72px;height:10px;border-radius:3px;vertical-align:-1px;margin:0 6px;background:linear-gradient(90deg,var(--c-grey),var(--c-cool),var(--c-green))}
+#gpu-solver .gs-prof{display:block;width:100%;height:64px;margin-top:10px}
+#gpu-solver .calc .out b{font-size:22px}#gpu-solver .calc .out span{display:block}#gpu-solver .calc .out div.green{border-left:4px solid var(--acc2)}#gpu-solver .calc .out .gs-ref{color:var(--acc2);font-weight:600}
+#gpu-solver .gs-lim{font-size:12px;color:var(--muted);margin:8px 0 0;min-height:3.2em;overflow-wrap:anywhere}
+#gpu-solver .calc .out b{min-height:1.25em}#gpu-solver .calc .out span{min-height:2.6em}
+@media (max-width:640px){#gpu-solver .gs-stage{aspect-ratio:1/1}#gpu-solver .calc .out b{font-size:19px}}
+</style>
+<div class="eyebrow reveal">12 · Run the 3D solver in your browser</div>
+<h2 class="reveal">The voxel Monte Carlo, on your own graphics card.</h2>
+<p class="lead reveal">Section 11 cross-checked the 1D hole model against a second, independent solver: test-particle Monte Carlo on a 3D voxel grid in the molecular-flow regime (<code>lib/aldmc</code>). This is that solver written as a WebGPU compute shader. Every particle is one GPU thread: it enters the mouth with a cosine distribution, flies in straight lines through the distance field, sticks with probability s (1 − θ) on the face it hits or re-emits diffusely, and the hit counts relax the coverage of every exposed voxel face. Pick a feature, press Run, and watch the floor saturate against the number the paper quotes.</p>
+<div class="calc reveal">
+<div>
+<div class="gs-btns" role="group" aria-label="Feature presets">
+<button type="button" class="gs-btn pri" data-gs-preset="ar20">Hole AR 20</button>
+<button type="button" class="gs-btn" data-gs-preset="ar50">Hole AR 50</button>
+<button type="button" class="gs-btn" data-gs-preset="ar100">Hole AR 100</button>
+<button type="button" class="gs-btn" data-gs-preset="taper">Tapered, 60 % bottom</button>
+<button type="button" class="gs-btn" data-gs-preset="slit">Slit AR 50</button>
+<button type="button" class="gs-btn" data-gs-preset="wordline">Word-line slit</button>
+</div>
+<label><span><b>Sticking probability</b> s on a bare site</span><input data-gs="s" type="number" value="0.005" step="0.001" min="0.0001" max="1"></label>
+<label><span><b>Site density</b> N₀, 10¹⁸ per m²</span><input data-gs="N0" type="number" value="4" step="0.5" min="0.5"></label>
+<label><span><b>TMA partial pressure</b>, Pa</span><input data-gs="p" type="number" value="0.3" step="0.1" min="0.01"></label>
+<label><span><b>Temperature</b>, °C</span><input data-gs="T" type="number" value="300" step="10" min="20"></label>
+<label><span><b>Voxels across</b> the opening</span><input data-gs="across" type="number" value="16" step="2" min="6" max="48"></label>
+<label><span><b>Particles per step</b> M</span><input data-gs="M" type="number" value="25000" step="5000" min="500"></label>
+<label><span><b>Time step</b> dt, ms <small>(reference t₉₀ / 200)</small></span><input data-gs="dt" type="number" value="5" step="1" min="0.1"></label>
+<div class="gs-run">
+<button type="button" class="btn" data-gs="run">Run</button>
+<button type="button" class="btn ghost" data-gs="pause" disabled>Pause</button>
+<button type="button" class="btn ghost" data-gs="reset" disabled>Reset</button>
+</div>
+<p class="gs-msg" data-gs="msg">Nothing has loaded yet: the solver module, the shader and three.js are fetched when you press Run.</p>
+<p class="gs-lim" data-gs="limits"></p>
+</div>
+<div>
+<div class="gs-card">
+<div class="vizhead"><b data-gs="title">Hole AR 20 · coverage of every exposed voxel face</b><span class="legend"><span>θ 0<i class="gs-ramp" aria-hidden="true"></i>1</span></span></div>
+<div class="gs-stage" data-lenis-prevent aria-label="3D coverage map of the feature; drag to orbit, wheel to zoom"><canvas data-gs="canvas"></canvas><div class="gs-empty" data-gs="empty"><b>Press Run</b>the feature appears here as its exposed voxel faces, coloured by coverage; drag to orbit</div></div>
+<svg class="gs-prof" data-gs="prof" viewBox="0 0 400 64" preserveAspectRatio="none" role="img" aria-label="Slice mean coverage against depth"><rect x="0" y="0" width="400" height="64" fill="none"/><line x1="0" y1="6.4" x2="400" y2="6.4" stroke="var(--line)" stroke-dasharray="3 3"/><polyline data-gs="profline" fill="none" stroke="var(--acc2)" stroke-width="2" points=""/><text x="4" y="60" font-size="10" fill="var(--muted)">θ per slice, mouth → floor; dashed line 90 %</text></svg>
+<div class="vizfoot" data-gs="geom">16 voxels across (h = 6.25 nm), grid 18 × 18 × 321, 20 681 exposed faces.</div>
+</div>
+<div class="out">
+<div class="wide green"><b data-gs="t90">—</b><span>floor t₉₀, live <span class="gs-ref" data-gs="t90ref">· reference 1.148 s (lib/aldmc, 16 across, dt 5 ms; Machball 1.158 s)</span></span></div>
+<div><b data-gs="floor">0 %</b><span>floor coverage</span></div>
+<div><b data-gs="time">0.000 s</b><span>simulated time</span></div>
+<div><b data-gs="backend">—</b><span data-gs="backendSub">backend</span></div>
+<div><b data-gs="pps">—</b><span>particles per second</span></div>
+<div><b data-gs="fps">—</b><span>flights (voxel segments) per second</span></div>
+<div><b data-gs="particles">0</b><span data-gs="fates">particles traced · escaped / stuck / left</span></div>
+</div>
+</div>
+</div>
+<p class="note" style="margin-top:18px">What runs where. The physics is that of <code>lib/aldmc</code> (molecular flow; cosine entry over the open mouth; sticking s w (1 − θ) on the face's own coverage; loss r; diffuse re-emission about the facet normal; escape through the mouth; N₀ h² w sites per face with the staircase area correction w; a step of M particles standing for n v̄/4 A<sub>mouth</sub> dt molecules; the Langmuir relaxation of the per-face collision count). The shader (<code>assets/aldmc-gpu.wgsl</code>) runs on your graphics card through WebGPU, one compute invocation per particle with its own xoshiro128** stream and atomic per-face counters; a second pass applies the coverage update. If <code>navigator.gpu</code> is missing (WebGPU is in Chrome, Edge and Safari 26, Firefox on Windows and behind a flag elsewhere) the same algorithm runs in plain JavaScript on one CPU thread (<code>assets/aldmc-cpu.js</code>): the same statistics, ten to twenty times slower. Results are statistical: the floor t₉₀ scatters by a few tenths of a per cent between seeds at the reference budgets and more at small M; the time step enters linearly through the coverage frozen within a step (0.6 % at the reference dt). The reference values are the paper's voxel runs at 16 voxels across (<code>paper/wp/wp9_voxel_mc.md</code>, 0.3 Pa TMA, 300 °C, s 5·10⁻³, N₀ 4·10¹⁸ m⁻²). What the demo is not: the film does not narrow the opening as it grows, and there are no gas-phase collisions by construction (Kn ≫ 1 inside the features); the time step scales with N₀, pressure and temperature but not with s, so change dt by hand when you change s.</p>
+</div>
+<script>
+(function(){
+  'use strict';
+  var root=document.getElementById('gpu-solver'); if(!root) return;
+  var $=function(k){return root.querySelector('[data-gs="'+k+'"]')};
+  var N_REF=3.7921e19, VBAR_REF=410.2, K_B=1.380649e-23;
+  /* presets: the paper's voxel runs (paper/wp/wp9_voxel_mc.md), 16 voxels across unless stated */
+  var PRESETS={
+    ar20:{title:'Hole AR 20',kind:'hole',d:100e-9,AR:20,across:16,M:25000,dt:0.005,t90:1.148,ref:'reference 1.148 s (lib/aldmc, 16 across, dt 5 ms; Machball 1.158 s; 1D model 1.035 s)'},
+    ar50:{title:'Hole AR 50',kind:'hole',d:100e-9,AR:50,across:16,M:50000,dt:0.0125,t90:4.513,ref:'reference 4.513 s (lib/aldmc, dt 12.5 ms; Machball 4.476 s; 1D model 4.230 s)'},
+    ar100:{title:'Hole AR 100',kind:'hole',d:100e-9,AR:100,across:16,M:50000,dt:0.025,t90:16.454,ref:'reference 16.45 s (lib/aldmc, dt 25 ms; Machball 16.19 s; 1D model 15.93 s)'},
+    taper:{title:'Tapered hole AR 100, bottom 60 %',kind:'taper',d:100e-9,AR:100,ratio:0.6,across:16,M:200000,dt:0.1,t90:20.02,ref:'reference 20.02 s (lib/aldmc, dt 100 ms, M 200 000; 1D frustum 19.12 s)'},
+    slit:{title:'Slit AR 50, gap 100 nm',kind:'slit',w:100e-9,AR:50,across:16,M:25000,dt:0.0125,t90:1.083,ref:'reference 1.083 s (lib/aldmc, dt 12.5 ms; Machball trench 1.117 s; 1D slit model 1.381 s)'},
+    wordline:{title:'Word-line slit w100_Lr365',kind:'recess',w:100e-9,L:5e-6,gR:29e-9,LR:365e-9,pR:51e-9,across:20,M:100000,dt:0.1,t90:10.70,ref:'reference 10.70 s slit floor (lib/aldmc, h 5 nm, dt 100 ms; deepest recess end 10.88 s; nested 1D model 14.53 s)'}
+  };
+  var state={preset:'ar20',mod:null,gpu:null,gpuTried:false,solver:null,dirty:true,running:false,busy:false,ts:[0],ys:[0],t90:NaN,particles:0,flights:0,wall:0,view:null,three:null,lastView:0,lastRead:0};
+  var inputs={}; ['s','N0','p','T','across','M','dt'].forEach(function(k){inputs[k]=$(k)});
+  var num=function(k){var v=parseFloat(inputs[k].value);return isFinite(v)?v:NaN};
+  var fmt=function(x,d){return isFinite(x)?x.toFixed(d):'—'};
+  var fmtRate=function(x){if(!isFinite(x))return '—';if(x>=1e9)return (x/1e9).toFixed(2)+' G';if(x>=1e6)return (x/1e6).toFixed(x>=1e7?0:1)+' M';if(x>=1e3)return (x/1e3).toFixed(x>=1e4?0:1)+' k';return x.toFixed(0)};
+  var fmtInt=function(x){return Math.round(x).toLocaleString('en-US').replace(/,/g,' ')};
+  function conditions(){var T=num('T')+273.15,p=num('p');return {n:p/(K_B*T),vbar:Math.sqrt(8*K_B*T/(Math.PI*72.09e-3/6.02214076e23)),T:T}}
+  function dtAuto(){var P=PRESETS[state.preset],c=conditions();return P.dt*(num('N0')*1e18/4e18)*(N_REF/c.n)*(VBAR_REF/c.vbar)}
+  function geometryFor(mod){
+    var P=PRESETS[state.preset],across=Math.max(6,Math.round(num('across')||16));
+    if(P.kind==='hole') return mod.hole(P.d,P.AR*P.d,P.d/across);
+    if(P.kind==='taper') return mod.taperedHole(P.d,P.AR*P.d,P.ratio,P.d/across);
+    if(P.kind==='slit') return mod.slit(P.w,P.AR*P.w,P.w/across);
+    return mod.recessedSlit(P.w,P.L,P.gR,P.LR,P.pR,P.w/across);
+  }
+  function describe(g){var h=g.voxel*1e9;var s=g.meta.voxelsAcross+' voxels across (h = '+(h%1?h.toFixed(2):h.toFixed(0))+' nm), grid '+g.nx+' × '+g.ny+' × '+g.nz;if(g.meta.kind==='recessed_slit')s+=', '+g.meta.nRecesses+' recesses per wall (g '+(g.meta.gRActual*1e9).toFixed(0)+' nm, pitch '+(g.meta.pRActual*1e9).toFixed(0)+' nm)';return s}
+  function setPreset(key,fromUser){
+    state.preset=key;var P=PRESETS[key];
+    root.querySelectorAll('[data-gs-preset]').forEach(function(b){b.classList.toggle('pri',b.dataset.gsPreset===key)});
+    inputs.across.value=P.across;inputs.M.value=P.M;
+    inputs.dt.value=+(dtAuto()*1e3).toPrecision(3);
+    $('title').textContent=P.title+' · coverage of every exposed voxel face';
+    $('t90ref').textContent='· '+P.ref;
+    if(state.mod){try{$('geom').textContent=describe(geometryFor(state.mod))}catch(e){}}
+    else $('geom').textContent=(key==='wordline'?'20 voxels across (h = 5 nm), grid 4 × 168 × 1001, 98 recesses per wall':P.across+' voxels across (h = '+(P.kind==='slit'||P.kind==='recess'?P.w:P.d)*1e9/P.across+' nm)');
+    markDirty();
+  }
+  function markDirty(){state.dirty=true;if(state.running)pause();}
+  root.querySelectorAll('[data-gs-preset]').forEach(function(b){b.addEventListener('click',function(){setPreset(b.dataset.gsPreset,true)})});
+  ['s','N0','across','T'].forEach(function(k){inputs[k].addEventListener('input',function(){if(k!=='s')inputs.dt.value=+(dtAuto()*1e3).toPrecision(3);markDirty()})});
+  inputs.p.addEventListener('input',function(){inputs.dt.value=+(dtAuto()*1e3).toPrecision(3)});
+  var msg=function(t){$('msg').textContent=t};
+
+  /* ---- solver ---- */
+  async function ensureSolver(){
+    if(state.solver&&!state.dirty) return state.solver;
+    if(state.solver){state.solver.destroy();state.solver=null}
+    if(!state.mod){msg('Loading the solver module…');state.mod=await import('./assets/aldmc-gpu.js')}
+    var mod=state.mod;
+    if(!state.gpuTried){state.gpuTried=true;try{state.gpu=await mod.requestGpu()}catch(e){state.gpu=null;state.gpuReason=String(e&&e.message||e)}}
+    var g=geometryFor(mod),c=conditions();
+    $('geom').textContent=describe(g)+' …';
+    var s=num('s'),N0=num('N0')*1e18;
+    if(!(s>0&&s<=1)) throw new Error('s must be in (0, 1]');
+    var solver=await mod.createSolver({geometry:g,params:{s:s,r:0,N0:N0,vbar:c.vbar,seed:1},backend:state.gpu?'webgpu':'cpu',gpu:state.gpu||undefined,
+      onProgress:function(stage,frac){msg(stage==='faces'?'Enumerating the exposed faces…':'Face weights (staircase correction)… '+Math.round((frac||0)*100)+' %')}});
+    state.solver=solver;state.dirty=false;
+    $('geom').textContent=describe(g)+', '+fmtInt(solver.nFaces)+' exposed faces, '+solver.nMouthVoxels+' mouth voxels.';
+    var info=solver.info||{};
+    if(solver.backend==='webgpu'){$('backend').textContent='WebGPU';$('backendSub').textContent='backend · '+[info.vendor,info.architecture,info.device,info.description].filter(Boolean).join(' ')||'adapter';
+      var L=solver.limits||{};$('limits').textContent='device limits: workgroups per dimension '+L.maxComputeWorkgroupsPerDimension+', invocations per workgroup '+L.maxComputeInvocationsPerWorkgroup+', storage binding '+Math.round(L.maxStorageBufferBindingSize/1048576)+' MiB, storage buffers per stage '+L.maxStorageBuffersPerShaderStage+'; up to '+fmtInt(solver.maxParticlesPerStep)+' particles per step.';}
+    else{$('backend').textContent='CPU';$('backendSub').textContent='backend · JavaScript, one thread'+(state.gpuReason?' (WebGPU: '+state.gpuReason+')':'');$('limits').textContent='';
+      if(!state.cpuNoted){state.cpuNoted=true;var m=num('M');if(m>5000){inputs.M.value=5000;state.justNoted=true;msg('No WebGPU here, so the CPU fallback runs; particles per step lowered to 5 000 to keep the page responsive (statistics get noisier).')}}}
+    resetSeries();
+    await ensureView(solver);
+    return solver;
+  }
+  function resetSeries(){state.ts=[0];state.ys=[0];state.t90=NaN;state.particles=0;state.flights=0;state.wall=0;readout(null)}
+  function readout(c){
+    var S=state.solver;var floor=S?S.floorCoverage():0;
+    $('floor').textContent=(floor*100).toFixed(1)+' %';$('time').textContent=S?fmt(S.time,3)+' s':'0.000 s';
+    $('t90').textContent=isFinite(state.t90)?state.t90.toFixed(3)+' s':(S&&S.time>0?'> '+fmt(S.time,2)+' s':'—');
+    if(isFinite(state.t90)){var P=PRESETS[state.preset];$('t90').textContent+=' ('+(state.t90/P.t90-1>=0?'+':'')+((state.t90/P.t90-1)*100).toFixed(1)+' %)'}
+    var w=state.wall/1000;$('pps').textContent=w>0?fmtRate(state.particles/w):'—';$('fps').textContent=w>0?fmtRate(state.flights/w):'—';
+    $('particles').textContent=fmtRate(state.particles).replace(/\.0 /,' ');
+    if(S){var k=S.counts();$('fates').textContent='particles traced · escaped '+fmtRate(k.escaped)+' / stuck '+fmtRate(k.stuck)+' / left '+fmtRate(k.left)}
+  }
+  async function loop(){
+    if(state.busy) return; state.busy=true;
+    try{
+      var S=state.solver,P=PRESETS[state.preset];
+      while(state.running){
+        var c=conditions(),dt=num('dt')*1e-3,M=Math.max(64,Math.round(num('M')));
+        if(!(dt>0)){msg('dt must be positive');break}
+        var r=await S.step(c.n,dt,M);
+        state.particles+=r.particles;state.flights+=r.flights;state.wall+=r.wallMs;
+        var fl=S.floorCoverage();state.ts.push(S.time);state.ys.push(fl);
+        if(!isFinite(state.t90)&&fl>=0.9) state.t90=state.mod.timeToLevel(state.ts,state.ys,0.9);
+        var now=performance.now();
+        if(now-state.lastRead>90){state.lastRead=now;readout(r)}
+        if(now-state.lastView>(window.SITE&&window.SITE.softGL?1000:160)){state.lastView=now;updateView()}
+        if(fl>=0.99){state.running=false;msg('Floor coverage 99 %: paused. Press Run to continue, or Reset.');break}
+        if(S.time>4*P.t90){state.running=false;msg('Past four reference saturation times: paused.');break}
+      }
+      readout(null);updateView();
+      if(state.pauseRequested){state.pauseRequested=false;msg('Paused at '+fmt(S.time,3)+' s. Press Run to continue.')}
+    }catch(e){state.running=false;msg('Error: '+(e&&e.message||e));console.error(e)}
+    finally{state.busy=false;buttons()}
+  }
+  function buttons(){var S=!!state.solver;$('run').disabled=state.running||state.building;$('pause').disabled=!state.running;$('reset').disabled=!S||state.running}
+  async function run(){
+    if(state.running||state.building) return;
+    state.building=true;buttons();
+    try{var S=await ensureSolver();state.running=true;buttons();if(S.backend==='webgpu')msg('Running on the GPU. Drag the view to orbit; wheel to zoom.');else if(!state.justNoted)msg('Running on the CPU fallback. Drag the view to orbit; wheel to zoom.');state.justNoted=false;loop()}
+    catch(e){msg('Could not start: '+(e&&e.message||e));console.error(e)}
+    finally{state.building=false;buttons()}
+  }
+  function pause(){if(!state.running)return;state.running=false;state.pauseRequested=true;buttons();msg('Pausing after this step…')}
+  function reset(){if(!state.solver||state.running)return;state.solver.reset();resetSeries();updateView();msg('Coverage, counters and time set to zero.')}
+  $('run').addEventListener('click',run);$('pause').addEventListener('click',pause);$('reset').addEventListener('click',reset);
+
+  /* ---- three.js view: exposed faces as an instanced mesh coloured by coverage, render on demand ---- */
+  var cssVar=function(n){return getComputedStyle(document.documentElement).getPropertyValue(n).trim()};
+  async function ensureView(solver){
+    var canvas=$('canvas'),holder=canvas.parentElement;
+    try{
+      if(!state.three){var T=await import('three');var OC=await import('three/addons/controls/OrbitControls.js');state.three={THREE:T,OrbitControls:OC.OrbitControls}}
+      var THREE=state.three.THREE;
+      if(!state.view){
+        var renderer=new THREE.WebGLRenderer({canvas:canvas,antialias:true,alpha:true,powerPreference:'high-performance'});
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,2));
+        var scene=new THREE.Scene();
+        var camera=new THREE.PerspectiveCamera(36,4/3,0.1,20000);
+        var controls=new state.three.OrbitControls(camera,canvas);controls.enableDamping=false;controls.enablePan=false;
+        var v={renderer:renderer,scene:scene,camera:camera,controls:controls,mesh:null,group:new THREE.Group(),col:new THREE.Color(),c0:new THREE.Color(),c1:new THREE.Color(),c2:new THREE.Color()};
+        scene.add(v.group);
+        var render=function(){var w=holder.clientWidth,h=holder.clientHeight;if(w&&h&&(canvas.width!==Math.round(w*renderer.getPixelRatio())||canvas.height!==Math.round(h*renderer.getPixelRatio()))){renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix()}renderer.render(scene,camera)};
+        v.render=render;controls.addEventListener('change',render);
+        if(window.ResizeObserver) new ResizeObserver(function(){render()}).observe(holder);
+        document.addEventListener('themechange',function(){recolor();render()});
+        state.view=v;
+      }
+      buildMesh(solver);$('empty').style.display='none';
+    }catch(e){console.warn('3D view unavailable',e);$('empty').innerHTML='<b>3D view unavailable</b>'+String(e&&e.message||e);$('empty').style.display='grid'}
+  }
+  function buildMesh(solver){
+    var v=state.view,THREE=state.three.THREE,F=solver.faces(),n=solver.nFaces;
+    if(v.mesh){v.group.remove(v.mesh);v.mesh.geometry.dispose();v.mesh.material.dispose();v.mesh=null}
+    var geo=new THREE.PlaneGeometry(1,1);
+    var mat=new THREE.MeshBasicMaterial({side:THREE.FrontSide});
+    var mesh=new THREE.InstancedMesh(geo,mat,n);
+    var m=new THREE.Matrix4(),q=new THREE.Quaternion(),pos=new THREE.Vector3(),one=new THREE.Vector3(1,1,1),Z=new THREE.Vector3(0,0,1);
+    /* normals into the gas (world: x = i, y = -k (depth downwards), z = j): face dir d points at the solid */
+    var normals=[new THREE.Vector3(-1,0,0),new THREE.Vector3(1,0,0),new THREE.Vector3(0,0,-1),new THREE.Vector3(0,0,1),new THREE.Vector3(0,1,0),new THREE.Vector3(0,-1,0)];
+    var quats=normals.map(function(nv){return new THREE.Quaternion().setFromUnitVectors(Z,nv)});
+    var nx=F.nx,ny=F.ny,nz=F.nz;
+    for(var f=0;f<n;f++){
+      var vox=F.voxel[f],i=vox%nx,j=((vox-i)/nx)%ny,k=Math.floor(vox/(nx*ny)),d=F.direction[f];
+      var cx=i+0.5,cy=j+0.5,cz=k+0.5;if(d<2)cx+=(d===0?0.5:-0.5);else if(d<4)cy+=(d===2?0.5:-0.5);else cz+=(d===4?0.5:-0.5);
+      pos.set(cx-nx/2,-cz,cy-ny/2);m.compose(pos,quats[d],one);mesh.setMatrixAt(f,m);
+    }
+    mesh.instanceMatrix.needsUpdate=true;
+    v.mesh=mesh;v.group.add(mesh);
+    /* depth compression so a 1600-voxel hole still reads as a shape */
+    var width=Math.max(nx,ny),sy=Math.min(1,4*width/nz);v.group.scale.set(1,sy,1);v.sy=sy;
+    var box=new THREE.Box3().setFromObject(v.group),c=box.getCenter(new THREE.Vector3()),R=box.getSize(new THREE.Vector3()).length()/2;
+    v.controls.target.copy(c);v.camera.position.copy(c).add(new THREE.Vector3(-0.75,0.55,-1).normalize().multiplyScalar(R*2.6));v.camera.near=Math.max(0.05,R/200);v.camera.far=R*20;v.camera.updateProjectionMatrix();v.controls.update();
+    if(sy<0.999)$('geom').textContent+=' Depth drawn compressed ×'+(1/sy).toFixed(0)+'.';
+    recolor();v.render();
+  }
+  function recolor(){
+    var v=state.view;if(!v||!v.mesh)return;var THREE=state.three.THREE;
+    v.c0.set(cssVar('--c-grey')||'#64748b');v.c1.set(cssVar('--c-cool')||'#2f5590');v.c2.set(cssVar('--c-green')||'#047857');
+    /* unlit colour with a per-direction shade baked in (walls 0.78-0.9, floor 1.0, ceilings 0.65) so the geometry reads in both themes */
+    var th=state.solver.coverage(),n=state.solver.nFaces,col=v.col,dir=state.solver.faces().direction,shade=[0.9,0.9,0.78,0.78,1.0,0.65];
+    for(var f=0;f<n;f++){var t=th[f];if(t<0.5){col.copy(v.c0).lerp(v.c1,t*2)}else{col.copy(v.c1).lerp(v.c2,(t-0.5)*2)}col.multiplyScalar(shade[dir[f]]);v.mesh.setColorAt(f,col)}
+    v.mesh.instanceColor.needsUpdate=true;
+  }
+  function updateView(){
+    if(state.view&&state.view.mesh&&state.solver){recolor();state.view.render()}
+    if(state.solver){var p=state.solver.sliceMean(),pts=[],n=p.mean.length,last=-1;for(var k=0;k<n;k++)if(p.area[k]>0)last=k;for(var k2=0;k2<=last;k2++){if(p.area[k2]<=0)continue;pts.push((400*k2/Math.max(1,last)).toFixed(1)+','+(64-p.mean[k2]*64).toFixed(1))}$('profline').setAttribute('points',pts.join(' '))}
+  }
+  setPreset('ar20',false);buttons();
+})();
+</script>
+</section>
 
 <footer><div class="wrap"><div><b style="color:var(--ink)">Soham Kavathekar</b> · MS Chemical &amp; Biomolecular Engineering, University of Pennsylvania<br><a href="mailto:stg3719@seas.upenn.edu">stg3719@seas.upenn.edu</a> · <a href="https://www.linkedin.com/in/soham-kavathekar-cheme">linkedin.com/in/soham-kavathekar-cheme</a> · <a href="https://github.com/Soham-ChemE">github.com/Soham-ChemE</a></div><div>OpenFOAM v2606 · JMP 19 · MATLAB R2025b · three.js 0.186 · GSAP 3.15 · Lenis 1.3 · <a href="DESIGN.md">design notes</a></div></div></footer>
 
