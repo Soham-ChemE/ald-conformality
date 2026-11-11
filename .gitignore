@@ -57,3 +57,5 @@ lib/aldkin/build/
 lib/aldkin/log.cmake
 lib/aldmc/build/
 lib/aldmc/log.cmake
+# Monte Carlo run cache (4.9 MB, regenerable by coupling/device_geometries.py)
+figures/device_geometries_runs.json

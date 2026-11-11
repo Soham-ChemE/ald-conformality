@@ -797,3 +797,49 @@ ideal, infinitely wide slit closed at one end with the cut-off at the channel le
 open far end change the cut-off; it is a few per cent fast against ballistic solvers at AR 20-50 (the diffusion model's
 own offset) and 14-30 % deep in front position at AR 500; the factor falls below 1 for AR < 14.4, where the slit is
 reaction-limited and the factor hardly matters; no narrowing in the Machball comparisons.
+
+## Night 4, part 5: device geometries (coupling/device_geometries.py; figures/device_geometries.png, gaa_coverage.png, nand_cell_coverage.png, device_geometries.csv, device_geometries_recess_profile.csv)
+Two builders on top of aldconf.voxel.from_array: gaa_stack (N sheets t_s at spacing g_s, width W, under a gate trench
+of length Lg closed by the spacers, H_top above the top sheet, g_bot to the substrate, periodic along the width at
+W + gap_x; plain voxel faces, exact for the axis-aligned cell, inventory 1.000) and nand_cell (voxel.recessed_slit's
+slit and recesses plus channel-hole pillars as solid cylinders of round(pi r^2) voxels per slice in staggered rows at
+the hole pitch along the slit; area correction with a 2-voxel normal kernel so the 5-6-voxel recesses are not blended
+across, inventory 0.991 / 0.994). Cells: gaa_ibm2017 (3 x 5 nm at 10 nm, W 40, Lg 12, gap 20, H_top 40, g_bot 10;
+h 1.25 nm; Loubet 2017 via Wong and Kakushima 2022 for N, t_s, g_s, Lg; W from an IBM figure caption; gap, H_top,
+g_bot assumed), gaa_scaled4 (4 x 5 nm at 7 nm, W 25, h 0.875), gaa_ibm2017_after_hk (3 nm removed from every
+surface: 4 nm slots, 6 nm trench, h 0.5), nand_wp4_pillars (wp4's w100_Lr365 at h 5 nm with 2 rows of 100 nm holes at
+200 nm pitch), nand_2xx (250 nm slit, 12.7 um, 48 nm pitch split 30/18, 1 um recesses, 4 rows of 100 nm holes, h 6 nm;
+TechInsights YMTC 232L table for depth and pitch, Onto 2023 for slit, slit pitch and hole; split, hole pitch and rows
+assumed). Regions: sheet tops, slot centres (central 20 % of W) and edges (outer 20 %), floors; slit floor, deep halves
+and end walls of the first, middle and deepest recess, and the minimum over all recesses' deep halves. Chemistries TMA
+5e-3 / 4e18 / 410 m/s, TDMAH 7e-3 / 2.77e18 / 185, TiCl4 0.1 / 1.24e18 / 253; drives constant 0.3 Pa and the long
+AR-100 case's centre-face history; GAA dt = t_flat/100, M 50 000; NAND dt 0.1 / 0.25 s, M 100 000 / 60 000; stop at
+99.5 % everywhere or the end of the history; wall-clock cap 18 min never reached.
+GAA (everywhere t90 / t99 at 0.3 Pa; flat Langmuir 0.474 / 0.947 s TMA): IBM cell TMA 0.558 / 1.038 s, TDMAH 0.649 /
+1.179, TiCl4 0.056 / 0.070 (exposure 0.17 / 0.20 / 0.017 Pa s); order top sheet < slots from the top down < bottom slot
+centre; centre-edge lag 1 % TMA, 8 % TiCl4; four-sheet 7 nm cell +2-3 %; narrowed cell TiCl4 0.142 s (28 % centre lag),
+TDMAH 0.898 s. Wall-area ratio 17.5 / 19.5 / 25.6 per mouth, 5.7 / 6.2 / 4.4 per wafer at 44 nm CPP; rule 1.69 / 1.17 /
+0.52 s; all cells at 99.5 % at the rule's pulse. Chamber drive: 2.15 / 3.18 s TMA, 2.38 / 3.43 TDMAH, 0.34 / 0.41 TiCl4
+(flat top of that wafer 1.95 s). Convergence M x2 0.558, h 0.625 nm 0.563, dt/2 0.556 s.
+NAND 5 um cell (TMA, 0.3 Pa): slit floor 9.04 s, deepest recess end 10.37, slowest recess 11.30 (recess 86 of 100 at
+4.3 um; the deepest is 9 % ahead because the saturated floor reflects the downward stream), t99 12.13; wp9 without
+pillars 10.70 / 10.88 / 12.06 (the 12.06 was called noise there; it is this effect); nested model nominal 14.68 s, with
+knudsen_correction="plates" 10.17 s; TDMAH 12.42 / 15.38 / 17.10 (nested 22.34 / 15.42); TiCl4 0.82 / 4.55 / 6.80 (8.00 /
+5.57); chamber-driven TMA 10.45 / 11.27 / 11.85 (nested 13.53 / 11.07), TDMAH 12.47 / 13.92 / 14.45, TiCl4 2.62 / 7.09 /
+8.88. Pillars take 8 % of the area (two discs out of the plates per pillar and recess, one wall in). Wall-area ratio
+1422 per mouth, 171 per wafer; rule 43.5 / 30.1 / 13.5 s; exposure 3.39 / 5.13 / 2.04 Pa s, 7.6-9.2 x the effusion
+limit. M x2 11.28 s; h 10 nm 10.99 s.
+NAND 2XX cell: TMA 0.3 Pa slit floor 14.60, deepest recess 28.18 (end 28.76), slowest (recess 236 of 264, 90 % depth)
+33.09 / 34.20 s, 9.93 Pa s; TDMAH 17.78 / 41.31 / 50.40 s (15.1 Pa s); TiCl4 1.25 / 23.15 / 29.88 s (9.0 Pa s); nested
+deepest recess 43.6 / 66.2 / 26.9 s (wp4 diffusivity), 29.9 / 45.5 / 19.0 s (plates); chamber-driven 16.90 / 19.04 s,
+TiCl4 not reached by the end of the 20 s pulse (recesses from 172 on below 90 % except the two at the floor; slowest
+at 0.09, deepest at 0.97; 13.8 % of the area below 90 %); nested chamber 17.0 / 19.3 / 15.0 and 15.7 / 17.2 / 13.5 s. Wall-area ratio 4009 per mouth,
+448 per wafer at the 2.25 um slit pitch; rule 113 / 78.5 / 35.1 s at 1 % (3.4 / 1.6 / 1.2 x the 0.3 Pa need); effusion
+limit 4.1 / 6.3 / 2.1 s. M x2 32.81 s; h 8 nm 33.90 s. 35 runs, 5.9e8 particles, 100 min on 6 threads, longest 834 s;
+every particle bookkept. Literature: no measured ALD thickness per sheet on a GAA stack or per level on a 2XX word-line
+stack found (patents and a thesis describe TiN pinch-off between sheets qualitatively); Reiter 2024's 85 % HfO2 step
+coverage fixed s_TDMAH in wp4 and is not an independent test. Everything here is application; the testable
+predictions are the slot-centre deficit after a one-third pulse (3-8 % TMA-like, 30 % TiCl4 in 4 nm slots) and the
+10-20 % dose lead of the lowest word lines over those five slit widths above them after a two-thirds pulse.
+Tests: tests/test_device_geometries.py, 5 new; 129 pass in 13 s.
+```

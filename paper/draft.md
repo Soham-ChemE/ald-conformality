@@ -2,7 +2,7 @@
 
 Soham Kavathekar, Department of Chemical and Biomolecular Engineering, University of Pennsylvania
 
-*Draft 0.9.3 (public), 2026-11-10. Every number is from a run documented in `paper/assumptions.md`.*
+*Draft 0.9.4 (public), 2026-11-11. Every number is from a run documented in `paper/assumptions.md`.*
 
 ## Abstract
 
@@ -220,6 +220,9 @@ regions and a somewhat sharper front at 5, 10 and 13 s. For slits the two ballis
 1.08-1.11 s voxel, 1.12 s Machball), but the 1D slit model with D_K = 2 w vbar/3 is 24 % slow, the known logarithmic
 correction of the parallel-plate Knudsen diffusivity; the word-line recess structure therefore saturates 27 % sooner
 in the voxel solver (10.7 s against 14.5 s at 0.3 Pa) with the same ordering of slit bottom and recess ends. The
+slowest point of such a stack is not the floor: the per-recess saturation time peaks at 87 to 90 % of the depth
+(Section 3.14), because the saturated floor reflects the downward stream back into the lowest recesses, so the
+minimum over the recesses (12.06 s) is that recess and the deepest recess (10.88 s) is 10 % ahead of it. The
 chamber results rest on the hole model, whose Knudsen diffusivity d vbar/3 is exact; the slit-based numbers of
 Section 3.11 are conservative by this factor (the parallel-plate correction of Section 2.3 removes it). The 24 voxel runs behind these numbers used 6.1e8 particles and 93 min
 of wall time in all on 7 to 8 threads, no single run above 10 min, against under a second per 1D solve and 1 to
@@ -667,6 +670,90 @@ driven, 7.754 s constant:
 | TiCl4 chamber-driven, nu 0.5, s_B 0.1, k_B 1 | 11.759 s | 11.808 (+0.4 %) | 11.905 (+1.2 %) | 12.234 (+4.0 %) |
 | TMA constant, CH4 bound s_B 1e-3, k_B 1e3 | 15.601 s | 15.601 | 15.601 | 15.601 |
 
+### 3.14 Gate-all-around stacks and a current NAND cell
+The voxel solver of Section 2.6 takes any shape, so two device geometries that the one-dimensional models cannot
+describe were run with it: the replacement-gate step of a stacked-nanosheet transistor and a 3D-NAND word-line cell
+with the channel-hole pillars standing in the recesses (Figure, device_geometries.png). The nanosheet cell follows
+the IBM device of Loubet et al. [2017] (three 5 nm sheets at 10 nm spacing, 12 nm gate, 40 nm sheets [Semiconductor
+Engineering 2018]) under a 40 nm gate trench, periodic across the sheet width at a 60 nm pitch, with a four-sheet
+7 nm-spacing variant [Wong and Kakushima 2022] and the IBM cell after 3 nm of oxide on every surface (4 nm slots,
+6 nm trench) for the TiN step; the NAND cells are the word-line slit of Section 3.11 with two rows of 100 nm pillars
+per side, and a 2XX-layer cell built from a teardown table [TechInsights 2022] (12.7 um slit depth, 48 nm word-line
+pitch) and a metrology note [Onto Innovation 2023] (250 nm slit, 1 um recesses, 100 nm holes). Each was run with the
+TMA, TDMAH and TiCl4 parameters at a constant 0.3 Pa and under the centre-face history of the AR-100 wafer, with 8
+voxels across every slot or recess, particle doublings and grid changes moving the saturation times by at most 1 %
+(nanosheets) and 3 % (NAND).
+
+The nanosheet stack is, for ALD, a flat surface with a short slot: the last point, the centre of the slot under the
+lowest sheet, reaches 90 % at 0.56 s of TMA at 0.3 Pa against 0.47 s for a flat surface, and 99 % at 1.04 against
+0.95 s; the slots fill from their two open edges inward with a centre-to-edge lag of 1 % (TMA) to 8 % (TiCl4), 28 % in
+the 4 nm slots (Figure, gaa_coverage.png; table below). A wafer tiled with such devices carries 5.7 wafer areas of
+surface (the gate trench walls, not the sheets, dominate), so the rule gives a 1.7 s TMA pulse at 1 %, by which time
+the cell is at 99.5 % everywhere; the exposure for 90 % everywhere is 0.17 Pa s (TMA), 0.20 (TDMAH) and 0.017 Pa s
+(TiCl4), 30 x and 6 x the stoichiometric minimum, i.e. reaction-limited like a blanket wafer. The word-line cells are
+the opposite case (second table below). The 5 um cell with pillars saturates its last recess at 11.3 s at 0.3 Pa
+(3.4 Pa s), 6 % sooner than without pillars because a 100 nm pillar in a 30 nm recess removes more plate area than it
+adds in wall; the 2XX cell needs 33 s (9.9 Pa s of TMA, 15 Pa s of TDMAH, 9 Pa s of TiCl4), eight times its effusion
+limit, and a wafer of it carries 448 wafer areas, so the rule puts its TMA pulse at 113 s at 1 %, 3.4 x the feature's
+own need; for TiN the margin is only 17 %. The nested 1D model of Section 3.11 with the parallel-plate slit
+diffusivity reproduces the deepest recess within 2-6 % for TMA and TDMAH (10.2 vs 10.4 s; 29.9 vs 28.2 s) and is
+18-29 % off for TiCl4, where the recess rather than the slit limits. What the 1D model cannot give is where the last
+point sits: in every voxel run it is at 87-90 % of the depth, about five slit widths above the floor, and the deepest
+recess is 9-22 % ahead of it, because the saturated floor returns the downward stream into the lowest recesses; the
+same turn-up is present at the bottom of the AR-100 hole of Section 2.6 and absent from the continuum profile.
+
+These are applications of a solver validated in Section 2.6, not validations: no published measurement of film
+thickness per sheet or per word line was found for either structure (the one step-coverage datum on a word-line
+stack, Reiter et al.'s 85 % HfO2, fixed the TDMAH sticking coefficient in Section 3.11 and cannot also test the
+transport), and at saturating pulses both solvers predict uniform films, which is what the device papers'
+cross-sections show and what any model would. The predictions that would test the transport are the 3-8 %
+(TMA-like) to 30 % (TiCl4, 4 nm slot) deficit at the slot centre of the lowest sheet after a pulse one third of
+saturation, and the 10-20 % dose-equivalent lead of the lowest word lines over those five slit widths above them
+after a two-thirds pulse; a TEM or EELS thickness at those positions after a deliberately short pulse is the
+experiment.
+
+GAA cells (573 K; constant 0.3 Pa mouth density or the AR-100 wafer's centre-face history; M 50 000 particles per
+step, dt = t_flat/100; the last point is the centre of the slot under the lowest sheet in every run; times in s to
+90 / 99 % area-weighted coverage; the rule's pulse is 1.2 (1 + A_wall/A_wafer) N0/(U c0) at 1 % precursor):
+
+| cell | chemistry, drive | top of top sheet t90 / t99 | everywhere (last point) t90 / t99 | exposure 90 / 99 % (Pa s) | wall-area ratio cell / wafer | rule pulse |
+|---|---|---|---|---|---|---|
+| IBM 2017 (3 x 5 nm sheets, 10 nm slots) | TMA, 0.3 Pa | 0.490 / 0.966 | 0.558 / 1.038 | 0.167 / 0.311 | 17.5 / 5.69 | 1.69 s |
+| | TMA, chamber | 1.974 / 3.050 | 2.152 / 3.184 | - | 17.5 / 5.69 | 1.69 s |
+| | TDMAH, 0.3 Pa | 0.546 / 1.068 | 0.649 / 1.179 | 0.195 / 0.354 | 17.5 / 5.69 | 1.17 s |
+| | TDMAH, chamber | 2.121 / 3.238 | 2.376 / 3.430 | - | 17.5 / 5.69 | 1.17 s |
+| | TiCl4, 0.3 Pa | 0.018 / 0.032 | 0.056 / 0.070 | 0.017 / 0.021 | 17.5 / 5.69 | 0.52 s |
+| | TiCl4, chamber | 0.130 / 0.208 | 0.341 / 0.413 | - | 17.5 / 5.69 | 0.52 s |
+| four sheets, 7 nm slots | TMA, 0.3 Pa | 0.494 / 0.970 | 0.569 / 1.052 | 0.171 / 0.316 | 19.5 / 6.15 | 1.81 s |
+| | TMA, chamber | 1.982 / 3.056 | 2.180 / 3.204 | - | 19.5 / 6.15 | 1.81 s |
+| | TDMAH, 0.3 Pa | 0.550 / 1.074 | 0.665 / 1.199 | 0.200 / 0.360 | 19.5 / 6.15 | 1.25 s |
+| | TDMAH, chamber | 2.133 / 3.247 | 2.419 / 3.462 | - | 19.5 / 6.15 | 1.25 s |
+| | TiCl4, 0.3 Pa | 0.018 / 0.033 | 0.062 / 0.076 | 0.019 / 0.023 | 19.5 / 6.15 | 0.56 s |
+| | TiCl4, chamber | 0.133 / 0.213 | 0.374 / 0.447 | - | 19.5 / 6.15 | 0.56 s |
+| IBM 2017 after 3 nm oxide (4 nm slots, 6 nm trench) | TiCl4, 0.3 Pa | 0.024 / 0.038 | 0.142 / 0.157 | 0.043 / 0.047 | 25.6 / 4.35 | 0.42 s |
+| | TiCl4, chamber | 0.165 / 0.246 | 0.761 / 0.827 | - | 25.6 / 4.35 | 0.42 s |
+| | TDMAH, 0.3 Pa | 0.576 / 1.105 | 0.898 / 1.450 | 0.269 / 0.435 | 25.6 / 4.35 | 0.94 s |
+| | TDMAH, chamber | 2.198 / 3.301 | 2.913 / 3.852 | - | 25.6 / 4.35 | 0.94 s |
+
+Word-line cells with channel-hole pillars (regions: slit floor; deepest recess, deep half; slowest recess = the recess
+whose deep half is the last to pass 90 %, which is "everywhere"; for the 2XX cell its index of 264 and depth fraction
+are given; times in s to 90 / 99 %):
+
+| cell | chemistry, drive | slit floor | deepest recess | slowest recess (everywhere) | exposure 90 / 99 % (Pa s) | wall-area ratio cell / wafer; rule pulse at 1 % |
+|---|---|---|---|---|---|---|
+| 5 um, 100 nm slit, 29 nm recesses at 51 nm, 365 nm long, two pillar rows | TMA, 0.3 Pa | 9.04 / 11.39 | 10.33 / 11.78 | 11.30 / 12.13 | 3.39 / 3.64 | 1422 / 171; 43.5 s |
+| | TMA, chamber | 10.45 / 11.88 | 11.25 / 12.10 | 11.85 / 12.32 | - | same |
+| | TDMAH, 0.3 Pa | 12.42 / 16.59 | 15.29 / 17.49 | 17.10 / 18.08 | 5.13 / 5.42 | 1422 / 171; 30.1 s |
+| | TDMAH, chamber | 12.47 / 14.34 | 13.87 / 14.51 | 14.45 / 14.63 | - | same |
+| | TiCl4, 0.3 Pa | 0.82 / 1.49 | 4.38 / 4.95 | 6.80 / 6.94 | 2.04 / 2.08 | 1422 / 171; 13.5 s |
+| | TiCl4, chamber | 2.62 / 3.77 | 6.95 / 7.45 | 8.88 / 8.99 | - | same |
+| 2XX-layer: 250 nm slit, 12.7 um, 48 nm pitch, 1 um recesses, four pillar rows | TMA, 0.3 Pa | 14.60 / 23.63 | 28.18 / 32.26 | 236 (0.90): 33.09 / 34.20 | 9.93 / 10.26 | 4009 / 448; 113 s |
+| | TMA, chamber | 13.55 / 15.30 | 15.78 / 16.47 | 228 (0.87): 16.89 / 17.19 | - | same |
+| | TDMAH, 0.3 Pa | 17.78 / 30.22 | 41.31 / 47.20 | 233 (0.88): 50.40 / 51.60 | 15.12 / 15.50 | 4009 / 448; 78.5 s |
+| | TDMAH, chamber | 14.55 / 16.08 | 17.82 / 18.57 | 228 (0.87): 19.04 / 19.24 | - | same |
+| | TiCl4, 0.3 Pa | 1.25 / 2.35 | 23.15 / 24.68 | 231 (0.88): 29.88 / 30.37 | 8.96 / 9.11 | 4009 / 448; 35.1 s |
+| | TiCl4, chamber | 2.99 / 4.43 | 20.25 / - | not reached by the end of the 20 s pulse: recesses from index 172 (65 % depth) down are below 90 % except the two next to the floor; 13.8 % of the area below 90 % at 22 s | - | same |
+
 ## 4. Discussion
 - Throughput on patterned wafers is bought with precursor delivery rate (vapour pressure, bubbler carrier flow,
   injector design), not with chamber pressure, gap or carrier flow; those knobs move uniformity.
@@ -758,20 +845,26 @@ driven, 7.754 s constant:
    1,000: for TMA/H2O the methane byproduct leaves every result as computed, while for chlorides the HCl desorption
    rate decides between no effect (k_B >= 100 1/s), a 10 to 50 % longer pulse (k_B ~ 1 1/s) and failure of the rule
    (k_B <= 0.1 1/s or etching).
-8. Second-order knobs: pressure up and carrier flow down raise precursor utilization from about 55 % to 95 % at
+8. Two device geometries run in the voxel solver: gate-all-around nanosheet cells are reaction-limited (the last
+   point, the slot centre under the lowest sheet, 18 % behind a flat surface at 90 % for TMA and 5x for TiCl4) and a
+   wafer of them carries 4 to 6 times the flat area, so the rule's pulse is 1.7 s at 1 % TMA; word-line stacks with
+   channel-hole pillars carry 171 (5 um cell) to 448 (2XX cell) wafer areas, their slowest recess sits at 87 to 90 %
+   of the depth, about five slit widths above the floor, and on the 2XX cell at 1 % the TiN rule pulse exceeds the
+   feature's own need by only 17 %.
+9. Second-order knobs: pressure up and carrier flow down raise precursor utilization from about 55 % to 95 % at
    fixed precursor flow; gap and pressure set within-wafer edge lag (5 to 18 %) but not time.
-9. The water half-cycle needs the same pulse as TMA on patterned wafers despite a 50x lower sticking coefficient,
+10. The water half-cycle needs the same pulse as TMA on patterned wafers despite a 50x lower sticking coefficient,
    and coats deep features more evenly; reversible adsorption, not chamber flushing, governs its purge.
-10. In fab units the rule's pulse gives 99 % step coverage as well as 90 %, because the saturation front is 0.25 to
+11. In fab units the rule's pulse gives 99 % step coverage as well as 90 %, because the saturation front is 0.25 to
    0.3 s wide at every aspect ratio; 50 cycles of the blanket recipe leave 1.4 nm of a 5.15 nm film on top of an
    AR-100 array and nothing at the bottom. The Al2O3 cycle on the AR-100 wafer is 3.1 times the blanket cycle (37.6
    against 12.2 s; 1.9 against 5.5 wafers per hour for 5 nm), its pulses are three quarters of the cycle, and above
    a wall-area ratio of about 10 throughput falls as 1/(1 + A_wall/A_wafer); the purge is set by water desorption,
    not by the chamber, which clears to 1 % in 2 s while a 10 um hole empties in microseconds.
-11. Plasma ALD adds a hard ceiling: above a wall recombination probability of about 3e-3, aspect ratio 100 is
+12. Plasma ALD adds a hard ceiling: above a wall recombination probability of about 3e-3, aspect ratio 100 is
    unreachable by dose. Separated-chemistry (spatial) architectures beat temporal pulsing by the same wall-area
    factor the rule predicts.
-12. All of this runs on a laptop in open-source tools, with the feature model verified against two independent
+13. All of this runs on a laptop in open-source tools, with the feature model verified against two independent
    ballistic descriptions and fitted to public measurements, and every number traceable to a script in the repository.
 
 ## Acknowledgements
@@ -784,7 +877,7 @@ line (`python -m aldconf` evaluates the rule, the surrogate and the Pareto front
 figures: https://github.com/Soham-ChemE/ald-conformality. The repository also ships a layout-to-recipe tool on its
 live page (pattern zones in, per-zone local rule and recipe pulse out, calibrated on the two non-uniform runs of
 Section 3.9) and continuous integration that rebuilds the boundary conditions and reruns a regression case in an
-OpenFOAM container (118 tests). The kinetics behind the OpenFOAM boundary conditions live in `lib/aldkin`, a C-ABI
+OpenFOAM container (129 tests). The kinetics behind the OpenFOAM boundary conditions live in `lib/aldkin`, a C-ABI
 library with Fluent and plain-C hooks, and the voxel Monte Carlo feature solver of Section 2.6 in `lib/aldmc`.
 Validation data: Zenodo 3974438 (CC BY 4.0).
 

@@ -302,6 +302,7 @@ def run_cell(g, chem, drive, dt, M, t_end, regions_fn, seed=1, stop_level=0.995,
     t, n0 = drive_series(drive, dt, t_end)
     hist = {k: [] for k in track}
     hist_min_list = {k: [] for k in lists}
+    hist_lists = {k: [] for k in lists}                                        # per member (e.g. per recess) histories
     hist_t = []
     snaps = {}
     area_below = []
@@ -317,6 +318,7 @@ def run_cell(g, chem, drive, dt, M, t_end, regions_fn, seed=1, stop_level=0.995,
         for k, lst in lists.items():
             vals = np.array([wmean(th, w, idx) for idx in lst])
             hist_min_list[k].append(float(np.nanmin(vals)) if len(vals) else float("nan"))
+            hist_lists[k].append([float(v) for v in vals])
         area_below.append(float(w[th < 0.9].sum() / w.sum()))
         if snapshot_every and i % snapshot_every == 0:
             snaps[float(t[i])] = th.copy()
@@ -354,6 +356,17 @@ def run_cell(g, chem, drive, dt, M, t_end, regions_fn, seed=1, stop_level=0.995,
     rec["t90_everywhere"] = voxel.time_to_level(tt, allmin, 0.9)
     rec["t99_everywhere"] = voxel.time_to_level(tt, allmin, 0.99)
     rec["last_region_90"] = max(rec["t90"], key=lambda k: (rec["t90"][k] if np.isfinite(rec["t90"][k]) else 1e9))
+    # per-member times of the list regions (per recess): where along the list the slowest member sits
+    rec["t90_list"], rec["t99_list"], rec["slowest_member"] = {}, {}, {}
+    for k, hl in hist_lists.items():
+        H = np.array(hl)
+        t90s = [voxel.time_to_level(tt, H[:, j], 0.9) for j in range(H.shape[1])]
+        t99s = [voxel.time_to_level(tt, H[:, j], 0.99) for j in range(H.shape[1])]
+        rec["t90_list"][k] = t90s; rec["t99_list"][k] = t99s
+        fin = [v if np.isfinite(v) else -1.0 for v in t90s]
+        j = int(np.argmax(fin))
+        rec["slowest_member"][k] = dict(index=j, of=len(t90s), fraction=(j + 0.5) / len(t90s), t90=t90s[j], t99=t99s[j],
+                                        last_t90=t90s[-1], last_t99=t99s[-1])
     rec["final_min_region"] = float(allmin[-1])
     rec["final_area_below_0p9"] = area_below[-1]
     rec["snapshots"] = snaps
@@ -610,6 +623,10 @@ def write_csv(cache):
                    final_min_region=r["final_min_region"], final_area_fraction_below_0p9=r["final_area_below_0p9"], t_end_reached_s=r["t_end_reached"],
                    particles=r["particles"], threads=r["threads"], wall_s=r["wall_s"], pps_thread=r["pps_thread"], seg_per_particle=r["seg_per_particle"],
                    escaped=r["counts"]["escaped"], stuck=r["counts"]["stuck"], left=r["counts"]["left"])
+        sm = r.get("slowest_member", {}).get("recess_all_deephalf")
+        if sm:
+            row.update(slowest_recess_index=sm["index"], n_recesses=sm["of"], slowest_recess_depth_fraction=round(sm["fraction"], 3),
+                       t90_slowest_recess=sm["t90"], t99_slowest_recess=sm["t99"], t90_deepest_recess=sm["last_t90"], t99_deepest_recess=sm["last_t99"])
         for k, v in r["t90"].items():
             row[f"t90_{k}"] = v
         for k, v in r["t99"].items():
@@ -750,6 +767,73 @@ def plot_gaa(cache):
     plt.close(fig)
 
 
+def plot_nand(cache):
+    """figures/nand_cell_coverage.png: histories of the two NAND cells (slit floor, deepest recess, slowest recess) for
+    the three chemistries at 0.3 Pa and under the chamber drive, the nested-model references, and the per-recess
+    saturation profile along the depth."""
+    import matplotlib; matplotlib.use("Agg"); import matplotlib.pyplot as plt
+    refs = cache.get("refs", {})
+    fig, axes = plt.subplots(2, 3, figsize=(15, 8.5), constrained_layout=True)
+    for row, (name, hkey, Mkey) in enumerate((("nand_wp4_pillars", "h5", "M100000"), ("nand_2xx", "h6", "M60000"))):
+        for col, drive in enumerate(("constant", "chamber")):
+            ax = axes[row][col]
+            for chem, c in (("TMA", "tab:blue"), ("TDMAH", "tab:orange"), ("TiCl4", "tab:green")):
+                k = f"{name}_{chem}_{drive}_{hkey}_{Mkey}"
+                if k not in cache:
+                    continue
+                r = cache[k]
+                ax.plot(r["t_hist"], r["hist"]["slit_floor"], color=c, ls=":", lw=1)
+                ax.plot(r["t_hist"], r["hist"]["recess_deep_deephalf"], color=c, ls="--", lw=1)
+                ax.plot(r["t_hist"], r["hist_min_list"]["recess_all_deephalf"], color=c, label=f"{chem}: slowest recess t90 {r['t90_everywhere']:.1f} s (deepest {r['t90']['recess_deep_deephalf']:.1f}, floor {r['t90']['slit_floor']:.1f})")
+            if drive == "constant":
+                for corr, ls, lab in (("none", "-.", "nested model (wp4 slit diffusivity)"), ("plates", (0, (1, 1)), "nested model (parallel-plate correction)")):
+                    rk = f"nested_{name}_rounded_{corr}_TMA"
+                    if rk in refs:
+                        ax.plot(refs[rk]["B_t"], refs[rk]["B_recess_deep_hist"], color="k", ls=ls, lw=1, label=f"{lab}: deepest recess {refs[rk]['B_recess_deep_t90']:.1f} s")
+            else:
+                td, nd = load_drive()
+                ax2 = ax.twinx(); ax2.plot(td, nd / C0, color="0.75", lw=0.8); ax2.set_ylim(0, 0.1); ax2.set_ylabel("centre-face n / c0 (grey)")
+            ax.axhline(0.9, color="0.6", ls=":")
+            if drive == "constant":
+                xmax = [cache[f"{name}_{chem}_constant_{hkey}_{Mkey}"]["t_end_reached"] for chem in ("TMA", "TDMAH", "TiCl4") if f"{name}_{chem}_constant_{hkey}_{Mkey}" in cache]
+                xmax += [1.4 * refs[f"nested_{name}_rounded_none_TMA"]["B_recess_deep_t90"]] if f"nested_{name}_rounded_none_TMA" in refs else []
+                if xmax:
+                    ax.set_xlim(0, max(xmax))
+            ax.set_xlabel("time, s" if drive == "chamber" else "dose time at 0.3 Pa, s"); ax.set_ylabel("coverage")
+            ax.set_title(f"{name}, {'constant 0.3 Pa' if drive == 'constant' else 'chamber centre-face history (AR-100 wafer)'}\n"
+                         "dotted: slit floor, dashed: deepest recess, solid: slowest recess (deep halves)", fontsize=8)
+            ax.legend(fontsize=6, loc="lower right"); ax.grid(alpha=0.3)
+    # per-recess profiles
+    ax = axes[0][2]
+    prof = FIG / "device_geometries_recess_profile.csv"
+    if prof.exists():
+        rows = [l for l in prof.read_text().splitlines() if l and not l.startswith("#")]
+        data = np.array([[float(v) for v in l.split(",")] for l in rows[1:]])
+        ax.plot(data[:, 1], data[:, 2], "o-", ms=3, color="tab:blue", label="nand_wp4_pillars, TMA 0.3 Pa: t90 per recess (M 50 000)")
+        ax.plot(data[:, 1], data[:, 3], "s-", ms=3, color="tab:cyan", label="t99 per recess")
+    for name, hkey, Mkey, c in (("nand_2xx", "h6", "M60000", "tab:red"),):
+        k = f"{name}_TMA_constant_{hkey}_{Mkey}"
+        if k in cache and "t90_list" in cache[k]:
+            r = cache[k]; g = build_nand(name); h = g.voxel
+            z = [0.5 * (a + b) * h * 1e6 for a, b in g.meta["recess_k"]]
+            ax.plot(z, r["t90_list"]["recess_all_deephalf"], "o-", ms=2, color=c, label=f"{name}, TMA 0.3 Pa: t90 per recess")
+    ax.set_xlabel("recess depth below the slit mouth, um"); ax.set_ylabel("time to 90 / 99 % of the recess deep half, s")
+    ax.set_title("Where the last point sits: saturation time along the stack", fontsize=9); ax.legend(fontsize=6); ax.grid(alpha=0.3)
+    # final profile along the depth for the 2xx cell runs (slice coverage)
+    ax = axes[1][2]
+    for chem, c in (("TMA", "tab:blue"), ("TDMAH", "tab:orange"), ("TiCl4", "tab:green")):
+        for drive, ls in (("constant", "-"), ("chamber", "--")):
+            k = f"nand_2xx_{chem}_{drive}_h6_M60000"
+            if k in cache and "final_profile" in cache[k]:
+                fp = cache[k]["final_profile"]
+                ax.plot(np.array(fp["z"]) * 1e6, fp["theta"], color=c, ls=ls, lw=1, label=f"{chem} {drive}: at t = {cache[k]['t_end_reached']:.1f} s")
+    ax.set_xlabel("depth, um"); ax.set_ylabel("slice-mean coverage at the end of the run"); ax.set_title("nand_2xx: coverage along the depth at the end of each run", fontsize=9)
+    ax.legend(fontsize=6); ax.grid(alpha=0.3)
+    fig.suptitle("3D-NAND word-line cells with channel-hole pillars (lib/aldmc voxel Monte Carlo)", fontsize=11)
+    fig.savefig(FIG / "nand_cell_coverage.png", dpi=150)
+    plt.close(fig)
+
+
 PARTS = dict(gaa=part_gaa, maps=part_maps, nand5=part_nand5, nand13=part_nand13, refs=part_refs)
 
 
@@ -772,7 +856,8 @@ def main():
     write_csv(cache)
     plot_geometries()
     plot_gaa(cache)
-    print("wrote figures/device_geometries.png, figures/gaa_coverage.png")
+    plot_nand(cache)
+    print("wrote figures/device_geometries.png, figures/gaa_coverage.png, figures/nand_cell_coverage.png")
 
 
 if __name__ == "__main__":

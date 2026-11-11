@@ -351,7 +351,7 @@ def qa_readme():
     (DOCS / "qa" / "README.md").write_text("\n".join(lines).replace("\u00a0", " ") + "\n", encoding="utf-8"); print("wrote qa/README.md")
 
 
-FIGS_ON_PAGE = ["sticking_sensitivity", "step_coverage_vs_pulse", "cycle_time_wph", "blanket_saturation_literature", "validation_gakis", "chamber3d_t90_map", "tapered_hole", "wordline_recess"]
+FIGS_ON_PAGE = ["sticking_sensitivity", "step_coverage_vs_pulse", "cycle_time_wph", "blanket_saturation_literature", "validation_gakis", "chamber3d_t90_map", "tapered_hole", "wordline_recess", "gaa_coverage", "device_geometries"]
 
 
 def copy_figures():
