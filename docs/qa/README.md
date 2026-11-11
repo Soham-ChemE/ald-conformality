@@ -13,11 +13,11 @@ Lighthouse (desktop preset): performance 100, accessibility 100, best practices 
 | Speed Index | 0.3 s |
 | Total Blocking Time | 0 ms |
 | Cumulative Layout Shift | 0 |
-| Total byte weight | Total size was 762 KiB |
+| Total byte weight | Total size was 975 KiB |
 
 | Theme | Console errors | Failed requests | Transfer (bytes) | Body scenes captured |
 |---|---|---|---|---|
-| dark | 0 | 0 | 1,066,066 | stack, map |
-| light | 0 | 0 | 1,066,066 | stack, map |
+| dark | 0 | 0 | 1,302,021 | stack, map |
+| light | 0 | 0 | 1,302,021 | stack, map |
 
 Files: `light/` and `dark/` hold `index-hero.png`, `index-scene1-*.png`, `index-scene2-*.png` and `index-mobile-375-hero.png`; `lighthouse.report.html` and `.json` are the Lighthouse run; `qa.json` is the machine-readable summary.

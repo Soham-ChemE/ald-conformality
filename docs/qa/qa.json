@@ -4,8 +4,8 @@
    "dark": {
     "errors": [],
     "failed": [],
-    "imagesLoaded": "0/2",
-    "transferBytes": 1066066,
+    "imagesLoaded": "0/0",
+    "transferBytes": 1302021,
     "scenes": [
      "stack",
      "map"
@@ -15,8 +15,8 @@
    "light": {
     "errors": [],
     "failed": [],
-    "imagesLoaded": "0/2",
-    "transferBytes": 1066066,
+    "imagesLoaded": "0/0",
+    "transferBytes": 1302021,
     "scenes": [
      "stack",
      "map"
@@ -33,7 +33,7 @@
     "tbt": "0\u00a0ms",
     "cls": "0",
     "si": "0.3\u00a0s",
-    "bytes": "Total size was 762\u00a0KiB"
+    "bytes": "Total size was 975\u00a0KiB"
    }
   }
  }

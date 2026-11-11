@@ -268,6 +268,146 @@ def night3_data():
     out["chemistry"] = {"rows": [{"film": a.film, "precursor": a.precursor, "M": r(a.M_g_mol, 2), "T_C": a.T_C, "s": r(a.s, 5), "gpc": r(a.GPC_nm, 3), "N0": a.N0_per_m2, "vbar": r(a.vbar_m_s, 1), "rule_AR100": r(a.rule_AR100_wafer_s, 3), "rule_blanket": r(a.rule_blanket_s, 4), "note": str(a.note)[:200]} for a in ch.itertuples()], "tdmah_run": td}
     return out
 
+# ---------------- device geometries (wp10): the GAA cell and the NAND word-line slab as coverage-coloured face tiles ----------------
+SCENE_CACHE = FIG / "device_geometries_scene.json"
+NAND_SLAB_I = (19, 20)       # the two voxel columns straddling the row-0 pillar centre line (x = 100 nm of the 200 nm period)
+
+
+def _b64(arr):
+    import base64
+    return base64.b64encode(np.ascontiguousarray(arr).tobytes()).decode("ascii")
+
+
+def _q8(theta):
+    """Coverage quantised to one byte (0..255 = 0..1)."""
+    return np.clip(np.round(np.asarray(theta, float) * 255), 0, 255).astype(np.uint8)
+
+
+def device_scene_cache():
+    """Per-face coverage snapshots for the two device scenes, cached in figures/device_geometries_scene.json so that --data
+    does not rerun the solver: every face of the IBM GAA cell under TMA at 0.3 Pa at t90/3, 2 t90/3 and t90 (13 s), and
+    for the 5 um NAND cell with pillars under TMA at 0.3 Pa the faces whose gas voxel lies in the two-voxel slab through
+    the row-0 pillar centre line, at 3, 6, 9 s and the end of the run, plus the area-weighted coverage of the row-0
+    pillar walls per recess and side (about 5 min on 6 threads). Same solver, parameters and seeds as coupling/
+    device_geometries.py (wp10), whose cached runs the t90 values in the captions come from."""
+    if SCENE_CACHE.exists(): return json.loads(SCENE_CACHE.read_text())
+    import device_geometries as dg
+    dg.THREADS = min(dg.THREADS, 6)
+    out = {}
+    g = dg.build_gaa("gaa_ibm2017"); c = dg.CHEM["TMA"]
+    t_flat = 2.303 * c["N0"] / (c["s"] * dg.N0_GAS * dg.vbar_of("TMA") / 4); dt = t_flat / 100
+    rec = dg.run_cell(g, "TMA", "constant", dt, 50000, 60 * t_flat, dg.gaa_regions, label="scene gaa_ibm2017 TMA", area_correction=False, snapshot_every=1, verbose_every=0)
+    t90 = rec["t90_everywhere"]; times = sorted(rec["snapshots"]); picks = [min(times, key=lambda q: abs(q - fr * t90)) for fr in (1 / 3, 2 / 3, 1.0)]
+    f = rec["faces"]
+    out["gaa"] = {"run": f"gaa_ibm2017, TMA, constant 0.3 Pa, h 1.25 nm, dt {dt:.5g} s, M 50000, seed 1, plain faces", "voxel": g.voxel, "shape": list(g.shape),
+                  "meta": {k: g.meta[k] for k in ("sheet_x", "trench_y", "sheet_k", "gap_k", "n_sheets")}, "t90": t90, "t_flat": t_flat, "t90_regions": rec["t90"], "wall_s": rec["wall_s"],
+                  "vox": [int(v) for v in f["voxel"]], "dir": [int(v) for v in f["direction"]], "snaps": [{"t": float(q), "theta": r(rec["snapshots"][q], 4)} for q in picks]}
+    gn = dg.build_nand("nand_wp4_pillars"); m = gn.meta; h = gn.voxel
+    rec = dg.run_cell(gn, "TMA", "constant", 0.1, 100000, 30.0, dg.nand_regions, label="scene nand_wp4_pillars TMA", verbose_every=20, normal_radius=dg.NAND_NORMAL_RADIUS, snapshot_every=30)
+    times = sorted(rec["snapshots"]); picks = [min(times, key=lambda q: abs(q - tt)) for tt in (3.0, 6.0, 9.0)] + [times[-1]]
+    f = rec["faces"]; nx, ny, nz = gn.shape; vox = f["voxel"]; i = vox % nx; j = (vox // nx) % ny; k = vox // (nx * ny); d = f["direction"]; w = f["weight"]
+    di = np.array([1, -1, 0, 0, 0, 0]); dj = np.array([0, 0, 1, -1, 0, 0]); si = (i + di[d]) % nx; sj = np.clip(j + dj[d], 0, ny - 1)
+    pm = np.zeros((nx, ny), bool)
+    for side in (0, 1):
+        cx, cy = m["pillar_xy"][side]; pm |= dg._disc_mask(nx, ny, cx / h, cy / h, m["d_h_voxels"])
+    onpillar = (d < 4) & pm[si, sj]
+    slab = np.isin(i, NAND_SLAB_I)
+    pil = []
+    for ka, kb in m["recess_k"]:
+        for side in (0, 1):
+            sel = onpillar & (k >= ka) & (k < kb) & ((sj < m["y_slit"][0]) if side == 0 else (sj >= m["y_slit"][1]))
+            pil.append([r(np.average(rec["snapshots"][q][sel], weights=w[sel]), 4) if sel.any() else None for q in picks])
+    out["nand"] = {"run": "nand_wp4_pillars, TMA, constant 0.3 Pa, h 5 nm, dt 0.1 s, M 100000, seed 1, normal radius 2", "voxel": h, "shape": [nx, ny, nz], "slab_i": list(NAND_SLAB_I),
+                   "meta": {kk: m[kk] for kk in ("y_slit", "recess_end_y", "recess_k", "pillar_xy", "d_h_voxels", "n_recesses", "pad", "L_r_actual", "w_actual", "L_actual", "g_r_actual", "p_r_actual")},
+                   "t90_regions": rec["t90"], "t90_everywhere": rec["t90_everywhere"], "t99_everywhere": rec["t99_everywhere"], "t90_recess": rec["t90_list"]["recess_all_deephalf"],
+                   "slowest": rec["slowest_member"]["recess_all_deephalf"], "t_end": rec["t_end_reached"], "wall_s": rec["wall_s"], "counts": {kk: int(v) for kk, v in rec["counts"].items()},
+                   "snap_t": [float(q) for q in picks], "pillar_cov": pil,
+                   "slab": {"j": [int(v) for v in j[slab]], "k": [int(v) for v in k[slab]], "d": [int(v) for v in d[slab]], "w": r(w[slab], 3), "pil": [int(v) for v in onpillar[slab]],
+                            "theta": [r(rec["snapshots"][q][slab], 3) for q in picks]}}
+    SCENE_CACHE.write_text(json.dumps(out, separators=(",", ":")))
+    print(f"device scene cache: GAA t90 {t90:.3f} s ({len(out['gaa']['vox'])} faces), NAND slab {int(slab.sum())} faces, t90 everywhere {rec['t90_everywhere']:.2f} s -> {SCENE_CACHE}")
+    return out
+
+
+def _pack24(x2, y2, z2, d):
+    """Tile positions in half-voxel units (x 7 bits, y 5, z 8) and direction (3 bits) as three little-endian bytes each."""
+    assert x2.max() < 128 and y2.max() < 32 and z2.max() < 256
+    p = (x2.astype(np.uint32) | (y2.astype(np.uint32) << 7) | (z2.astype(np.uint32) << 12) | (d.astype(np.uint32) << 20))
+    b = np.zeros((len(p), 3), np.uint8); b[:, 0] = p & 255; b[:, 1] = (p >> 8) & 255; b[:, 2] = (p >> 16) & 255
+    return _b64(b)
+
+
+def device_data():
+    """window.ALD.n3.gaacell and .nandcell: the exposed faces of the device cells as tiles (position in half-voxel units,
+    direction 0..5 toward the solid, coverage 0..255 per snapshot), base64 of packed bytes. GAA: the IBM 2017 cell under
+    TMA (8 400 faces, 1.25 nm tiles) and the narrowed cell after 3 nm of oxide under TiCl4 (figures/device_geometries_maps.json,
+    0.5 nm faces merged 2 x 2 to 1 nm tiles). NAND: the 5 um cell's two-voxel slab through the row-0 pillars, faces merged
+    4 along the recess (20 nm tiles) and per oxide band along the slit, plus the pillar-wall coverage per recess."""
+    import device_geometries as dg
+    sc = device_scene_cache(); runs = json.loads((FIG / "device_geometries_runs.json").read_text()) if (FIG / "device_geometries_runs.json").exists() else {}
+    cells = {}
+    # --- IBM cell, TMA: one tile per face
+    G = sc["gaa"]; nx, ny, nz = G["shape"]; vox = np.array(G["vox"]); d = np.array(G["dir"]); i = vox % nx; j = (vox // nx) % ny; k = vox // (nx * ny)
+    x2 = 2 * i + 1 + (d == 0) - (d == 1); y2 = 2 * j + 1 + (d == 2) - (d == 3); z2 = 2 * k + 1 + (d == 4) - (d == 5)
+    hn = G["voxel"] * 1e9; gm = dg.build_gaa("gaa_ibm2017").meta
+    cells["ibm"] = {"name": "IBM 2017 cell, TMA at 0.3 Pa", "chem": "TMA", "film": "Al₂O₃", "unit_nm": r(hn / 2, 4), "tile_nm": r(hn, 4), "n": int(len(d)), "ext": [2 * nx, 2 * ny, 2 * nz],
+                    "sx": [2 * v for v in G["meta"]["sheet_x"]], "ty": [2 * v for v in G["meta"]["trench_y"]], "sk": [[2 * a, 2 * b] for a, b in G["meta"]["sheet_k"]], "gk": [[2 * a, 2 * b] for a, b in G["meta"]["gap_k"]],
+                    "pos": _pack24(x2, y2, z2, d), "snaps": [{"t": r(s["t"], 4), "cov": _b64(_q8(s["theta"]))} for s in G["snaps"]],
+                    "t90": r(G["t90"], 4), "t_flat": r(G["t_flat"], 4), "t90_regions": {kk: r(v, 4) for kk, v in G["t90_regions"].items()},
+                    "dims": {"period": r(gm["pitch_x"] * 1e9, 3), "W": r(gm["W_actual"] * 1e9, 3), "Lg": r(gm["Lg_actual"] * 1e9, 3), "t_s": r(gm["t_s_actual"] * 1e9, 3), "g_s": r(gm["g_s_actual"] * 1e9, 3), "H_top": r(gm["H_top_actual"] * 1e9, 3), "g_bot": r(gm["g_bot_actual"] * 1e9, 3), "depth": r((nz - 1) * hn, 3)},
+                    "source": G["run"] + f"; snapshots at t90/3, 2 t90/3, t90 (t90 everywhere {G['t90']:.3f} s); every exposed face"}
+    # --- narrowed cell (after 1 nm interfacial oxide + 2 nm HfO2), TiCl4: the maps file, faces merged 2 x 2
+    mp = json.loads((FIG / "device_geometries_maps.json").read_text()); hf = mp["voxel"]; nx, ny, nz = mp["shape"]
+    xf = np.round(np.array(mp["x"]) / hf * 2).astype(int); yf = np.round(np.array(mp["y"]) / hf * 2).astype(int); zf = np.round(np.array(mp["z"]) / hf * 2).astype(int)   # face centres in half fine voxels
+    d = np.array(mp["direction"]); ax = d // 2
+    i = np.where(ax == 0, xf // 2 - (d == 0), (xf - 1) // 2); j = np.where(ax == 1, yf // 2 - (d == 2), (yf - 1) // 2); k = np.where(ax == 2, zf // 2 - (d == 4), (zf - 1) // 2)   # gas voxel indices
+    nrm = np.where(ax == 0, xf // 2, np.where(ax == 1, yf // 2, zf // 2))                                                        # boundary coordinate along the normal (fine voxels)
+    pa = np.where(ax == 0, (j - 1) // 2, i // 2); pb = np.where(ax == 2, (j - 1) // 2, k // 2)                                  # in-plane pairs (y offset 1 = pad)
+    key = ((d * (nz + 1) + nrm) * 256 + pa) * 256 + pb; uq, first, inv, cnt = np.unique(key, return_index=True, return_inverse=True, return_counts=True)
+    n = len(uq); dgr = d[first]; ng = nrm[first]; ga = pa[first]; gb = pb[first]; axg = dgr // 2
+    x2 = np.where(axg == 0, ng, 2 * ga + 1); y2 = np.where(axg == 0, 2 * ga + 2, np.where(axg == 1, ng, 2 * gb + 2)); z2 = np.where(axg == 2, ng, 2 * gb + 1)   # tile centres in fine voxels (0.5 nm)
+    snaps = []
+    for q in sorted(mp["snapshots"], key=float):
+        th = np.bincount(inv, weights=np.array(mp["snapshots"][q]), minlength=n) / cnt; snaps.append({"t": r(float(q), 4), "cov": _b64(_q8(th))})
+    gm2 = dg.build_gaa("gaa_ibm2017_after_hk").meta; rk = "gaa_ibm2017_after_hk_TiCl4_constant_h0.5_M50000"
+    cells["narrow"] = {"name": "the same cell after 3 nm of oxide, TiCl₄ at 0.3 Pa", "chem": "TiCl₄", "film": "TiN", "unit_nm": r(hf * 1e9, 4), "tile_nm": r(2 * hf * 1e9, 4), "n": int(n), "ext": [nx, ny, nz],
+                       "sx": list(mp["meta"]["sheet_x"]), "ty": list(mp["meta"]["trench_y"]), "sk": [[a, b] for a, b in gm2["sheet_k"]], "gk": [[a, b] for a, b in mp["meta"]["gap_k"]],
+                       "pos": _pack24(x2, y2, z2, dgr), "snaps": snaps, "t90": r(mp["t90"], 4), "t_flat": r(2.303 * dg.CHEM["TiCl4"]["N0"] / (dg.CHEM["TiCl4"]["s"] * dg.N0_GAS * dg.vbar_of("TiCl4") / 4), 4),
+                       "t90_regions": ({kk: r(v, 4) for kk, v in runs[rk]["t90"].items()} if rk in runs else {}),
+                       "dims": {"period": r(gm2["pitch_x"] * 1e9, 3), "W": r(gm2["W_actual"] * 1e9, 3), "Lg": r(gm2["Lg_actual"] * 1e9, 3), "t_s": r(gm2["t_s_actual"] * 1e9, 3), "g_s": r(gm2["g_s_actual"] * 1e9, 3), "H_top": r(gm2["H_top_actual"] * 1e9, 3), "g_bot": r(gm2["g_bot_actual"] * 1e9, 3), "depth": r((nz - 1) * hf * 1e9, 3)},
+                       "source": f"gaa_ibm2017_after_hk, TiCl4, constant 0.3 Pa, h 0.5 nm, M 50000 (figures/device_geometries_maps.json, part maps): {len(d)} faces merged 2 x 2 to {n} tiles of 1 nm; snapshots at t90/3, 2 t90/3, t90 (t90 everywhere {mp['t90']:.4f} s); groups of {int(cnt.min())}-{int(cnt.max())} faces"}
+    gaacell = {"cells": cells, "regions": {"sheet0_top": "top of the top sheet", "gap0_mid": "slot 1 centre", "gap0_edge": "slot 1 edge", "gap1_mid": "slot 2 centre", "gap1_edge": "slot 2 edge", "gap_bottom_mid": "bottom slot centre", "gap_bottom_edge": "bottom slot edge", "floor_between_stacks": "floor between stacks", "floor_under_stack": "floor under the stack"}}
+    # --- NAND slab
+    Nd = sc["nand"]; S = Nd["slab"]; m = Nd["meta"]; nx, ny, nz = Nd["shape"]; h = Nd["voxel"]
+    j = np.array(S["j"]); k = np.array(S["k"]); d = np.array(S["d"]); w = np.array(S["w"]); pil = np.array(S["pil"]) == 1; TH = [np.array(t) for t in S["theta"]]
+    keep = (~pil) & (d >= 2); j, k, d, w = j[keep], k[keep], d[keep], w[keep]; TH = [t[keep] for t in TH]
+    ya, yb = m["y_slit"]; pad = m["pad"]; k0, k1 = m["recess_k"][0]; pitch = m["recess_k"][1][0] - k0; gr = k1 - k0; MY = 4
+    region = np.where(j < ya, 0, np.where(j < yb, 1, 2)); jstart = np.where(region == 0, pad, np.where(region == 1, ya, yb))
+    plate = d >= 4
+    grp_a = np.where(plate, k, j); grp_b = np.where(plate, region * 64 + (j - jstart) // MY, k // pitch)
+    key = (d.astype(np.int64) * 4096 + grp_a) * 4096 + grp_b; uq, inv, cnt = np.unique(key, return_inverse=True, return_counts=True); n = len(uq)
+    jmin = np.full(n, 10 ** 6); jmax = np.full(n, -1); kmin = np.full(n, 10 ** 6); kmax = np.full(n, -1)
+    np.minimum.at(jmin, inv, j); np.maximum.at(jmax, inv, j); np.minimum.at(kmin, inv, k); np.maximum.at(kmax, inv, k)
+    dgr = np.round(np.bincount(inv, weights=d, minlength=n) / cnt).astype(int); pl = dgr >= 4
+    y2 = np.where(pl, jmin + jmax + 1, np.where(dgr == 2, 2 * (jmin + 1), 2 * jmin)); z2 = np.where(pl, np.where(dgr == 4, 2 * (kmin + 1), 2 * kmin), kmin + kmax + 1)
+    sy = np.where(pl, jmax - jmin + 1, 0); sz = np.where(pl, 0, kmax - kmin + 1)
+    assert y2.max() < 1024 and z2.max() < 2048 and sy.max() < 8 and sz.max() < 16
+    p = (y2.astype(np.uint32) | (z2.astype(np.uint32) << 10) | (dgr.astype(np.uint32) << 21) | (sy.astype(np.uint32) << 24) | (sz.astype(np.uint32) << 27))
+    b = np.zeros((n, 4), np.uint8); b[:, 0] = p & 255; b[:, 1] = (p >> 8) & 255; b[:, 2] = (p >> 16) & 255; b[:, 3] = (p >> 24) & 255
+    wsum = np.bincount(inv, weights=w, minlength=n)
+    snaps = [{"t": r(t, 3), "cov": _b64(_q8(np.bincount(inv, weights=w * th, minlength=n) / wsum))} for t, th in zip(Nd["snap_t"], TH)]
+    pc = np.array([[(v if v is not None else 0.0) for v in row] for row in Nd["pillar_cov"]])        # (recess*2+side, snapshot)
+    sl = Nd["slowest"]; t90r = Nd["t90_recess"]
+    nandcell = {"unit_nm": r(h * 1e9 / 2, 4), "h_nm": r(h * 1e9, 4), "ext": [nx, ny, nz], "slab_i": Nd["slab_i"], "y_slit": [ya, yb], "y_end": list(m["recess_end_y"]), "pad": pad, "n_rec": m["n_recesses"], "rec_k0": k0, "rec_pitch": pitch, "rec_g": gr,
+                "dims": {"w": r(m["w_actual"] * 1e9, 3), "L": r(m["L_actual"] * 1e9, 3), "L_r": r(m["L_r_actual"] * 1e9, 3), "g_r": r(m["g_r_actual"] * 1e9, 3), "p_r": r(m["p_r_actual"] * 1e9, 3), "d_h": 100, "pitch_h": 200},
+                "pillar": {"cx": r(m["pillar_xy"][0][0] / h, 3), "cy": [r(m["pillar_xy"][0][1] / h, 3), r(m["pillar_xy"][1][1] / h, 3)], "r": r(m["d_h_voxels"] / 2, 3), "cov": [_b64(_q8(pc[:, q])) for q in range(pc.shape[1])]},
+                "n": int(n), "pos": _b64(b), "snaps": snaps, "t90_recess": r(t90r, 3), "t90_floor": r(Nd["t90_regions"]["slit_floor"], 3), "t90_everywhere": r(Nd["t90_everywhere"], 3), "t99_everywhere": r(Nd["t99_everywhere"], 3),
+                "t90_deepest": r(t90r[-1], 3), "slowest": {"index": sl["index"], "t90": r(sl["t90"], 3), "frac": r(sl["fraction"], 3), "depth_um": r(0.5 * sum(m["recess_k"][sl["index"]]) * h * 1e6, 3)},
+                "source": Nd["run"] + f"; the faces whose gas voxel lies in columns x = {Nd['slab_i'][0]}, {Nd['slab_i'][1]} (through the row-0 pillar centres), {int(keep.sum())} faces (pillar edge faces left out) merged to {n} tiles: plates in groups of {MY} along the recess, slit walls per oxide band, end walls per recess; pillar walls as the area-weighted mean per recess and side; snapshots at " + ", ".join(f"{t:g}" for t in Nd['snap_t']) + " s"}
+    print(f"device scenes: gaa ibm {cells['ibm']['n']} tiles, narrow {cells['narrow']['n']} tiles, nand {n} tiles (groups of {int(cnt.min())}-{int(cnt.max())} faces); slowest recess {sl['index']} at {nandcell['slowest']['depth_um']} um, t90 {sl['t90']:.2f} s")
+    return gaacell, nandcell
+
+
 def build_data():
     hero = hero_data()
     data = {"geometry": {"wafer_mm": 300, "chamber_mm": 400, "gap_mm": 15, "hole_nm": 100, "AR": AR, "pitch_nm": 180, "hole_density": HOLES, "open_area": r(HOLES * np.pi * (D_HOLE / 2) ** 2, 3), "wall_ratio": r(WALL, 2), "p_Pa": P_TOT, "T_K": T_K, "Q_sccm": 300, "U_m_s": U, "cells": 6000, "N0": N0, "c0_1pct": C0_1PCT},
@@ -292,6 +432,7 @@ def build_data():
     if par.exists():
         pf = csv_rows(par); data["pareto"] = [{k: r(getattr(a, k), 4) for k in ("t90_s", "util", "precursor_over_minimum", "x", "Q_sccm", "p_Pa", "g_mm", "tma_sccm_s")} for a in pf.itertuples()]
     data["n3"] = night3_data()
+    data["n3"]["gaacell"], data["n3"]["nandcell"] = device_data()
     data["stats"] = {"blanket_t90": hero["blanket"]["t90_centre"], "blanket_t90_worst": hero["blanket"]["t90_worst"], "patterned_t90": hero["t90_bottom_centre"], "patterned_t90_worst": hero["t90_bottom_worst"], "wall_ratio": r(WALL, 1),
                      "underdose": r(hero["t90_bottom_centre"] / hero["blanket"]["t90_centre"], 1), "rule_band": data["map"]["patterned_ratio"], "blanket_band": data["map"]["blanket_ratio"], "fluidized_tau": data["validation"]["fluidized"]["tau"],
                      "util_range": data["doe"]["util_range"], "h2o_t90": data["water"]["patterned_h2o_t90_bottom"], "tma_t90": data["water"]["patterned_tma_t90_bottom"]}

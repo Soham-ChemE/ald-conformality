@@ -1,7 +1,7 @@
 /* aldmc-gpu.js: the 3D voxel test-particle Monte Carlo feature solver of lib/aldmc, running in the browser.
    ES module. Nothing here touches the DOM; docs/partials/gpu-solver.html imports it when the visitor clicks Run.
 
-     import { createSolver, hole, taperedHole, slit, recessedSlit, numberDensity, meanSpeed } from './aldmc-gpu.js';
+     import { createSolver, hole, taperedHole, slit, recessedSlit, gaaStack, numberDensity, meanSpeed } from './aldmc-gpu.js';
      const g = hole(100e-9, 2e-6, 100e-9 / 16);                      // AR-20 hole, 16 voxels across
      const mc = await createSolver({ geometry: g, params: { s: 5e-3, N0: 4e18, vbar: 410, seed: 1 }, backend: 'webgpu' });
      const counts = await mc.step(3.79e19, 0.005, 25000);           // n_mouth (1/m3), dt (s), M particles
@@ -121,6 +121,29 @@ export function recessedSlit(w, L, gR, LR, pR, voxel, nx = 4, pad = 1, oxideFirs
   }
   const meta = { kind: 'recessed_slit', w, L, gR, LR, pR, voxelsAcross: nw, voxelsDeep: nL, wActual: nw * voxel, LActual: nL * voxel,
     gRActual: ng * voxel, pRActual: npitch * voxel, LRActual: nLr * voxel, nRecesses: recesses.length, recessK: recesses, pad, ySlit: [y0, y0 + nw] };
+  return fromArray(occ, nx, ny, nz, voxel, [true, false], meta);
+}
+
+/** Gate-all-around nanosheet unit cell after channel release (coupling/device_geometries.py gaa_stack): nSheets sheets of
+    thickness tS at vertical spacing gS and width W, suspended gBot above the substrate, under a gate trench of length Lg
+    (along y, closed by the spacers) and height HTop above the top sheet; periodic along x with period W + gapX (the gas gap
+    to the neighbouring stack); the mouth is the top of the trench. Every dimension is rounded to whole voxels; meta
+    records the actual values and the index ranges (sheetX, trenchY, sheetK, gapK) the regions are read from. */
+export function gaaStack(nSheets, tS, gS, W, Lg, gapX, HTop, gBot, voxel, pad = 1) {
+  const nt = roundVoxels(tS, voxel), ng = roundVoxels(gS, voxel), nW = roundVoxels(W, voxel), nLg = roundVoxels(Lg, voxel);
+  const ngap = roundVoxels(gapX, voxel), nH = roundVoxels(HTop, voxel), nb = roundVoxels(gBot, voxel);
+  const nx = nW + ngap, ny = nLg + 2 * pad, nz = nH + nSheets * nt + (nSheets - 1) * ng + nb + 1;
+  const occ = new Uint8Array(nx * ny * nz).fill(1);
+  for (let k = 0; k < nz - 1; k++) for (let j = pad; j < pad + nLg; j++) for (let i = 0; i < nx; i++) occ[(k * ny + j) * nx + i] = 0;   /* the gate trench, floor at the last slice */
+  const x0 = Math.floor(ngap / 2), sheets = [];
+  let k = nH;
+  for (let s = 0; s < nSheets; s++) {
+    for (let kk = k; kk < k + nt; kk++) for (let j = pad; j < pad + nLg; j++) for (let i = x0; i < x0 + nW; i++) occ[(kk * ny + j) * nx + i] = 1;   /* a sheet (solid Si) */
+    sheets.push([k, k + nt]); k += nt + ng;
+  }
+  const gaps = sheets.slice(0, -1).map((sh, s) => [sh[1], sheets[s + 1][0]]).concat([[sheets[sheets.length - 1][1], nz - 1]]);
+  const meta = { kind: 'gaa', nSheets, tS, gS, W, Lg, gapX, HTop, gBot, voxelsAcross: ng, voxelsDeep: nz - 1, tSActual: nt * voxel, gSActual: ng * voxel, WActual: nW * voxel, LgActual: nLg * voxel,
+    gapXActual: ngap * voxel, HTopActual: nH * voxel, gBotActual: nb * voxel, pitchX: nx * voxel, sheetX: [x0, x0 + nW], trenchY: [pad, pad + nLg], sheetK: sheets, gapK: gaps, pad };
   return fromArray(occ, nx, ny, nz, voxel, [true, false], meta);
 }
 
@@ -392,7 +415,7 @@ async function createGpuBackend(grid, params, gpu) {
    createSolver: geometry + params -> solver (webgpu or cpu) with the common queries. */
 /**
  * @param {object} o
- * @param {object} o.geometry  from hole/taperedHole/slit/recessedSlit/fromArray
+ * @param {object} o.geometry  from hole/taperedHole/slit/recessedSlit/gaaStack/fromArray
  * @param {object} o.params    {s, r, N0, vbar, seed, areaCorrection, normalRadius, maxSegments}
  * @param {string} o.backend   "webgpu" (falls back to cpu when unavailable unless o.strict) | "cpu"
  * @param {function} o.onProgress optional (stage, fraction) during preprocessing

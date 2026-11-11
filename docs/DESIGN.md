@@ -91,3 +91,29 @@ with the TDMAH run). Each card links the audit figure (`assets/fig_*.png`, copie
 `partials/layout-tool.html`): zones in, per-zone local rule out, the lateral-feed margin calibrated on the two non-uniform
 runs and labelled as such, an SVG wafer map, CSV in and out; it has its own Playwright checks (`partials/README.md`).
 The data file grew to about 380 KB; the 3D-chamber block is every third wafer face with its Delaunay triangulation.
+
+## 7. The device cells as live scenes, and the GAA preset
+
+The two device-geometry results of wp10 (`paper/wp/wp10_device_geometries.md`) were static figure cards in section 11; they
+are now scenes drawn from the solver's own faces. `build_assets.py` (`device_data`, cached per-face snapshots in
+`figures/device_geometries_scene.json`, rerun by `coupling/device_geometries.py`'s functions with the paper's parameters and
+seeds: the GAA run reproduces 0.558 s, the NAND run 11.30 s) exports every exposed face as a tile: position in half-voxel
+units and the face direction packed in three or four bytes, coverage quantised to one byte per snapshot, all base64 of
+packed typed arrays (212 KB for the three sets; `data.js` is now about 585 KB). `gaacell` holds the IBM 2017 cell under TMA
+(8,400 faces at 1.25 nm) and the narrowed cell after 3 nm of oxide under TiCl₄ (its 36,864 faces of 0.5 nm merged 2 × 2 to
+1 nm tiles, from `figures/device_geometries_maps.json`), each at a third, two thirds and all of its time to 90 % everywhere;
+`nandcell` is the 5 µm word-line cell with pillars cut through its row-0 pillar centre line (the faces of a two-voxel slab,
+46,440 of 1.19 million, merged to 6,205 tiles: plates in groups of four along the recess, slit walls per oxide band, end
+walls per recess) at 3, 6, 9 s and the end of the run, plus the area-weighted coverage of the pillar wall per recess and
+side. The scenes follow the GPU solver's view: each GAA face is an unlit instanced plane with its normal into the gas and
+front-face culling, so the camera sees the inside of the cavity from any angle; slots are drawn three times their height
+and the trench above the stack at half height (stated in the caption) so the slot interiors are visible, and the cell is
+drawn twice along its periodic axis. The NAND slab is drawn as boxes lying along the slit (mouth at the left, 4× wider
+across the slit than deep, each face 100 nm long along the slit), with cylinder segments for the pillars and a line at the
+slowest recess (86 of 100 at 4.3 µm). A `.vizctl` row under each card switches the snapshot (and, for the GAA card, the
+cell); hover names the region (sheet, slot centre or edge, spacer wall, recess index and wall, pillar) with the position
+in nm or µm and the coverage at every snapshot; tiles rise into place with the scroll progress. The WebGPU solver gained
+a `gaaStack` builder (the same arithmetic as `gaa_stack`, periodic along x) and a "GAA, 3 sheets" preset whose live number
+is the bottom slot centre (wp10's `gap_bottom_mid` region, read through a per-preset probe instead of the floor) against
+the paper's 0.558 s; it runs with plain faces (area correction off) as the paper's run did, and at the reference budget the
+Metal GPU gives 0.558 s.

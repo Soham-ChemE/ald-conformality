@@ -8,13 +8,16 @@
    azimuth    saturation time against azimuth at three radii;
    taper      four cut-open holes with narrowing bottoms coloured by coverage at 10 s;
    recess     a word-line stack: slit and lateral recesses coloured by coverage at 9 s;
-   chemistry  the rule's pulse per chemistry with the TDMAH chamber run. */
+   chemistry  the rule's pulse per chemistry with the TDMAH chamber run;
+   gaacell    the GAA nanosheet cell (wp10) as its exposed voxel faces, coloured by coverage at three times, two cells and chemistries;
+   nandcell   a cut through the 5 um word-line cell with pillars (wp10): slit, recesses, end walls and the row-0 pillars by coverage. */
 import { Viz } from './viz.js';
-import { THREE } from './three-kit.js';
+import { THREE, redrawLabel } from './three-kit.js';
 const D = window.ALD, N = D.n3; const lg = Math.log10; const f = (v, d = 0) => (+v).toLocaleString('en-US', { maximumFractionDigits: d, minimumFractionDigits: d });
 const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
 const sphere = (v, A, x, y, z, col, r = .06, data = null) => { const m = new THREE.Mesh(new THREE.SphereGeometry(r, 14, 12), Viz.mat(col, { emissive: col, emissiveIntensity: .55 })); m.position.copy(A.map(x, y, z)); m.userData = data || {}; v.rig.add(m); v.pickables.push(m); return m; };
 const fadeIn = (objs, p, from = .6) => objs.forEach(o => { o.material.transparent = true; o.material.opacity = clamp((p - from) / (1 - from), 0, 1); });
+const ease = t => t < .5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
 const viridis = t => { const s = [[68, 1, 84], [59, 82, 139], [33, 145, 140], [94, 201, 98], [253, 231, 37]]; t = clamp(t, 0, 1) * 4; const i = Math.floor(t), fr = t - i, a = s[i], b = s[Math.min(i + 1, 4)]; return [(a[0] + (b[0] - a[0]) * fr) / 255, (a[1] + (b[1] - a[1]) * fr) / 255, (a[2] + (b[2] - a[2]) * fr) / 255]; };
 if (!N) console.warn('night-three data missing');
 
@@ -182,3 +185,108 @@ N && Viz.view('[data-viz="chemistry"]', v => {
   v.hover = hit => { if (hit.object.userData.html) return hit.object.userData.html; const b = bars[hit.instanceId]; return b ? `<b>${b.q.film} from ${b.q.precursor}</b>s ${b.q.s} · N₀ ${Number(b.q.N0).toExponential(2)} /m² · GPC ${b.q.gpc} nm · v̄ ${f(b.q.vbar, 0)} m/s · rule ${f(b.q.rule_AR100, 2)} s (blanket ${f(b.q.rule_blanket, 3)} s)<br><span style="color:var(--muted)">${b.q.note}</span>` : null; };
   v.rot = -.2; v.tilt = .1;
 }, { camera: [0, 1.8, 7.6], target: [0, -.2, 0], fov: 32 });
+
+/* ---------- device cells (wp10): shared helpers ----------
+   Tiles come from data.js as packed bytes (docs/build_assets.py device_data): positions in half-voxel units, the direction
+   0 +x, 1 -x, 2 +y, 3 -y, 4 +z, 5 -z from the gas voxel toward the solid (lib/aldmc), coverage 0..255 per snapshot. */
+const b64u8 = s => { const bin = atob(s), a = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) a[i] = bin.charCodeAt(i); return a; };
+const bareColor = v => v.dark ? 0x5b6676 : 0x8a95a5;
+const TILE_SHADE = [.86, .86, .74, .74, 1, .62];   /* unlit tiles with a per-direction shade, as the GPU solver's view: undersides stay readable */
+const ctl = name => document.querySelector(`.vizctl[data-for="${name}"]`);
+/* GAA world: X = x across the sheet width, Y = depth upward (mouth at the top), Z = y along the gate. Each face is a unit plane whose
+   normal points into the gas; with front-face culling the camera always sees the inside of the cavity (the near spacer wall is culled),
+   as the GPU solver's view does. u x w = n keeps the winding right-handed. */
+const TILE_N = [[-1, 0, 0], [1, 0, 0], [0, 0, -1], [0, 0, 1], [0, 1, 0], [0, -1, 0]], TILE_U = [[0, 0, 1], [0, 1, 0], [0, 1, 0], [1, 0, 0], [0, 0, 1], [1, 0, 0]], TILE_W = [[0, 1, 0], [0, 0, 1], [1, 0, 0], [0, 1, 0], [1, 0, 0], [0, 0, 1]];
+const tileMatrix = (M, d, p, e, s) => { const n = TILE_N[d], u = TILE_U[d], w = TILE_W[d]; const a = s * (e[0] * Math.abs(u[0]) + e[1] * Math.abs(u[1]) + e[2] * Math.abs(u[2])), b = s * (e[0] * Math.abs(w[0]) + e[1] * Math.abs(w[1]) + e[2] * Math.abs(w[2])); M.set(u[0] * a, w[0] * b, n[0], p[0], u[1] * a, w[1] * b, n[1], p[1], u[2] * a, w[2] * b, n[2], p[2], 0, 0, 0, 1); };
+const gaaRegion = (C, q) => {
+  const [sx0, sx1] = C.sx, xm = (sx0 + sx1) / 2, W = sx1 - sx0, inX = q.x2 > sx0 && q.x2 < sx1, d = q.d, z = q.z2, ng = C.gk.length;
+  const where = Math.abs(q.x2 - xm) < .1 * W ? 'centre' : Math.abs(q.x2 - xm) > .4 * W ? 'edge' : 'between centre and edge';
+  const zone = () => { if (z < C.sk[0][0]) return 'above the stack'; for (let i = 0; i < C.sk.length; i++) { if (z >= C.sk[i][0] && z <= C.sk[i][1]) return `beside sheet ${i + 1}`; if (z >= C.gk[i][0] && z <= C.gk[i][1]) return i === ng - 1 ? 'at the bottom slot' : `at slot ${i + 1}`; } return 'at the floor'; };
+  if (d >= 4) { if (!inX) return z >= C.gk[ng - 1][1] ? 'floor between the stacks' : 'floor'; if (d === 4 && z === C.sk[0][0]) return 'top of the top sheet'; for (let i = 0; i < ng; i++) { const [a, b] = C.gk[i]; if (z >= a && z <= b) return `${i === ng - 1 ? 'bottom slot' : `slot ${i + 1}`}, ${where}: ${d === 5 ? `underside of sheet ${i + 1}` : i === ng - 1 ? 'substrate under the stack' : `top of sheet ${i + 2}`}`; } return 'sheet face'; }
+  if (d < 2) { for (let i = 0; i < C.sk.length; i++) if (z >= C.sk[i][0] && z <= C.sk[i][1]) return `edge of sheet ${i + 1}, at the slot opening`; return 'side wall'; }
+  return `gate spacer wall, ${zone()}`;
+};
+
+/* ---------- gaacell: the nanosheet cell, every exposed face ---------- */
+N && N.gaacell && Viz.view('[data-viz="gaacell"]', v => {
+  const GC = N.gaacell, EX = 3, HT = .5, WS = .05;      /* slots drawn EX times their height, the trench above the stack at HT of its height (stated in the caption); WS world units per nm */
+  const M = new THREE.Matrix4(), col = new THREE.Color(), cBare = new THREE.Color(), cCov = new THREE.Color(); const cells = {}; let cur = 'ibm', ti = 2;
+  for (const key of ['ibm', 'narrow']) {
+    const C = GC.cells[key]; if (!C) continue; const u = C.unit_nm, T = C.tile_nm, n = C.n, pos = b64u8(C.pos), cov = C.snaps.map(s => b64u8(s.cov)), per = C.dims.period, Ly = C.ext[1] * u, depth = C.dims.depth;
+    const sk = C.sk.map(([a, b]) => [a * u, b * u]); const segs = [[0, sk[0][0], HT]]; sk.forEach(([a, b], i) => { segs.push([a, b, 1]); segs.push([b, i + 1 < sk.length ? sk[i + 1][0] : depth, EX]); });
+    const zmap = z => { let y = 0; for (const [a, b, fct] of segs) { if (z <= a) break; y += (Math.min(z, b) - a) * fct; } return y; };
+    const zsc = z => { for (const [a, b, fct] of segs) if (z > a && z < b) return fct; return 1; };
+    const Hw = zmap(depth) * WS; const ends = [];
+    const F = new Array(n); for (let q = 0; q < n; q++) { const p = pos[3 * q] | (pos[3 * q + 1] << 8) | (pos[3 * q + 2] << 16); F[q] = { x2: p & 127, y2: (p >> 7) & 31, z2: (p >> 12) & 255, d: (p >> 20) & 7 }; }
+    const im = new THREE.InstancedMesh(new THREE.PlaneGeometry(1, 1), new THREE.MeshBasicMaterial({ side: THREE.FrontSide }), 2 * n); v.rig.add(im);
+    const place = p => { for (let c = 0; c < 2; c++) for (let q = 0; q < n; q++) { const t = F[q], x = t.x2 * u, y = t.y2 * u, z = t.z2 * u; const s = Math.max(1e-3, ease(clamp(p * 1.6 - (z / depth) * .6, 0, 1))); tileMatrix(M, t.d, [(x + (c - 1) * per) * WS, Hw / 2 - zmap(z) * WS, (y - Ly / 2) * WS], [T * WS, T * zsc(z) * WS, T * WS], s); im.setMatrixAt(c * n + q, M); } im.instanceMatrix.needsUpdate = true; ends.forEach(m => { m.scale.y = Math.max(1e-3, m.userData.sz[1] * ease(clamp(p * 1.6 - (m.userData.sz[2] / depth) * .6, 0, 1))); }); };
+    const paint = () => { cBare.set(bareColor(v)); cCov.set(v.pal.green); const cv = cov[Math.min(ti, cov.length - 1)]; for (let q = 0; q < n; q++) { col.copy(cBare).lerp(cCov, cv[q] / 255).multiplyScalar(TILE_SHADE[F[q].d]); im.setColorAt(q, col); im.setColorAt(n + q, col); } im.instanceColor.needsUpdate = true; };
+    /* the sheets' ends, where they run into the gate spacers: grey plates flush with the two spacer planes (not solver faces; they close the view into the cut sheet) */
+    const sxw = [C.sx[0] * u, C.sx[1] * u];
+    for (let c = 0; c < 2; c++) sk.forEach(([a, b]) => C.ty.forEach(tyv => { const m = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), Viz.mat('steel', { side: THREE.DoubleSide, roughness: .7 })); m.position.set(((sxw[0] + sxw[1]) / 2 + (c - 1) * per) * WS, Hw / 2 - (zmap(a) + zmap(b)) / 2 * WS, (tyv * u - Ly / 2) * WS); m.userData.sz = [(sxw[1] - sxw[0]) * WS, (zmap(b) - zmap(a)) * WS, a]; m.scale.set(m.userData.sz[0], 1e-3, 1); v.rig.add(m); ends.push(m); }));
+    const G = new THREE.Group(); v.rig.add(G); G.add(...ends); const lx = per * WS + .3, Rg = C.t90_regions || {}, tt = k => Rg[k] != null ? ` · t90 ${f(Rg[k], 3)} s` : '';
+    const lab = (txt, znm, o = {}) => Viz.label(v, txt, [lx + .9, Hw / 2 - zmap(znm) * WS, 0], { px: 16, scale: .105, parent: G, ...o });
+    lab('gate trench mouth', 0, { color: 'muted' }); lab(`top sheet${tt('sheet0_top')}`, sk[0][0]);
+    C.gk.forEach(([a, b], i) => { const last = i === C.gk.length - 1; lab(`${last ? 'bottom slot' : `slot ${i + 1}`}, ${f(C.dims.g_s, 0)} nm${tt(last ? 'gap_bottom_mid' : `gap${i}_mid`)}${last ? ' (last point)' : ''}`, (a + b) / 2 * u, last ? { color: 'green', weight: 700 } : {}); });
+    lab(`substrate${tt('floor_between_stacks')}`, depth, { color: 'muted' });
+    Viz.label(v, `${C.name} · period ${f(per, 0)} nm, sheets ${f(C.dims.t_s, 0)} × ${f(C.dims.W, 0)} nm, Lᵍ ${f(C.dims.Lg, 1)} nm · slots drawn ${EX}× taller, the trench above the stack at half height`, [0, Hw / 2 + .5, 0], { px: 16, scale: .105, parent: G, color: 'ink' });
+    Viz.label(v, `${C.film} from ${C.chem}, 0.3 Pa: t90 everywhere ${f(C.t90, 3)} s, flat surface ${f(C.t_flat, 3)} s`, [0, -Hw / 2 - .45, 0], { px: 16, scale: .105, parent: G, color: 'muted' });
+    place(0); paint(); cells[key] = { C, F, im, G, n, u, cov, paint, place };
+  }
+  const el = ctl('gaacell');
+  const sync = () => { const c = cells[cur]; if (!el || !c) return; const sl = el.querySelector('input[type=range]'); if (sl) { sl.max = c.C.snaps.length - 1; sl.value = ti; } const val = el.querySelector('.val'); if (val) val.textContent = `${f(c.C.snaps[ti].t, 3)} s`; el.querySelectorAll('button[data-cell]').forEach(b => b.classList.toggle('on', b.dataset.cell === cur)); const info = el.querySelector('.info'); if (info) info.textContent = `${['one third', 'two thirds', 'all'][ti] || ''} of the ${f(c.C.t90, 3)} s this cell needs for 90 % everywhere`; };
+  const show = key => { if (!cells[key]) return; cur = key; for (const k in cells) { cells[k].im.visible = k === key; cells[k].G.visible = k === key; } v.pickables = [cells[key].im]; cells[key].place(v.p); cells[key].paint(); sync(); v.dirty = true; };
+  if (el) { const sl = el.querySelector('input[type=range]'); if (sl) sl.addEventListener('input', () => { ti = clamp(+sl.value, 0, 2); cells[cur].paint(); sync(); v.dirty = true; }); el.querySelectorAll('button[data-cell]').forEach(b => b.addEventListener('click', () => show(b.dataset.cell))); }
+  show(cur);
+  let lastP = -1; v.update = vv => { if (Math.abs(vv.p - lastP) > 1e-4) { lastP = vv.p; cells[cur].place(vv.p); } return false; };
+  v.onTheme = () => { for (const k in cells) cells[k].paint(); };
+  v.hover = hit => { const c = cells[cur]; if (!c || hit.object !== c.im || hit.instanceId == null) return null; const q = hit.instanceId % c.n, t = c.F[q], C = c.C, u = c.u; const parts = C.snaps.map((s, i) => `${f(c.cov[i][q] / 255 * 100, 0)} % at ${f(s.t, 3)} s`).join(' · '); return `<b>${gaaRegion(C, t)}</b>x ${f(t.x2 * u, 1)} nm across the sheet · y ${f(t.y2 * u, 1)} nm along the gate · ${f(t.z2 * u, 1)} nm below the mouth · ${f(C.tile_nm, 2)} nm tile<br>${parts}`; };
+  v.rot = -.5; v.tilt = .3;
+}, { camera: [0, 2.0, 13.4], target: [0, 0, 0], fov: 34 });
+
+/* ---------- nandcell: a cut through the 5 um word-line cell with pillars ---------- */
+N && N.nandcell && Viz.view('[data-viz="nandcell"]', v => {
+  const R = N.nandcell, u = R.unit_nm, h = R.h_nm, L = R.dims.L, YX = 4, WS = 1.28e-3, XL = 100, TH = 12, TW = 10;
+  /* world: X = depth (mouth at the left), Y = across the slit stretched YX times, Z = along the slit toward the viewer; the slab's faces are
+     drawn XL nm long along the slit, plate tiles TH nm into their recess, wall tiles TW nm into the solid (all stated in the caption) */
+  const n = R.n, pos = b64u8(R.pos), cov = R.snaps.map(s => b64u8(s.cov)), pcov = R.pillar.cov.map(b64u8), nr = R.n_rec; let ti = R.snaps.length - 1;
+  const Yc = R.ext[1] * h / 2, mx = z => (z - L / 2) * WS, my = y => (y - Yc) * YX * WS, ya = R.y_slit[0] * h, yb = R.y_slit[1] * h;
+  const T = new Array(n); for (let q = 0; q < n; q++) { const p = (pos[4 * q] | (pos[4 * q + 1] << 8) | (pos[4 * q + 2] << 16) | (pos[4 * q + 3] << 24)) >>> 0; T[q] = { y2: p & 1023, z2: (p >> 10) & 2047, d: (p >> 21) & 7, sy: (p >> 24) & 7, sz: (p >> 27) & 15 }; }
+  const im = new THREE.InstancedMesh(new THREE.BoxGeometry(1, 1, 1), new THREE.MeshStandardMaterial({ roughness: .6, metalness: .05 }), n); v.rig.add(im); v.pickables.push(im);
+  const M = new THREE.Matrix4(), S = new THREE.Vector3(), P = new THREE.Vector3(), Q0 = new THREE.Quaternion(), Qp = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 0, 1), -Math.PI / 2), col = new THREE.Color(), cBare = new THREE.Color(), cCov = new THREE.Color();
+  const grow = (p, z) => Math.max(1e-3, ease(clamp(p * 1.5 - (z / L) * .5, 0, 1)));
+  const place = p => { for (let q = 0; q < n; q++) { const t = T[q], y = t.y2 * u, z = t.z2 * u; let cx, cy, sx, sy; if (t.d >= 4) { sx = TH; sy = t.sy * h; cx = z + (t.d === 5 ? TH / 2 : -TH / 2); cy = y; } else { sx = t.sz * h; sy = TW; cx = z; cy = y + (t.d === 2 ? TW / 2 : -TW / 2); } const s = grow(p, z); S.set(sx * WS * s, sy * YX * WS * s, XL * WS * s); P.set(mx(cx), my(cy), 0); M.compose(P, Q0, S); im.setMatrixAt(q, M); } im.instanceMatrix.needsUpdate = true; };
+  const paint = () => { cBare.set(bareColor(v)); cCov.set(v.pal.green); const cv = cov[ti], pv = pcov[ti]; for (let q = 0; q < n; q++) { col.copy(cBare).lerp(cCov, cv[q] / 255).multiplyScalar(TILE_SHADE[T[q].d]); im.setColorAt(q, col); } im.instanceColor.needsUpdate = true; for (let q = 0; q < 2 * nr; q++) { col.copy(cBare).lerp(cCov, pv[q] / 255).multiplyScalar(.78); pil.setColorAt(q, col); } pil.instanceColor.needsUpdate = true; };
+  /* the row-0 pillars: one cylinder segment per recess and side, coloured by the area-weighted coverage of the pillar wall inside that recess; a faint full-length cylinder joins them */
+  const pil = new THREE.InstancedMesh(new THREE.CylinderGeometry(1, 1, 1, 24, 1), new THREE.MeshStandardMaterial({ roughness: .5, metalness: .15 }), 2 * nr); v.rig.add(pil); v.pickables.push(pil);
+  const rr = R.pillar.r * h, zrec = r => (R.rec_k0 + r * R.rec_pitch + R.rec_g / 2) * h;
+  const placePil = p => { for (let r = 0; r < nr; r++) for (let side = 0; side < 2; side++) { const zc = zrec(r), s = grow(p, zc); S.set(rr * YX * WS * s, R.rec_g * h * WS * s, rr * WS * s); P.set(mx(zc), my(R.pillar.cy[side] * h), 0); M.compose(P, Qp, S); pil.setMatrixAt(r * 2 + side, M); } pil.instanceMatrix.needsUpdate = true; };
+  R.pillar.cy.forEach(cy => { const c = new THREE.Mesh(new THREE.CylinderGeometry(1, 1, 1, 24, 1), Viz.mat('steel', { opacity: .22, depthWrite: false })); c.quaternion.copy(Qp); c.scale.set(rr * .85 * YX * WS, L * WS, rr * .85 * WS); c.position.set(0, my(cy * h), 0); v.rig.add(c); });
+  /* the two word-line stacks as faint panels behind the tiles */
+  [[R.pad * h, ya], [yb, R.y_end[1] * h]].forEach(([y0, y1]) => { const b = new THREE.Mesh(new THREE.BoxGeometry(L * WS, (y1 - y0) * YX * WS, .01), Viz.mat('steel', { opacity: .14, depthWrite: false })); b.position.set(0, my((y0 + y1) / 2), -XL * WS / 2 - .02); v.rig.add(b); });
+  const sl = R.slowest, zs = zrec(sl.index), zd = zrec(nr - 1);
+  Viz.line(v, [[mx(zs), my(R.pad * h) - .25, .1], [mx(zs), my(R.y_end[1] * h) + .25, .1]], 'rose');
+  Viz.label(v, `slowest recess: ${sl.index + 1} of ${nr} at ${f(sl.depth_um, 1)} µm, ${f(sl.frac * 100, 0)} % of the depth · t90 ${f(sl.t90, 2)} s`, [mx(zs) - .3, my(R.y_end[1] * h) + .5, .1], { px: 16, scale: .1, color: 'rose', weight: 700 });
+  Viz.label(v, `deepest recess ${f(R.t90_deepest, 2)} s`, [mx(zd) + .2, my(R.y_end[1] * h) + .22, .1], { px: 15, scale: .09, color: 'muted' });
+  Viz.label(v, 'mouth', [mx(0) - .45, 0, .1], { px: 16, scale: .1, color: 'muted' }); Viz.label(v, `slit floor · t90 ${f(R.t90_floor, 2)} s`, [mx(L) + .75, 0, .1], { px: 16, scale: .1, color: 'ink' });
+  Viz.label(v, `slit, ${f(R.dims.w, 0)} nm wide (drawn ${YX}× taller) · ${f(L / 1000, 0)} µm deep`, [mx(L * .25), 0, .12], { px: 15, scale: .09, bg: false });
+  Viz.label(v, `${nr} word-line recesses per wall: ${f(R.dims.L_r, 0)} nm deep, ${f(R.dims.g_r, 0)} nm tall at ${f(R.dims.p_r, 0)} nm pitch`, [mx(L * .35), my(R.pad * h) - .32, .1], { px: 15, scale: .09, bg: false });
+  Viz.label(v, `channel-hole pillars, ${f(R.dims.d_h, 0)} nm (the row through the cut)`, [mx(L * .25), my(R.pillar.cy[0] * h), .3], { px: 15, scale: .09, bg: false, color: 'ink' });
+  const title = Viz.label(v, '', [0, my(R.y_end[1] * h) + 1.0, 0], { px: 16, scale: .1, color: 'ink' });
+  const el = ctl('nandcell');
+  const sync = () => { const t = R.snaps[ti].t; title.userData.label.text = `TMA at 0.3 Pa: coverage at ${f(t, 1)} s of the pulse · the cut through the pillar row, faces drawn ${XL} nm long along the slit`; redrawLabel(title, v.dark); if (!el) return; const r0 = el.querySelector('input[type=range]'); if (r0) r0.value = ti; const val = el.querySelector('.val'); if (val) val.textContent = `${f(t, 1)} s`; const info = el.querySelector('.info'); if (info) info.textContent = ti === R.snaps.length - 1 ? `end of the run: everywhere above 90 % from ${f(R.t90_everywhere, 2)} s, 99 % from ${f(R.t99_everywhere, 2)} s` : `${f(t / R.t90_everywhere * 100, 0)} % of the ${f(R.t90_everywhere, 2)} s to 90 % everywhere`; };
+  if (el) { const r0 = el.querySelector('input[type=range]'); if (r0) { r0.max = R.snaps.length - 1; r0.addEventListener('input', () => { ti = clamp(+r0.value, 0, R.snaps.length - 1); paint(); sync(); v.dirty = true; }); } }
+  place(0); placePil(0); paint(); sync();
+  let lastP = -1; v.update = vv => { if (Math.abs(vv.p - lastP) > 1e-4) { lastP = vv.p; place(vv.p); placePil(vv.p); } return false; };
+  v.onTheme = () => { paint(); redrawLabel(title, v.dark); };
+  const recessOf = kgas => clamp(Math.floor((kgas - R.rec_k0) / R.rec_pitch), 0, nr - 1);
+  v.hover = hit => {
+    const parts = (arr, id) => R.snaps.map((s, i) => `${f(arr[i][id] / 255 * 100, 0)} % at ${f(s.t, 1)} s`).join(' · ');
+    if (hit.object === pil && hit.instanceId != null) { const id = hit.instanceId, r = Math.floor(id / 2); return `<b>pillar wall in recess ${r + 1}, ${id % 2 ? 'right' : 'left'} wall · ${f(zrec(r) / 1000, 2)} µm deep</b>${parts(pcov, id)} · recess deep-half t90 ${f(R.t90_recess[r], 2)} s`; }
+    if (hit.object !== im || hit.instanceId == null) return null; const q = hit.instanceId, t = T[q], y = t.y2 * u, z = t.z2 * u, dep = `${f(z / 1000, 2)} µm deep (${f(z / L * 100, 0)} % of the depth)`; let what, r = null;
+    if (t.d >= 4) { if (y > ya && y < yb) what = 'slit floor'; else { r = recessOf(t.d === 4 ? t.z2 / 2 - 1 : t.z2 / 2); const left = y < Yc; what = `recess ${r + 1} of ${nr}, ${left ? 'left' : 'right'} wall, ${t.d === 5 ? 'ceiling' : 'floor'}, ${f(left ? ya - y : y - yb, 0)} nm into the recess`; } }
+    else { const kc = Math.floor(z / h); if ((t.d === 3 && t.y2 === 2 * R.y_slit[0]) || (t.d === 2 && t.y2 === 2 * R.y_slit[1])) what = `slit wall, oxide band ${Math.floor(kc / R.rec_pitch) + 1} (between the recesses)`; else { r = recessOf(kc); what = `end wall of recess ${r + 1}, ${f(R.dims.L_r, 0)} nm from the slit`; } }
+    return `<b>${what}</b>${dep}<br>${parts(cov, q)}${r != null ? ` · recess deep-half t90 ${f(R.t90_recess[r], 2)} s` : ''}`;
+  };
+  v.rot = -.22; v.tilt = .24;
+}, { camera: [0, 1.8, 10.6], target: [0, 0, 0], fov: 34 });
