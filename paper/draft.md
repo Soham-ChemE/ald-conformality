@@ -2,7 +2,7 @@
 
 Soham Kavathekar, Department of Chemical and Biomolecular Engineering, University of Pennsylvania
 
-*Draft 0.9.2 (public), 2026-11-10. Every number is from a run documented in `paper/assumptions.md`.*
+*Draft 0.9.3 (public), 2026-11-10. Every number is from a run documented in `paper/assumptions.md`.*
 
 ## Abstract
 
@@ -16,8 +16,9 @@ on non-uniform layouts the local wall-area ratio of the densest region sets the 
 At a typical operating point the blanket wafer saturates in 0.35 s and the product wafer in 14 s. Chamber pressure,
 showerhead gap and carrier flow do not move that number; precursor delivery rate does. Nor does the sticking coefficient across its published range; only the blanket pulse
 does, threefold. The water half-cycle, fifty
-times less reactive, needs the same pulse on the product wafer and coats it more evenly. The feature model agrees
-with an independent Argonne code to 7 % and fits published thickness profiles from lateral test structures,
+times less reactive, needs the same pulse on the product wafer and coats it more evenly. The feature model sits within
+3 to 11 % of a converged ballistic reference (Argonne's Machball and this work's own 3D Monte Carlo solver, which
+agree within 2 %) and fits published thickness profiles from lateral test structures,
 and the rule itself reproduces the measured saturation time of a fluidized-bed ALD run on 940 m2 of silica gel
 to 7 %. The rule
 turns a day of recipe transfer into arithmetic, and says where a tool's throughput actually comes from.
@@ -55,8 +56,9 @@ Equipment makers are building exactly this class of model under the name of equi
 [Applied Materials, Computational Products and Solutions; AppliedTwin]. This work is an open, reproducible instance
 for ALD, with every case file, boundary condition and figure in the repository.
 
-Contributions: (i) a two-way coupled chamber-feature wall condition for OpenFOAM, released; (ii) two-code
-verification and public-data validation of the feature model; (iii) the supply-limit rule and its range of validity;
+Contributions: (i) a two-way coupled chamber-feature wall condition for OpenFOAM, released; (ii) three-method
+verification (continuum, this work's voxel Monte Carlo, Argonne's Machball) and public-data validation of the feature
+model; (iii) the supply-limit rule and its range of validity;
 (iv) the blanket-to-product recipe-transfer factor, the shielding mechanism and the edge-lag inversion; (v) the
 temporal-versus-spatial design chart and the plasma-ALD recombination ceiling.
 
@@ -84,8 +86,13 @@ A_wall/A_wafer = 11, 28, 56 for AR 20, 50, 100.
 - Scaling tests on the feature solver: penetration depth ~ sqrt(dose); dose for 95 % step coverage ~ AR^2 in the
   diffusion-limited regime (ratio 4.0 for AR 20 -> 40 at s = 0.5; drops to 3.2 at s = 0.05 where the front becomes
   reaction-limited); sticking coefficient recovered from a synthetic profile within 5 % (log).
-- Two-code check: Machball (ballistic, cosine re-emission) vs this Knudsen-continuum solver, 95 % bottom coverage
-  time at 0.3 Pa TMA, 573 K: 1.20 vs 1.29 s (AR 20), 4.45 vs 4.46 s (AR 50), 16.2 vs 15.6 s (AR 100).
+- Cross-code check: Machball (ballistic, cosine re-emission) vs this Knudsen-continuum solver, 100 nm holes at
+  0.3 Pa TMA, 573 K, with Machball's wall discretisation converged (Nz = 8 to 16 AR): 90 % bottom coverage at
+  1.035 vs 1.158 s (AR 20), 4.230 vs 4.476 s (AR 50), 15.93 vs 16.19 s (AR 100), 95 % at 1.20 vs 1.33, 4.45 vs
+  4.70 and 16.2 vs 16.5 s; the continuum solver is 11, 5.5 and 1.6 % fast against converged Machball and 11, 7 and
+  3 % fast against the voxel Monte Carlo solver of Section 2.6, which agrees with converged Machball within 2 %. An
+  earlier draft of this paper quoted Machball at Nz = 2 AR (95 % times 1.29 / 4.46 / 15.6 s), which Section 2.6 shows
+  is not converged; the values here supersede them.
 - Embedded-BC check: with negligible hole density the boundary condition's hole-bottom coverage matches the
   standalone solver driven by the same surface density to 1 % at all times.
 - Validation against the Zenodo 3974438 PillarHall Al2O3 profiles (TMA/H2O, 300 C, 500 cycles x 0.1 s, 500 nm
@@ -95,6 +102,8 @@ A_wall/A_wafer = 11, 28, 56 for AR 20, 50, 100.
   Published values: 0.5-2e-3 (Arts 2019, 275 C set-point); our value is higher, with temperature, the site-density
   assumption and lumped-vs-explicit kinetics as candidate reasons; s = 1e-3 at the same exposure is visibly excluded
   by the data. The chamber runs use 5e-3; the patterned-wafer conclusions are supply-limited and insensitive to it.
+  The slit model's Knudsen diffusivity D_K = 2 w vbar/3 is about 24 % slow against the ballistic solvers (Section 2.6),
+  which this fit absorbed into s; a refit with the corrected slit transport follows.
 
 ### 2.4 Validation against a measured high-surface-area ALD run
 A patterned wafer with tens of wafer-areas of holes is, to the chamber, a powder bed. The cleanest published
@@ -170,6 +179,49 @@ uniformity of a particular injector is not a claim of this paper.
 | Measured, 25 ms (2019 Fig. 10, digitised, / 1.00 A per cycle at 60 ms) | 0.996 / 0.975 / 0.998 | 2.37 % (2.40 % stated) | | | | | |
 | Measured, 60 ms (stated) | 1.00 | 0.58 % | | | | | |
 | Their CFD + kinetics, 25 ms / 60 ms | | 2.45 % / 0.83 % | | 0.55-0.60 (2018 Fig. 12) | 10.7 % | | 0.7-3.7 at 25 ms (2019 Fig. 7b) |
+
+### 2.6 A 3D voxel Monte Carlo feature solver
+To check the one-dimensional Knudsen-diffusion model against a description that makes none of its assumptions, the
+same features were solved with a test-particle Monte Carlo on a voxel grid (lib/aldmc). In the molecular-flow regime
+that holds inside the features (Kn ~ 200), particles move in straight lines between wall collisions and never
+collide with each other. They enter through the feature mouth with a cosine angular distribution and a uniform
+position over the opening; on hitting a solid voxel face they stick with probability s (1 - theta) on that face's
+own coverage, are lost with probability r, and otherwise re-emit diffusely; particles leaving through the mouth are
+lost. A time step launches M particles that represent the mouth flux n vbar/4 times the mouth area and the step, and
+the coverage of every face is advanced by the Langmuir relaxation of the collisions it received, the same update as
+the 1D solver with the Monte Carlo impingement in place of n vbar/4 dt. Because a voxel surface is a staircase with
+4/pi times the area of a smooth cylinder wall, each face carries sites and sticking in proportion to its projected
+area on the estimated smooth surface; without this correction the hole saturates 26 % late. The solver is
+deterministic for a given seed at any thread count, needs no diffusion coefficient or hydraulic diameter, and takes
+arbitrary shapes from an occupancy array (straight and tapered holes, slits, the word-line recess structure).
+
+For the straight 100 nm holes at 0.3 Pa TMA and 573 K the voxel solver and Machball agree within 2 % at AR 20, 50
+and 100 once Machball's wall discretisation is converged (t90 1.15 / 4.51 / 16.45 s against 1.16 / 4.48 / 16.19 s;
+Machball's values move by 3-6 % between Nz = 2 AR and 8 AR), while the 1D Knudsen solver is 11 % fast at AR 20, 7 %
+at AR 50 and 3 % at AR 100 (1.04 / 4.23 / 15.93 s): the continuum description converges to the ballistic one as the
+aspect ratio grows (Figure, voxel_mc_crosscheck.png; table below). The particle budget (25 000 to 400 000 per step),
+the voxel size (16 to 32 across the diameter) and the seed change t90 by at most 1 %; the time step enters linearly
+through the coverage frozen within a step (0.6 % at dt = t90/200). The frustum with a 60 % bottom lengthens t90 by
+the factor 1.19 in the voxel solver and 1.20 in the 1D model. Driven by the chamber's centre-face density history of
+the long AR-100 case, the voxel hole reaches 90 % bottom coverage at 14.32 s (14.55 s with the history subsampled to
+0.25 s) against 14.03 s in the 1D solver and 14.05 s in the boundary condition, with the same saturated and empty
+regions and a somewhat sharper front at 5, 10 and 13 s. For slits the two ballistic codes again agree (AR 50:
+1.08-1.11 s voxel, 1.12 s Machball), but the 1D slit model with D_K = 2 w vbar/3 is 24 % slow, the known logarithmic
+correction of the parallel-plate Knudsen diffusivity; the word-line recess structure therefore saturates 27 % sooner
+in the voxel solver (10.7 s against 14.5 s at 0.3 Pa) with the same ordering of slit bottom and recess ends. The
+chamber results rest on the hole model, whose Knudsen diffusivity d vbar/3 is exact; the slit-based numbers of
+Section 3.11 are conservative by this factor. The 24 voxel runs behind these numbers used 6.1e8 particles and 93 min
+of wall time in all on 7 to 8 threads, no single run above 10 min, against under a second per 1D solve and 1 to
+131 s per converged Machball run.
+
+| AR | voxel t90 / t95 (s) | 1D Knudsen t90 / t95 (s) | Machball converged t90 / t95 (s) | Machball Nz = 2 AR t90 / t95 (s) | voxel vs Machball | voxel vs 1D |
+|---|---|---|---|---|---|---|
+| 20 | 1.148 / 1.316 | 1.035 / 1.204 | 1.158 / 1.334 | 1.123 / 1.289 | -0.9 % / -1.3 % | +10.9 % / +9.3 % |
+| 50 | 4.513 / 4.735 | 4.230 / 4.451 | 4.476 / 4.704 | 4.247 / 4.465 | +0.8 % / +0.7 % | +6.7 % / +6.4 % |
+| 100 | 16.454 / 16.784 | 15.931 / 16.249 | 16.191 / 16.511 | 15.279 / 15.590 | +1.6 % / +1.7 % | +3.3 % / +3.3 % |
+
+Conditions: s = 5e-3, N0 = 4e18 /m2, 573 K, 0.3 Pa TMA, 100 nm holes; voxel runs 16 voxels across the diameter,
+dt 0.005 / 0.0125 / 0.025 s, seed 1; Machball converged at Nz = 8 AR (16 AR at AR 100).
 
 ## 3. Results
 
@@ -397,7 +449,10 @@ wall), so the rule's area-only treatment of recesses holds up to recess aspect r
 recipe is in the area: a wafer tiled with these slits at a 1 to 2.3 um pitch carries 150 to 189 wafer-areas of wall,
 2.7 to 3.4 x the AR-100 hole wafer, and the rule puts its TMA pulse at 38 to 48 s (fully patterned) at 1 %. Closing
 this with a recessed-slit boundary condition in the chamber is the natural next step; the nested model says the
-correction it would find inside the structure is below 10 %.
+correction it would find inside the structure is below 10 %. The voxel Monte Carlo solver of Section 2.6 shows the
+1D slit transport behind these numbers to be about 24 % slow against the ballistic solvers (the same structure
+saturates in 10.7 s there against 14.5 s at 0.3 Pa), so the absolute recess times above are conservative by about
+that factor while the ordering and the area-equivalence hold; a refit with the corrected slit transport follows.
 
 | slit width w_s | recess length L_r (AR_r) | area factor A_f | chamber-driven t90: plain slit bottom | slit bottom (flat wall) | recess bottom at mouth / mid / stack bottom | delay of the last recess bottom behind the slit bottom | area-equivalent slit bottom | constant 0.3 Pa: slit bottom / last recess bottom; exposure | ratio to the effusion-limit exposure |
 |---|---|---|---|---|---|---|---|---|---|
@@ -494,6 +549,110 @@ on this wafer; the recipe margin of the design rule (the factor 1.2) covers it, 
 convective gap (Peclet of order 1, i.e. ten times the flow or pressure) before it mattered. The same ordering holds in
 the wedge's radial direction, where the edge lag is 0.4 %.
 
+### 3.13 Byproducts: what a second species does and does not do
+At the pressures of this work the mean free path is 12 to 123 um, so inside a 100 nm feature the Knudsen number is
+120 to 1,200 and molecules collide with the walls, not with each other: a reaction byproduct cannot block the
+precursor in the gas phase, and each species diffuses independently with its own Knudsen diffusivity (methane 2.1 x
+faster than TMA, HCl 2.3 x faster than TiCl4). What a byproduct can do is surface-side: re-adsorb on a free site and
+block it until it desorbs, or etch the film. We extended the feature solver to two species (aldconf.multispecies and
+the library option): the byproduct is released at nu molecules per adsorbed precursor, solved quasi-steadily with a
+source on the right-hand side, re-adsorbs on free sites with sticking s_B, desorbs at k_B and removes a coated site
+with probability k_etch per collision; the precursor sees the free fraction 1 - theta_P - theta_B. With s_B = k_etch = 0,
+or k_B -> infinity, the single-species solver is reproduced to round-off, and the byproduct balance (produced +
+desorbed = escaped + re-adsorbed + etched) closes to 1e-14 in every run. For TMA/H2O the byproduct is methane
+(3 per TMA over a cycle [Puurunen 2005]), which does not re-adsorb at these temperatures; the two-species result is
+the single-species one, and even a hypothetical re-adsorption at s_B = 1e-3 with 1 ms residence changes the AR-100
+pulse by 0.01 % while 99.95 % of the methane leaves the hole (Figure, multispecies.png, panel a; table (a)). Every
+result of this paper therefore stands as computed.
+
+For TiCl4/NH3 the byproduct is HCl, 4 per TiCl4 over a cycle [Ritala et al. 1995], about 0.5 of them in the TiCl4
+half-step [Tiznado and Zaera 2006], and its re-adsorption is documented on TiN, silica and TiO2 [Tiznado and Zaera
+2006; Snyder et al. 2006; Leem et al. 2014]; no sticking coefficient or desorption rate exists for HCl on TiN at
+573 K, so we ran the range that the HCl/alumina surface science spans (s_B 1e-3 to 0.4 [Elam et al. 2000; Lostier et
+al. 2026]; k_B 0.1 to 1,000 1/s, the 300-650 K TPD span of [Elam et al. 2000] read at 573 K). The desorption rate
+decides (panel b, table (b)): at k_B >= 100 1/s HCl is a spectator whatever its sticking; at k_B = 1 1/s the anchored
+half-step stoichiometry lengthens the 100 nm x 10 um hole's saturating pulse by 11 to 55 % (7.75 s to 8.6-12.0 s at a
+constant 0.3 Pa mouth) and by 11 to 36 % under the chamber's density history (table (c)); at k_B = 0.1 1/s the
+blocked sites outlive the pulse and the hole fills three times slower. Releasing the whole cycle's four HCl in the
+half-step (a bound) doubles these costs, and an etch probability of 1e-3 per HCl collision (a bound; HCl does not
+etch TiO2 [Leem et al. 2014], and the TiN kinetic Monte Carlo of [Kim et al. 2022] lists Ti removal by surface Cl
+without a rate) costs 70 to 80 % at nu 0.5 and prevents saturation at nu 4: the hole settles into an etch-limited
+steady state. HCl accumulated in the chamber at 10 % of the precursor density adds 4 to 5 % at k_B = 1 1/s and
+nothing at 100 1/s, because the HCl produced inside the feature outweighs what the chamber brings in (panel d; table
+(d)). The profiles at the rule pulse (panel c) show the mechanism: blocked sites near the mouth let the precursor
+pass, so the front is broader and deeper at a given time, but the sites behind it must be released and refilled, and
+that is where the time goes.
+
+What this means for a chloride recipe is a measurement, not a number: the supply rule (Section 3.4) is untouched
+when k_B >= 100 1/s, carries a 10 to 50 % chemistry margin at k_B ~ 1 1/s, and fails at k_B <= 0.1 1/s or with
+etching, so a TiN or HfO2 tool model needs the HCl desorption rate on the growing film at the deposition
+temperature (one TPD of HCl from ALD TiN would fix it) before the wall-area rule can be applied with the same
+confidence as for Al2O3. The library carries the option behind defaults that reproduce the single-species boundary
+conditions bit for bit; a transported HCl field in the chamber is the next step.
+
+(a) TMA/H2O with methane (methane does not re-adsorb; AR-100 hole, bottom t90):
+
+| drive | single-species | two-species, CH4 nu 3, s_B 0 | bound: s_B 1e-3, k_B 1e3 1/s | methane escaping the hole (bound) |
+|---|---|---|---|---|
+| constant 0.3 Pa mouth | 15.600 s | 15.600 s, max coverage difference 0 | 15.601 s (+0.01 %) | 99.95 % |
+| chamber centre-face history | 14.005 s | 14.005 s, max coverage difference 0 | 14.006 s (+0.01 %) | 99.95 % |
+
+(b) TiCl4/NH3 with HCl at a constant 0.3 Pa mouth density; bottom t90 without HCl action 7.754 s. Blocking only (nu, s_B, k_B):
+
+| nu | s_B | k_B 0.1 1/s | k_B 1 | k_B 10 | k_B 100 | k_B 1,000 |
+|---|---|---|---|---|---|---|
+| 0.5 (anchored) | 1e-3 | 23.51 s (+203 %) | 8.59 (+11 %) | 7.75 | 7.75 | 7.75 |
+| 0.5 | 1e-2 | 24.34 (+214 %) | 8.65 (+12 %) | 7.75 | 7.75 | 7.75 |
+| 0.5 | 0.1 | 24.51 (+216 %) | 10.06 (+30 %) | 7.93 (+2 %) | 7.75 | 7.75 |
+| 0.5 | 0.4 | 27.67 (+257 %) | 12.00 (+55 %) | 8.51 (+10 %) | 7.79 (+0.5 %) | 7.75 |
+| 4 (bound) | 1e-3 | 24.73 | 8.41 (+8 %) | 7.75 | 7.75 | 7.75 |
+| 4 | 1e-2 | 27.32 | 8.97 (+16 %) | 7.78 | 7.75 | 7.75 |
+| 4 | 0.1 | not within 30 s | 13.36 (+72 %) | 8.42 (+9 %) | 7.77 | 7.75 |
+| 4 | 0.4 | not within 30 s | 20.39 (+163 %) | 10.16 (+31 %) | 7.97 (+3 %) | 7.75 |
+
+With etching (bound; k_etch per HCl collision on a Ti site), bottom t90 and the state at 30 s:
+
+| nu | s_B | k_B 1/s | k_etch 1e-4 | k_etch 1e-3 | blocking only |
+|---|---|---|---|---|---|
+| 0.5 | 1e-2 | 1 | 10.44 s | 13.98 s | 8.65 s |
+| 0.5 | 1e-2 | 100 | 9.32 s | 12.46 s | 7.75 s |
+| 0.5 | 0.1 | 1 | 11.44 s | 14.17 s | 10.06 s |
+| 0.5 | 0.1 | 100 | 9.74 s | 13.11 s | 7.75 s |
+| 4 | 1e-2 | 1 | never: bottom theta_P 0.045, blocked 0.94 at 30 s | never: 0.001 / 0.98 | 8.97 s |
+| 4 | 1e-2 | 100 | never: 0.000 / 0.37 | never: 0.000 / 0.37 | 7.75 s |
+| 4 | 0.1 | 1 | never: 0.161 / 0.84 | never: 0.011 / 0.99 | 13.36 s |
+| 4 | 0.1 | 100 | never: 0.000 / 0.85 | never: 0.000 / 0.85 | 7.77 s |
+
+(c) The saturating pulse chamber-driven (the TMA run's centre-face history as a stand-in; no TiCl4 chamber run
+exists, so only the changes are meaningful) and at a constant 0.3 Pa mouth; bottom t90 without HCl action 9.622 s
+driven, 7.754 s constant:
+
+| nu | s_B | k_B 1/s | driven bottom t90 | change | bottom theta_P at the TiCl4 rule pulse 4.44 s | at the TMA rule pulse 14.4 s | constant-mouth t90 | change |
+|---|---|---|---|---|---|---|---|---|
+| 0.5 | 1e-2 | 1 | 10.72 s | +11 % | 0.000 | 0.997 | 8.65 s | +12 % |
+| 0.5 | 1e-2 | 100 | 9.62 s | 0 | 0.000 | 1.000 | 7.75 s | 0 |
+| 0.5 | 0.1 | 1 | 11.76 s | +22 % | 0.000 | 0.991 | 10.06 s | +30 % |
+| 0.5 | 0.1 | 100 | 9.62 s | 0 | 0.000 | 1.000 | 7.75 s | 0 |
+| 0.5 | 0.4 | 1 | 13.11 s | +36 % | 0.000 | 0.959 | 12.00 s | +55 % |
+| 0.5 | 0.4 | 100 | 9.67 s | +0.5 % | 0.000 | 1.000 | 7.79 s | +0.5 % |
+| 4 | 1e-2 | 1 | 10.89 s | +13 % | 0.012 | 0.997 | 8.97 s | +16 % |
+| 4 | 1e-2 | 100 | 9.62 s | 0 | 0.000 | 1.000 | 7.78 s | +0.4 % |
+| 4 | 0.1 | 1 | 14.06 s | +46 % | 0.058 | 0.922 | 13.36 s | +72 % |
+| 4 | 0.1 | 100 | 9.65 s | +0.3 % | 0.000 | 1.000 | 7.77 s | +0.3 % |
+| 4 | 0.4 | 1 | 16.72 s | +74 % | 0.118 | 0.698 | 20.39 s | +163 % |
+| 4 | 0.4 | 100 | 9.84 s | +2.3 % | 0.000 | 1.000 | 7.97 s | +3 % |
+| 0.5, k_etch 1e-4 | 0.1 | 1 | 12.51 s | +30 % | - | - | 11.44 s | +48 % |
+| 0.5, k_etch 1e-3 | 0.1 | 1 | 13.74 s | +43 % | - | - | 14.17 s | +83 % |
+
+(d) Byproduct at the mouth (chamber accumulation, a parameter): bottom t90 for a byproduct mouth density of 0 / 1 / 3 / 10 % of the precursor mouth density:
+
+| case | 0 % | 1 % | 3 % | 10 % |
+|---|---|---|---|---|
+| TiCl4 constant 0.3 Pa, nu 0.5, s_B 0.1, k_B 1 | 10.059 s | 10.111 (+0.5 %) | 10.215 (+1.6 %) | 10.568 (+5.1 %) |
+| TiCl4 constant, nu 0.5, s_B 0.1, k_B 100 | 7.749 s | 7.749 | 7.749 | 7.749 |
+| TiCl4 chamber-driven, nu 0.5, s_B 0.1, k_B 1 | 11.759 s | 11.808 (+0.4 %) | 11.905 (+1.2 %) | 12.234 (+4.0 %) |
+| TMA constant, CH4 bound s_B 1e-3, k_B 1e3 | 15.601 s | 15.601 | 15.601 | 15.601 |
+
 ## 4. Discussion
 - Throughput on patterned wafers is bought with precursor delivery rate (vapour pressure, bubbler carrier flow,
   injector design), not with chamber pressure, gap or carrier flow; those knobs move uniformity.
@@ -528,6 +687,11 @@ the wedge's radial direction, where the edge lag is 0.4 %.
   lumped Langmuir coefficient with an equilibrium constant, irreversible first-order Langmuir on 4e18 sites). A
   profile grown at a known TMA partial pressure at 300 C, with the site density taken from the measured growth per
   cycle, would remove the trade-off and fix s to the sheet-to-sheet scatter.
+- Byproducts: at Knudsen numbers of 100 to 1,000 a byproduct cannot block the precursor in the gas, only on the
+  surface. For TMA/H2O (methane) the single-species model is exact to the purposes of this paper; for chlorides the
+  HCl desorption rate at the deposition temperature decides between no effect (k_B >= 100 1/s), a 10 to 50 % longer
+  pulse (k_B ~ 1 1/s) and failure of the supply rule (k_B <= 0.1 1/s or etching), and that rate is not in the
+  literature for TiN or HfO2 at 573 K; the two-species solver and the library option (aldkin 1.1) are ready for it.
 - Robustness checks: replacing the bare floor by a 25 mm edge ring with pumping below the wafer plane changes no
   saturation time by more than one write interval and leaves the within-wafer spread within 3 % (blanket 9-11 %,
   patterned 4 %); the pulse-time results do not depend on the chamber outboard of the wafer at this Peclet number.
@@ -571,21 +735,27 @@ the wedge's radial direction, where the edge lag is 0.4 %.
    their cost is in the wall area alone (150 to 189 wafer-areas, 38 to 48 s at 1 %); and the rule is
    chemistry-agnostic through s, N0 and c0, with the HfO2/TDMAH chamber run at 1.17 times its rule and TiN and W
    predicted at 4.4 and 57 s per cycle on the same wafer.
-7. Second-order knobs: pressure up and carrier flow down raise precursor utilization from about 55 % to 95 % at
+7. A 3D voxel Monte Carlo feature solver agrees with converged Machball within 2 % and places the 1D hole model 3 to
+   11 % fast between AR 100 and AR 20; the 1D slit model is 24 % slow, so slit-based absolute numbers are
+   conservative by that factor. A second species cannot block the precursor in the gas at Knudsen numbers of 100 to
+   1,000: for TMA/H2O the methane byproduct leaves every result as computed, while for chlorides the HCl desorption
+   rate decides between no effect (k_B >= 100 1/s), a 10 to 50 % longer pulse (k_B ~ 1 1/s) and failure of the rule
+   (k_B <= 0.1 1/s or etching).
+8. Second-order knobs: pressure up and carrier flow down raise precursor utilization from about 55 % to 95 % at
    fixed precursor flow; gap and pressure set within-wafer edge lag (5 to 18 %) but not time.
-8. The water half-cycle needs the same pulse as TMA on patterned wafers despite a 50x lower sticking coefficient,
+9. The water half-cycle needs the same pulse as TMA on patterned wafers despite a 50x lower sticking coefficient,
    and coats deep features more evenly; reversible adsorption, not chamber flushing, governs its purge.
-9. In fab units the rule's pulse gives 99 % step coverage as well as 90 %, because the saturation front is 0.25 to
+10. In fab units the rule's pulse gives 99 % step coverage as well as 90 %, because the saturation front is 0.25 to
    0.3 s wide at every aspect ratio; 50 cycles of the blanket recipe leave 1.4 nm of a 5.15 nm film on top of an
    AR-100 array and nothing at the bottom. The Al2O3 cycle on the AR-100 wafer is 3.1 times the blanket cycle (37.6
    against 12.2 s; 1.9 against 5.5 wafers per hour for 5 nm), its pulses are three quarters of the cycle, and above
    a wall-area ratio of about 10 throughput falls as 1/(1 + A_wall/A_wafer); the purge is set by water desorption,
    not by the chamber, which clears to 1 % in 2 s while a 10 um hole empties in microseconds.
-10. Plasma ALD adds a hard ceiling: above a wall recombination probability of about 3e-3, aspect ratio 100 is
+11. Plasma ALD adds a hard ceiling: above a wall recombination probability of about 3e-3, aspect ratio 100 is
    unreachable by dose. Separated-chemistry (spatial) architectures beat temporal pulsing by the same wall-area
    factor the rule predicts.
-11. All of this runs on a laptop in open-source tools, with the feature model verified against an independent code
-   and fitted to public measurements, and every number traceable to a script in the repository.
+12. All of this runs on a laptop in open-source tools, with the feature model verified against two independent
+   ballistic descriptions and fitted to public measurements, and every number traceable to a script in the repository.
 
 ## Acknowledgements
 Validation data by R. L. Puurunen and O. M. E. Ylivaara (Aalto University, Zenodo 3974438, CC BY 4.0). Machball by
@@ -597,7 +767,9 @@ line (`python -m aldconf` evaluates the rule, the surrogate and the Pareto front
 figures: https://github.com/Soham-ChemE/ald-conformality. The repository also ships a layout-to-recipe tool on its
 live page (pattern zones in, per-zone local rule and recipe pulse out, calibrated on the two non-uniform runs of
 Section 3.9) and continuous integration that rebuilds the boundary conditions and reruns a regression case in an
-OpenFOAM container (77 tests). Validation data: Zenodo 3974438 (CC BY 4.0).
+OpenFOAM container (118 tests). The kinetics behind the OpenFOAM boundary conditions live in `lib/aldkin`, a C-ABI
+library with Fluent and plain-C hooks, and the voxel Monte Carlo feature solver of Section 2.6 in `lib/aldmc`.
+Validation data: Zenodo 3974438 (CC BY 4.0).
 
 ## References (to format)
 Gordon, Hausmann, Kim, Shepard, Chem. Vap. Deposition 9, 73 (2003). Yanguas-Gil and Elam, Chem. Vap. Deposition
