@@ -43,6 +43,7 @@ import numpy as np
 
 from .solver import Process, _solve_gas, _initial_opening, _area_terms
 from .transport import mean_speed, knudsen_diffusivity, gas_diffusivity, bosanquet
+from .solver import _geometry_factor
 from .kinetics import number_density
 from .recess import time_to_coverage
 
@@ -172,7 +173,7 @@ def advance_coverages(theta_P, theta_B, a_P, a_B, e, k_B, dt):
 # ---------------------------------------------------------------------------------------------------------------
 def _diffusivities(g, opening, proc, mass, sigma):
     N = len(opening)
-    D = knudsen_diffusivity(g.hydraulic_diameter(opening), proc.T, mass, proc.knudsen_factor)
+    D = knudsen_diffusivity(g.hydraulic_diameter(opening), proc.T, mass, proc.knudsen_factor * _geometry_factor(g))
     if proc.p_total is not None:
         D = bosanquet(D, gas_diffusivity(proc.T, proc.p_total, mass, sigma))
     D_face = np.empty(N + 1)

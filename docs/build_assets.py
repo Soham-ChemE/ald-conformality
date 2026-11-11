@@ -188,9 +188,15 @@ def pillarhall_data():
         pr = Precursor(sticking=s, site_density=4e18, mass_amu=72.09, gpc=GPC); res = simulate(Process(Slit(GAP, L), pr, T=T_K, p_partial=p, t_dose=TPULSE, cycles=CYCLES, n_cells=400, n_substeps=60, narrowing=True))
         return np.interp(grid * 1e-6, res.x, res.thickness / res.thickness[:10].mean())
     fit = model(S_FIT, P_FIT); ok = ~np.isnan(y); rms = float(np.sqrt(np.mean((fit[ok] - y[ok]) ** 2)))
+    # the same profile with the ideal-plate slit transport (coupling/fit_pillarhall_corrected.py): s 1.96e-2 at 32.3 Pa, same residual
+    S_FIT_PL, P_FIT_PL = 1.96e-2, 32.3
+    def model_plates(s, p):
+        pr = Precursor(sticking=s, site_density=4e18, mass_amu=72.09, gpc=GPC); res = simulate(Process(Slit(GAP, L, knudsen_correction="plates"), pr, T=T_K, p_partial=p, t_dose=TPULSE, cycles=CYCLES, n_cells=400, n_substeps=60, narrowing=True))
+        return np.interp(grid * 1e-6, res.x, res.thickness / res.thickness[:10].mean())
+    fit_pl = model_plates(S_FIT_PL, P_FIT_PL); rms_pl = float(np.sqrt(np.mean((fit_pl[ok] - y[ok]) ** 2)))
     alt = {"1e-3": model(1e-3, P_FIT), "1e-2": model(1e-2, P_FIT)}
     print(f"pillarhall: {len(sheets)} sheets, plateau {plateau:.2f} nm, rms at fit {rms:.4f}")
-    return {"AR": r(grid * 2, 1), "measured": r(np.where(ok, y, np.nan), 4), "std": r(std / plateau, 4), "fit": r(fit, 4), "alt": {k: r(v, 4) for k, v in alt.items()}, "s_fit": S_FIT, "p_fit_Pa": P_FIT, "rms": r(rms, 4), "plateau_nm": r(plateau, 2), "n_sheets": len(sheets), "source": "Zenodo 3974438, Puurunen and Ylivaara (CC BY 4.0)"}
+    return {"AR": r(grid * 2, 1), "measured": r(np.where(ok, y, np.nan), 4), "std": r(std / plateau, 4), "fit": r(fit, 4), "fit_plates": r(fit_pl, 4), "s_fit_plates": S_FIT_PL, "p_fit_plates_Pa": P_FIT_PL, "rms_plates": r(rms_pl, 4), "alt": {k: r(v, 4) for k, v in alt.items()}, "s_fit": S_FIT, "p_fit_Pa": P_FIT, "rms": r(rms, 4), "plateau_nm": r(plateau, 2), "n_sheets": len(sheets), "source": "Zenodo 3974438, Puurunen and Ylivaara (CC BY 4.0)"}
 
 
 
@@ -202,7 +208,7 @@ def night3_data():
     # 1. sticking sensitivity
     df = pd.read_csv(FIG / "sticking_sensitivity.csv")
     out["sticking"] = [{"kind": a.kind, "s": r(a.s, 5), "t90_centre": r(a.t90_centre, 3), "t90_worst": r(a.t90_worst, 3), "t90_flat": r(a.t90_flat_centre, 3) if a.t90_flat_centre == a.t90_flat_centre else None, "t_supply": r(a.t_supply, 4), "util": r(a.utilization, 3)} for a in df.itertuples()]
-    out["sticking_refs"] = {"arts_band": [5e-4, 2e-3], "ylilammi": 5.72e-3, "vandalon": 4e-3, "pillarhall": 8.5e-3, "runs": 5e-3}
+    out["sticking_refs"] = {"arts_band": [5e-4, 2e-3], "ylilammi": 5.72e-3, "vandalon": 4e-3, "pillarhall": 8.5e-3, "pillarhall_plates": 1.96e-2, "runs": 5e-3}
     # 2. step coverage and thickness after 50 cycles
     sc = pd.read_csv(FIG / "step_coverage_vs_pulse.csv"); curves = []
     for case, g in sc.groupby("case", sort=False):

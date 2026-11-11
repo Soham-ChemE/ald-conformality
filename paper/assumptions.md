@@ -761,3 +761,39 @@ tests; reproduce.sh --build cmakes both libraries. Caveats: no narrowing, no gas
 first-order time-step bias (use dt <= t90/100), slit and recess dimensions rounded to whole voxels, statistical
 noise on single faces and on minima over many faces.
 ```
+
+## Night 4, part 4: slit transport correction (src/aldconf/transport.py slit_knudsen_factor, geometry.py Slit.knudsen_correction, recess.py; coupling/fit_pillarhall_corrected.py, coupling/wordline_recess_corrected.py; figures/pillarhall_fit_corrected.png, .csv, wordline_recess_corrected.csv, .png; tests/test_slit_transport.py)
+The 24 % slit error of WP9 (f) is the parallel-plate Knudsen diffusivity: D_K = d_h vbar/3 with d_h = 2 w is exact for
+a cylinder and not for plates, where grazing flights give D_slit = (w vbar/4)[ln(L/w) + c], i.e. (3/8)[ln(L/w) + c]
+times D_K (Clausing slit transmission; Berman 1965; Steckelmacher 1986). A transmission Monte Carlo of the infinite
+slit (4e5 particles per point) gives W = 0.6844 / 0.5425 / 0.3572 / 0.2399 / 0.1545 / 0.0802 / 0.0472 / 0.0270 / 0.0124
+at L/w = 1 / 2 / 5 / 10 / 20 / 50 / 100 / 200 / 500, so W L/w - ln(L/w) = +0.10 from L/w 10 to 200. Machball
+Trench(AR, 8 AR) at s 5e-3, N0 4e18, 573 K, 0.3 Pa, 100 nm gap: t90 0.5335 / 0.6231 / 1.1170 / 2.6305 s at AR 10 / 20 /
+50 / 100 (Nz convergence 0.2-0.3 %) against the 1D slit model 0.5087 / 0.6149 / 1.3842 / 4.2305 s (bottom coverage
+0.9, 200 cells, 200 substeps; 400/400 moves AR 50 by 0.2 %); the knudsen_factor that matches Machball is 0.59 / 0.95 /
+1.405 / 1.721 (AR 10-20 reaction-limited, kinetic floor 0.47 s, factor ill-conditioned) against (3/8) ln(AR) = 0.863 /
+1.123 / 1.467 / 1.727; the 4 % at AR 50 is the continuum-vs-ballistic offset of WP9 (a). Implemented as
+Slit(knudsen_correction="plates") (keyword-only, default "none" reproduces every earlier number), applied in simulate,
+simulate_driven, multispecies and simulate_recessed (slit and recesses separately), factor (3/8) ln(L/w) without
+the constant: corrected 1D t90 0.5143 / 0.5993 / 1.0891 / 2.6234 s, -3.6 / -3.8 / -2.5 / -0.3 % against Machball (with
+c = 0.10: -3.9 / -4.5 / -3.9 / -2.0 %). Front shape (Machball Trench vs 1D at equal times): AR 500, s 8.5e-3, 0.8 -> 0.2
+width 40-48 gaps ballistic over z50 60-187, 42.1 corrected (6-13 % narrow), 27.6 uncorrected (31-43 % narrow); front
+position corrected 14-30 % deep, uncorrected 15-25 % shallow. PillarHall refit (same data, model, nine starts, per-sheet
+refits; factor 2.330 at AR 500): s = 1.96e-2, 32.3 Pa, 3.23 Pa s per pulse, rms 0.0381 (unchanged), sheet-to-sheet
+s = 1.99e-2 x/÷ 1.46 (geometric mean of the eight sheets; range 7.9e-3 to 2.7e-2), p = 32.4 Pa x/÷ 1.02; the nine starts agree within 1 %. s rises by the factor D rose and the pressure falls by it; against the 300 C
+literature (5.72e-3, 4e-3) the corrected value is 3.4-4.9 x high (was 1.5-2.1 x), i.e. the correction moves the fit
+away from the literature; the Arts slope relation itself is a hydraulic-diffusivity continuum result, so 8.5e-3 is the
+like-for-like number against it; a fully ballistic fit would give about 2.6e-2; the ideal-plate factor is an upper bound
+for the 140-200-gap-wide, pillar-supported cavity (duct Monte Carlo with side walls: 1.94 / 1.89 / 1.70 / 1.49 at b/w
+200 / 140 / 50 / 20 against 2.17 infinite at L/w 250; 2.21 / 1.90 / 1.88 at b/w 200 / 140 / 50 vs 2.30 at L/w 500). Word-line recesses
+restated (factors 1.123 / 1.467 slit, 0.950 / 1.328 recess): chamber-driven slit bottom 5.09 / 7.96 / 10.99 / 15.36 s
+(was 5.37 / 8.33 / 13.46 / 16.52), last recess +0.10 / +0.53 / +0.08 / +0.13 s, plain slit 2.26 / 3.27 s, area-equivalent
+within 0.5-3 %; constant 0.3 Pa w100_Lr365 10.03 / 10.17 s vs voxel 10.70 / 10.88 s (6 % fast; was 36 % slow); rule
+and wall ratios unchanged. Everything else that used Slit: voxel_mc_crosscheck part slit/recess references (stay as
+the uncorrected values they measure), docs/build_assets.py PillarHall panel (not touched), test_scaling and
+test_recess (transport-independent). pytest 124 passed in 32 s (118 + 6). Wall time: Machball runs 1-20 s each,
+transmission Monte Carlo 2 min, recess script 10 s, refit about 25 min single core. Caveats: the correction is for an
+ideal, infinitely wide slit closed at one end with the cut-off at the channel length; finite width, pillars or an
+open far end change the cut-off; it is a few per cent fast against ballistic solvers at AR 20-50 (the diffusion model's
+own offset) and 14-30 % deep in front position at AR 500; the factor falls below 1 for AR < 14.4, where the slit is
+reaction-limited and the factor hardly matters; no narrowing in the Machball comparisons.

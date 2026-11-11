@@ -21,7 +21,7 @@ from dataclasses import dataclass
 import numpy as np
 
 from .geometry import Slit
-from .transport import mean_speed, knudsen_diffusivity
+from .transport import mean_speed, knudsen_diffusivity, slit_knudsen_factor
 from .kinetics import Precursor
 from .solver import _solve_gas
 
@@ -116,18 +116,26 @@ def _solve_recesses(D_r, dy, k_r):
 
 
 def simulate_recessed(geom: RecessedSlit, pr: Precursor, T: float, t_series, n0_series, substeps_per_sample=5,
-                      n_slit=200, n_recess=50, snapshot_times=(), knudsen_factor=1.0) -> RecessResult:
+                      n_slit=200, n_recess=50, snapshot_times=(), knudsen_factor=1.0, knudsen_correction="none") -> RecessResult:
     """One half-cycle with a time-varying gas density n0(t) [1/m3] at the slit mouth.
 
     `t_series`/`n0_series` as in aldconf.simulate_driven (a constant density is the two-point series
-    [0, t_dose], [n0, n0] with substeps_per_sample = number of substeps)."""
+    [0, t_dose], [n0, n0] with substeps_per_sample = number of substeps). `knudsen_correction="plates"` applies the
+    length-dependent parallel-plate factor (transport.slit_knudsen_factor) to the slit (w_s, L_s) and to every recess
+    (g_r, L_r); "none" (default) keeps the hydraulic-diameter diffusivities of the earlier runs. `knudsen_factor`
+    multiplies both in either case."""
+    if knudsen_correction not in ("none", "plates"):
+        raise ValueError("knudsen_correction must be 'none' or 'plates'")
+    f_slit = knudsen_factor * (float(slit_knudsen_factor(geom.width, geom.depth)) if knudsen_correction == "plates" else 1.0)
+    f_recess = knudsen_factor * (float(slit_knudsen_factor(geom.recess_gap, geom.recess_length))
+                                 if knudsen_correction == "plates" and geom.recess_gap > 0 else 1.0)
     t_series = np.asarray(t_series, float); n0_series = np.asarray(n0_series, float)
     Ns, Nr = n_slit, n_recess
     x = (np.arange(Ns) + 0.5) * geom.depth / Ns
     vbar = mean_speed(T, pr.mass_amu)
     s, r, N0 = pr.sticking, pr.recombination, pr.site_density
     slit = geom.plain_slit()
-    D_s = knudsen_diffusivity(slit.hydraulic_diameter(geom.width), T, pr.mass_amu, knudsen_factor)
+    D_s = knudsen_diffusivity(slit.hydraulic_diameter(geom.width), T, pr.mass_amu, f_slit)
     D_face = np.full(Ns + 1, D_s)
     sv = 2.0 / geom.width
     f_r = geom.recessed_fraction
@@ -135,7 +143,7 @@ def simulate_recessed(geom: RecessedSlit, pr: Precursor, T: float, t_series, n0_
     if have_recess:
         y = (np.arange(Nr) + 0.5) * geom.recess_length / Nr
         dy = geom.recess_length / Nr
-        D_r = knudsen_diffusivity(2.0 * geom.recess_gap, T, pr.mass_amu, knudsen_factor)
+        D_r = knudsen_diffusivity(2.0 * geom.recess_gap, T, pr.mass_amu, f_recess)
         sv_r = 2.0 / geom.recess_gap
     else:
         y = np.zeros(0); Nr = 0

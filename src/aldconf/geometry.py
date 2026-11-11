@@ -6,15 +6,34 @@ All shapes expose, as functions of the local opening (which shrinks as the film 
 - cross-section A (per unit width for a slit), used by the solver when the opening varies along the feature,
 - initial_opening(x): the opening before any film, uniform for Slit and Hole, linear in depth for TaperedHole.
 """
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 import numpy as np
+
+from .transport import slit_knudsen_factor
 
 
 @dataclass
 class Slit:
-    """Lateral channel of gap `gap` (height) and length `length`, width >> gap (PillarHall-type)."""
+    """Lateral channel of gap `gap` (height) and length `length`, width >> gap (PillarHall-type).
+
+    `knudsen_correction` selects the slit's Knudsen diffusivity: "none" (default) keeps the hydraulic-diameter value
+    D_K = 2 w vbar / 3, which reproduces every earlier result of the repository; "plates" multiplies it by the
+    length-dependent parallel-plate factor (3/8) ln(L / w) (transport.slit_knudsen_factor), which brings the 1D model
+    within 5 % of the ballistic solvers for aspect ratios 20 to 100 (paper/wp/wp9b_slit_transport.md). Keyword-only,
+    so `Slit(gap, length)` and the subclasses' positional arguments are unchanged."""
     gap: float
     length: float
+    knudsen_correction: str = field(default="none", kw_only=True)
+
+    def __post_init__(self):
+        if self.knudsen_correction not in ("none", "plates"):
+            raise ValueError("knudsen_correction must be 'none' or 'plates'")
+
+    def knudsen_factor(self):
+        """Multiplier of the hydraulic-diameter Knudsen diffusivity for this geometry (1 unless corrected)."""
+        if self.knudsen_correction == "plates":
+            return float(slit_knudsen_factor(self.gap, self.length))
+        return 1.0
 
     @property
     def aspect_ratio(self):

@@ -92,6 +92,12 @@ def _solve_gas(x, D_face, k, n0, A_face=None, A_cell=None, source=None):
     return solve_banded((1, 1), ab, rhs)
 
 
+def _geometry_factor(g):
+    """The geometry's own Knudsen-diffusivity multiplier (Slit(knudsen_correction="plates")); 1 for every other geometry."""
+    f = getattr(g, "knudsen_factor", None)
+    return float(f()) if callable(f) else 1.0
+
+
 def _initial_opening(g, x):
     """Opening before any film: the geometry's profile if it has one, else uniform `gap` (older geometry objects)."""
     if hasattr(g, "initial_opening"):
@@ -125,12 +131,13 @@ def simulate(proc: Process) -> Result:
     n0 = number_density(proc.p_partial, proc.T)
     dt = proc.t_dose / proc.n_substeps
     n = np.zeros(N)
+    k_factor = proc.knudsen_factor * _geometry_factor(g)
 
     for _ in range(proc.cycles):
         theta[:] = 0.0  # each cycle starts on a surface the co-reactant has reset
         for _ in range(proc.n_substeps):
             d_h = g.hydraulic_diameter(opening)
-            D = knudsen_diffusivity(d_h, proc.T, pr.mass_amu, proc.knudsen_factor)
+            D = knudsen_diffusivity(d_h, proc.T, pr.mass_amu, k_factor)
             if proc.p_total is not None:
                 D = bosanquet(D, gas_diffusivity(proc.T, proc.p_total, pr.mass_amu, pr.sigma))
             D_face = np.empty(N + 1)
@@ -204,7 +211,7 @@ def simulate_driven(proc: Process, t_series, n0_series, substeps_per_sample: int
     idx = [min(N - 1, int(round(d * (N - 1)))) for d in record_depths]
     hist_t = []; hist = []
     d_h = g.hydraulic_diameter(opening)
-    D = knudsen_diffusivity(d_h, proc.T, pr.mass_amu, proc.knudsen_factor)
+    D = knudsen_diffusivity(d_h, proc.T, pr.mass_amu, proc.knudsen_factor * _geometry_factor(g))
     if proc.p_total is not None:
         D = bosanquet(D, gas_diffusivity(proc.T, proc.p_total, pr.mass_amu, pr.sigma))
     D_face = np.empty(N + 1); D_face[1:-1] = 2.0 * D[:-1] * D[1:] / (D[:-1] + D[1:]); D_face[0] = D[0]; D_face[-1] = D[-1]
