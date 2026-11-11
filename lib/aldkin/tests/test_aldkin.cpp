@@ -27,10 +27,11 @@ aldkin_params tma_params() {
 }
 
 void test_version_and_defaults() {
-    CHECK(std::strcmp(aldkin_version(), "1.0.0") == 0);
+    CHECK(std::strcmp(aldkin_version(), "1.1.0") == 0);
     aldkin_params p; aldkin_params_default(&p);
     CHECK(p.s == 1.0 && p.r == 0.0 && p.kdes == 0.0 && p.vbar == 410.0 && p.N0 == 4e18 && p.c0 == 1.0);
     CHECK(p.d == 1e-7 && p.AR == 50.0 && p.holeDensity == 0.0 && p.nCells == 100 && p.flatOnly == 0 && p.scheme == ALDKIN_SCHEME_EULER);
+    CHECK(p.nu == 0.0 && p.vbarB == 0.0 && p.sB == 0.0 && p.kB == 0.0 && p.kEtch == 0.0 && p.cB0 == 0.0);
     aldkin_t* h = aldkin_create(&p);
     CHECK(h != nullptr);
     aldkin_params q; CHECK_OK(aldkin_get_params(h, &q));
@@ -443,6 +444,181 @@ void test_error_codes() {
     aldkin_destroy(h);
 }
 
+
+// ---- two-species option ---------------------------------------------------------------------------------------------
+
+// TiCl4/HCl-like parameters on the AR-100 hole: s 0.1, N0 1.24e18, vbar 253 m/s (189.68 amu, 573 K), HCl vbarB 577 m/s
+aldkin_params ticl4_params() {
+    aldkin_params p = tma_params();
+    p.s = 0.10; p.N0 = 1.24e18; p.vbar = 253.0; p.c0 = 3.79e20;
+    p.nu = 0.5; p.vbarB = 577.0; p.sB = 0.0; p.kB = 0.0; p.kEtch = 0.0; p.cB0 = 0.0;
+    return p;
+}
+
+// With sB = kEtch = 0 the two-species fields (any nu, vbarB, kB) leave the single-species path untouched: every
+// coverage, K_eff and flux is bit-identical to the handle without them, for both models and both schemes.
+void test_two_species_defaults_are_bit_identical() {
+    for (int flat = 0; flat < 2; ++flat) {
+        for (int scheme = 0; scheme < 2; ++scheme) {
+            aldkin_params a = tma_params(); a.flatOnly = flat; a.scheme = scheme; if (flat) a.kdes = 0.3;
+            aldkin_params b = a; b.nu = 4.0; b.vbarB = 577.0; b.kB = 10.0; b.cB0 = 1e18;   // inactive: sB = kEtch = 0
+            aldkin_t* ha = aldkin_create(&a); aldkin_t* hb = aldkin_create(&b);
+            CHECK(ha != nullptr && hb != nullptr);
+            CHECK_OK(aldkin_set_faces(ha, 2, nullptr)); CHECK_OK(aldkin_set_faces(hb, 2, nullptr));
+            const double T[2] = {0.1, 0.03};
+            double Ka[2], Kb[2], Fa[2], Fb[2];
+            for (int k = 0; k < 400; ++k) {
+                CHECK_OK(aldkin_step(ha, T, 1e-3, Fa, Ka));
+                CHECK_OK(aldkin_step(hb, T, 1e-3, Fb, Kb));
+            }
+            CHECK(Ka[0] == Kb[0] && Ka[1] == Kb[1] && Fa[0] == Fb[0] && Fa[1] == Fb[1]);
+            std::vector<double> ta(2 * 200), tb(2 * 200), fa(2), fb(2), ba(2);
+            CHECK_OK(aldkin_theta(ha, ALDKIN_THETA_HOLE, ta.data())); CHECK_OK(aldkin_theta(hb, ALDKIN_THETA_HOLE, tb.data()));
+            CHECK_OK(aldkin_theta(ha, ALDKIN_THETA_FLAT, fa.data())); CHECK_OK(aldkin_theta(hb, ALDKIN_THETA_FLAT, fb.data()));
+            CHECK(ta == tb && fa == fb);
+            CHECK_OK(aldkin_theta(hb, ALDKIN_THETA_BLOCKED_FLAT, ba.data()));
+            CHECK(ba[0] == 0.0 && ba[1] == 0.0);
+            // byproduct reporting on the inactive path: everything produced escapes
+            double J[2], b5[5];
+            CHECK_OK(aldkin_byproduct_flux(hb, J)); CHECK(J[0] > 0.0);
+            CHECK_OK(aldkin_byproduct_flux(ha, J)); CHECK(J[0] == 0.0);
+            if (!flat) { CHECK_OK(aldkin_byproduct_balance(hb, 0, b5)); CHECK(b5[0] == b5[2] && b5[1] == 0.0 && b5[3] == 0.0); }
+            aldkin_destroy(ha); aldkin_destroy(hb);
+        }
+    }
+    std::printf("  inactive two-species fields: bit-identical to the single-species handle (4 model/scheme combinations)\n");
+}
+
+// kB -> infinity: blocked sites are released at once and the precursor coverages are the single-species ones to 1e-9.
+void test_two_species_fast_desorption_limit() {
+    aldkin_params a = ticl4_params(); a.scheme = ALDKIN_SCHEME_EXPONENTIAL;
+    aldkin_params b = a; b.nu = 4.0; b.sB = 0.5; b.kB = 1e14;
+    aldkin_t* ha = aldkin_create(&a); aldkin_t* hb = aldkin_create(&b);
+    CHECK(ha != nullptr && hb != nullptr);
+    CHECK_OK(aldkin_set_faces(ha, 1, nullptr)); CHECK_OK(aldkin_set_faces(hb, 1, nullptr));
+    const double Tf = 0.1;
+    double Ka, Kb;
+    for (int k = 0; k < 2000; ++k) { CHECK_OK(aldkin_step(ha, &Tf, 1e-3, nullptr, &Ka)); CHECK_OK(aldkin_step(hb, &Tf, 1e-3, nullptr, &Kb)); }
+    std::vector<double> ta(200), tb(200), bb(200);
+    CHECK_OK(aldkin_theta(ha, ALDKIN_THETA_HOLE, ta.data())); CHECK_OK(aldkin_theta(hb, ALDKIN_THETA_HOLE, tb.data()));
+    CHECK_OK(aldkin_theta(hb, ALDKIN_THETA_BLOCKED_HOLE, bb.data()));
+    double maxdiff = 0.0, maxb = 0.0;
+    for (int i = 0; i < 200; ++i) { maxdiff = std::fmax(maxdiff, std::fabs(ta[i] - tb[i])); maxb = std::fmax(maxb, bb[i]); }
+    std::printf("  kB = 1e14: max |theta - single-species| = %.3e, max blocked coverage %.3e\n", maxdiff, maxb);
+    CHECK(maxdiff <= 1e-9);
+    CHECK(maxb <= 1e-9);
+    CHECK_CLOSE(Ka, Kb, 1e-9 * std::fabs(Ka));
+    aldkin_destroy(ha); aldkin_destroy(hb);
+}
+
+// Byproduct bookkeeping of the hole: produced + desorbed = escaped + re-adsorbed + etched after every evaluate, to
+// 1e-9 relative, with and without etching, with and without a byproduct density at the mouth; the per-face flux
+// equals the open-area blend.
+void test_two_species_mass_balance() {
+    const double sB[3] = {0.05, 0.05, 0.1}, kE[3] = {0.0, 1e-3, 0.0}, cB0[3] = {0.0, 0.0, 2e18};
+    for (int v = 0; v < 3; ++v) {
+        aldkin_params p = ticl4_params(); p.nu = 4.0; p.sB = sB[v]; p.kB = 10.0; p.kEtch = kE[v]; p.cB0 = cB0[v];
+        p.scheme = ALDKIN_SCHEME_EXPONENTIAL;
+        aldkin_t* h = aldkin_create(&p);
+        CHECK(h != nullptr);
+        CHECK_OK(aldkin_set_faces(h, 1, nullptr));
+        const double Tf = 0.1;
+        double worst = 0.0, b5[5] = {0, 0, 0, 0, 0}, J;
+        for (int k = 0; k < 500; ++k) {
+            CHECK_OK(aldkin_step(h, &Tf, 1e-3, nullptr, nullptr));
+            CHECK_OK(aldkin_byproduct_balance(h, 0, b5));
+            const double in = b5[0] + b5[1], out = b5[2] + b5[3] + b5[4];
+            worst = std::fmax(worst, std::fabs(in - out) / in);
+        }
+        CHECK(worst <= 1e-9);
+        CHECK(b5[0] > 0.0 && b5[3] > 0.0);
+        if (kE[v] == 0.0) CHECK(b5[4] == 0.0); else CHECK(b5[4] > 0.0);
+        CHECK_OK(aldkin_byproduct_flux(h, &J));
+        // flux = (1 - phi) flat part + phi escaped; the flat part at cB0 = 0 is nu x flat uptake + kB N0 thetaB_flat (no B at the face)
+        double thF, thFB;
+        CHECK_OK(aldkin_theta(h, ALDKIN_THETA_FLAT, &thF)); CHECK_OK(aldkin_theta(h, ALDKIN_THETA_BLOCKED_FLAT, &thFB));
+        const double phi = p.holeDensity * 3.14159265358979323846 * p.d * p.d / 4.0;
+        const double freeF = 1.0 - thF - thFB;
+        const double flat = p.nu * p.s * (p.vbar / 4.0) * freeF * p.c0 * Tf + p.kB * p.N0 * thFB
+                            - (p.vbarB / 4.0) * (p.sB * freeF + p.kEtch * thF) * p.cB0;
+        CHECK_CLOSE(J, (1.0 - phi) * flat + phi * b5[2], 1e-9 * std::fabs(J));
+        if (cB0[v] > 0.0) CHECK(thFB > 0.0); else CHECK(thFB == 0.0);
+        std::printf("  variant %d: worst closure %.2e; produced %.3e, desorbed %.3e, escaped %.3e, adsorbed %.3e, etched %.3e per m2 s\n",
+                    v, worst, b5[0], b5[1], b5[2], b5[3], b5[4]);
+        aldkin_destroy(h);
+    }
+    // the per-face mouth density override
+    aldkin_params p = ticl4_params(); p.sB = 0.1; p.kB = 1.0; p.scheme = ALDKIN_SCHEME_EXPONENTIAL;
+    aldkin_t* h = aldkin_create(&p);
+    CHECK_OK(aldkin_set_faces(h, 2, nullptr));
+    const double nBf[2] = {0.0, 3e18};
+    CHECK_OK(aldkin_set_byproduct_mouth(h, nBf));
+    const double T[2] = {0.1, 0.1};
+    for (int k = 0; k < 50; ++k) CHECK_OK(aldkin_step(h, T, 1e-3, nullptr, nullptr));
+    double bf[2];
+    CHECK_OK(aldkin_theta(h, ALDKIN_THETA_BLOCKED_FLAT, bf));
+    CHECK(bf[0] == 0.0 && bf[1] > 0.0);
+    CHECK_OK(aldkin_set_byproduct_mouth(h, nullptr));          // back to cB0 = 0
+    aldkin_destroy(h);
+}
+
+// Re-adsorption slows the hole bottom; the Euler and exponential schemes agree; etching lowers the coverage further.
+void test_two_species_blocking_slows_the_bottom() {
+    double bottom[3], bottomE = 0.0;
+    for (int v = 0; v < 3; ++v) {
+        aldkin_params p = ticl4_params(); p.scheme = ALDKIN_SCHEME_EXPONENTIAL;
+        if (v >= 1) { p.sB = 0.1; p.kB = 1.0; }
+        if (v == 2) p.kEtch = 1e-3;
+        aldkin_t* h = aldkin_create(&p);
+        CHECK_OK(aldkin_set_faces(h, 1, nullptr));
+        const double Tf = 0.1;
+        for (int k = 0; k < 12000; ++k) CHECK_OK(aldkin_step(h, &Tf, 1e-3, nullptr, nullptr));
+        CHECK_OK(aldkin_theta(h, ALDKIN_THETA_BOTTOM, &bottom[v]));
+        if (v == 1) {
+            double bb;
+            CHECK_OK(aldkin_theta(h, ALDKIN_THETA_BLOCKED_BOTTOM, &bb));
+            CHECK(bb > 0.0);
+            // Euler scheme at the same step
+            aldkin_params q = p; q.scheme = ALDKIN_SCHEME_EULER;
+            aldkin_t* he = aldkin_create(&q);
+            CHECK_OK(aldkin_set_faces(he, 1, nullptr));
+            for (int k = 0; k < 12000; ++k) CHECK_OK(aldkin_step(he, &Tf, 1e-3, nullptr, nullptr));
+            CHECK_OK(aldkin_theta(he, ALDKIN_THETA_BOTTOM, &bottomE));
+            aldkin_destroy(he);
+        }
+        aldkin_destroy(h);
+    }
+    std::printf("  bottom coverage at 12 s: no HCl action %.4f, blocking %.4f (Euler %.4f), blocking + etch %.4f\n",
+                bottom[0], bottom[1], bottomE, bottom[2]);
+    CHECK(bottom[0] > 0.5);
+    CHECK(bottom[1] < bottom[0] - 1e-3);
+    CHECK(bottom[2] < bottom[1]);
+    CHECK(std::fabs(bottomE - bottom[1]) < 0.01);
+}
+
+void test_two_species_errors() {
+    aldkin_params p = ticl4_params(); p.sB = 0.1;                 // vbarB set, fine
+    aldkin_t* h = aldkin_create(&p); CHECK(h != nullptr); aldkin_destroy(h);
+    p = ticl4_params(); p.sB = 0.1; p.vbarB = 0.0;
+    CHECK(aldkin_create(&p) == nullptr);
+    CHECK(std::strstr(aldkin_last_error(nullptr), "vbarB") != nullptr);
+    p = ticl4_params(); p.sB = 1.5; CHECK(aldkin_create(&p) == nullptr);
+    p = ticl4_params(); p.kEtch = -1.0; CHECK(aldkin_create(&p) == nullptr);
+    p = ticl4_params(); p.nu = -1.0; CHECK(aldkin_create(&p) == nullptr);
+    p = ticl4_params(); p.cB0 = -1.0; CHECK(aldkin_create(&p) == nullptr);
+    p = ticl4_params(); p.sB = 0.1;
+    h = aldkin_create(&p);
+    const double nBf = 1.0;
+    CHECK(aldkin_set_byproduct_mouth(h, &nBf) == ALDKIN_ERR_STATE);     // faces not set
+    CHECK_OK(aldkin_set_faces(h, 1, nullptr));
+    CHECK_OK(aldkin_set_byproduct_mouth(h, &nBf));
+    double out[5];
+    CHECK(aldkin_byproduct_balance(h, 3, out) == ALDKIN_ERR_ARG);
+    CHECK(aldkin_hole_byproduct_gas(h, -1, out) == ALDKIN_ERR_ARG);
+    CHECK(aldkin_byproduct_flux(h, nullptr) == ALDKIN_ERR_ARG);
+    aldkin_destroy(h);
+}
+
 }  // namespace
 
 int main(int argc, char** argv) {
@@ -458,6 +634,11 @@ int main(int argc, char** argv) {
         {"zero_density_and_zero_holes_are_safe", test_zero_density_and_zero_holes_are_safe},
         {"clone_and_restart", test_clone_and_restart},
         {"error_codes", test_error_codes},
+        {"two_species_defaults_are_bit_identical", test_two_species_defaults_are_bit_identical},
+        {"two_species_fast_desorption_limit", test_two_species_fast_desorption_limit},
+        {"two_species_mass_balance", test_two_species_mass_balance},
+        {"two_species_blocking_slows_the_bottom", test_two_species_blocking_slows_the_bottom},
+        {"two_species_errors", test_two_species_errors},
     };
     int ran = 0;
     for (const Entry& e : tests) {

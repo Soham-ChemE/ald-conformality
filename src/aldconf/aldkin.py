@@ -32,7 +32,7 @@ BUILD_DIR = ROOT / "lib" / "aldkin" / "build"
 BUILD_COMMAND = "cmake -S lib/aldkin -B lib/aldkin/build -DCMAKE_BUILD_TYPE=Release && cmake --build lib/aldkin/build"
 
 SCHEMES = {"euler": 0, "exponential": 1}
-THETA = {"flat": 0, "mid": 1, "bottom": 2, "hole": 3}
+THETA = {"flat": 0, "mid": 1, "bottom": 2, "hole": 3, "blocked_flat": 4, "blocked_bottom": 5, "blocked_hole": 6}
 PROFILE = {"AR": 0, "density": 1}
 ERRORS = {0: "ok", 1: "ALDKIN_ERR_ARG", 2: "ALDKIN_ERR_PARAM", 3: "ALDKIN_ERR_STATE", 4: "ALDKIN_ERR_ALLOC", 5: "ALDKIN_ERR_INTERNAL"}
 
@@ -49,7 +49,9 @@ class _Params(ctypes.Structure):
     _fields_ = [("s", ctypes.c_double), ("r", ctypes.c_double), ("kdes", ctypes.c_double), ("vbar", ctypes.c_double),
                 ("N0", ctypes.c_double), ("c0", ctypes.c_double), ("d", ctypes.c_double), ("AR", ctypes.c_double),
                 ("holeDensity", ctypes.c_double), ("nCells", ctypes.c_int), ("flatOnly", ctypes.c_int),
-                ("scheme", ctypes.c_int)]
+                ("scheme", ctypes.c_int),
+                ("nu", ctypes.c_double), ("vbarB", ctypes.c_double), ("sB", ctypes.c_double), ("kB", ctypes.c_double),
+                ("kEtch", ctypes.c_double), ("cB0", ctypes.c_double)]
 
 
 @dataclass
@@ -67,6 +69,15 @@ class Params:
     nCells: int = 100
     flatOnly: bool = False
     scheme: str = "euler"
+    # two-species option (library 1.1): a byproduct released at nu per adsorbed precursor, mean speed vbarB, that
+    # re-adsorbs on free sites (sB), desorbs (kB, 1/s), etches covered sites (kEtch) and sits at cB0 [1/m3] at the
+    # mouth; all 0 = the single-species path, bit for bit (aldconf.multispecies is the Python twin)
+    nu: float = 0.0
+    vbarB: float = 0.0
+    sB: float = 0.0
+    kB: float = 0.0
+    kEtch: float = 0.0
+    cB0: float = 0.0
 
     def to_struct(self) -> _Params:
         if self.scheme not in SCHEMES:
@@ -81,7 +92,8 @@ class Params:
     def from_struct(cls, p: _Params) -> "Params":
         inv = {v: k for k, v in SCHEMES.items()}
         return cls(s=p.s, r=p.r, kdes=p.kdes, vbar=p.vbar, N0=p.N0, c0=p.c0, d=p.d, AR=p.AR, holeDensity=p.holeDensity,
-                   nCells=p.nCells, flatOnly=bool(p.flatOnly), scheme=inv[p.scheme])
+                   nCells=p.nCells, flatOnly=bool(p.flatOnly), scheme=inv[p.scheme],
+                   nu=p.nu, vbarB=p.vbarB, sB=p.sB, kB=p.kB, kEtch=p.kEtch, cB0=p.cB0)
 
 
 def _candidates():
@@ -176,6 +188,14 @@ def load_library(path: Optional[os.PathLike] = None) -> ctypes.CDLL:
     lib.aldkin_desorption_flux.argtypes = [P, PD]
     lib.aldkin_hole_gas.restype = I
     lib.aldkin_hole_gas.argtypes = [P, I, PD]
+    lib.aldkin_set_byproduct_mouth.restype = I
+    lib.aldkin_set_byproduct_mouth.argtypes = [P, PD]
+    lib.aldkin_byproduct_flux.restype = I
+    lib.aldkin_byproduct_flux.argtypes = [P, PD]
+    lib.aldkin_byproduct_balance.restype = I
+    lib.aldkin_byproduct_balance.argtypes = [P, I, PD]
+    lib.aldkin_hole_byproduct_gas.restype = I
+    lib.aldkin_hole_byproduct_gas.argtypes = [P, I, PD]
     _lib, _lib_path = lib, found
     return lib
 
@@ -321,16 +341,44 @@ class AldKin:
 
     # -- state ---------------------------------------------------------------------------------------------------
     def theta(self, which: str = "flat") -> np.ndarray:
-        """'flat', 'mid', 'bottom' (n_faces) or 'hole' (n_faces x nCells)."""
+        """'flat', 'mid', 'bottom', 'blocked_flat', 'blocked_bottom' (n_faces) or 'hole', 'blocked_hole' (n_faces x nCells)."""
         n, N = self.n_faces, self.n_cells
-        out = np.zeros(n * N if which == "hole" else n)
+        full = which in ("hole", "blocked_hole")
+        out = np.zeros(n * N if full else n)
         self._check(self._lib.aldkin_theta(self._h, THETA[which], _ptr(out)), "aldkin_theta")
-        return out.reshape(n, N) if which == "hole" else out
+        return out.reshape(n, N) if full else out
 
     def set_theta(self, which: str, values):
         n, N = self.n_faces, self.n_cells
-        v = _arr(values, n * N if which == "hole" else n)
+        v = _arr(values, n * N if which in ("hole", "blocked_hole") else n)
         self._check(self._lib.aldkin_set_theta(self._h, THETA[which], _ptr(v)), "aldkin_set_theta")
+
+    # -- two-species option ----------------------------------------------------------------------------------------
+    def set_byproduct_mouth(self, nB_face=None):
+        """Byproduct number density (1/m3, absolute) at every face and hole mouth; None restores the scalar cB0."""
+        if nB_face is None:
+            self._check(self._lib.aldkin_set_byproduct_mouth(self._h, None), "aldkin_set_byproduct_mouth")
+        else:
+            v = _arr(nB_face, self.n_faces)
+            self._check(self._lib.aldkin_set_byproduct_mouth(self._h, _ptr(v)), "aldkin_set_byproduct_mouth")
+
+    def byproduct_flux(self) -> np.ndarray:
+        """Net byproduct flux into the chamber per unit wafer area from the last step/evaluate [molecules/(m2 s)]."""
+        out = np.zeros(self.n_faces)
+        self._check(self._lib.aldkin_byproduct_flux(self._h, _ptr(out)), "aldkin_byproduct_flux")
+        return out
+
+    def byproduct_balance(self, face: int) -> dict:
+        """Hole bookkeeping rates per unit mouth area: produced, desorbed, escaped, adsorbed, etched."""
+        out = np.zeros(5)
+        self._check(self._lib.aldkin_byproduct_balance(self._h, int(face), _ptr(out)), "aldkin_byproduct_balance")
+        return dict(zip(("produced", "desorbed", "escaped", "adsorbed", "etched"), out.tolist()))
+
+    def hole_byproduct_gas(self, face: int) -> np.ndarray:
+        """Absolute byproduct density (1/m3) along the hole of one face from the last step/evaluate."""
+        out = np.zeros(self.n_cells)
+        self._check(self._lib.aldkin_hole_byproduct_gas(self._h, int(face), _ptr(out)), "aldkin_hole_byproduct_gas")
+        return out
 
     def keff(self) -> np.ndarray:
         out = np.zeros(self.n_faces)

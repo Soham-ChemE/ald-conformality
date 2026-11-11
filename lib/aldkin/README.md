@@ -29,7 +29,7 @@ adapters gives `T` files byte-identical to the pre-library run at all 201 write 
     cmake --build lib/aldkin/build
     ctest --test-dir lib/aldkin/build --output-on-failure
 
-Products in `lib/aldkin/build`: `libaldkin.dylib` / `libaldkin.so` / `aldkin.dll` (shared, versioned 1.0.0) and
+Products in `lib/aldkin/build`: `libaldkin.dylib` / `libaldkin.so` / `aldkin.dll` (shared, versioned 1.1.0) and
 `libaldkin.a` (static, position independent; the OpenFOAM adapter links this one so the cases need no extra library
 path). `include/aldkin.h` is the whole API. Options `-DALDKIN_BUILD_TESTS=OFF`, `-DALDKIN_BUILD_EXAMPLES=OFF`;
 `cmake --install` puts headers and libraries under the usual prefix. Windows: the shared build defines
@@ -41,8 +41,8 @@ neither. Requirements: CMake >= 3.15, a C++17 compiler (tested: Apple clang 21, 
 
 | Function | Purpose |
 |---|---|
-| `aldkin_version()` | `"1.0.0"` |
-| `aldkin_params_default(&p)` | the boundary conditions' defaults (s 1, r 0, kdes 0, vbar 410, N0 4e18, c0 1, d 1e-7, AR 50, holeDensity 0, nCells 100, flatOnly 0, scheme Euler) |
+| `aldkin_version()` | `"1.1.0"` |
+| `aldkin_params_default(&p)` | the boundary conditions' defaults (s 1, r 0, kdes 0, vbar 410, N0 4e18, c0 1, d 1e-7, AR 50, holeDensity 0, nCells 100, flatOnly 0, scheme Euler; two-species fields nu, vbarB, sB, kB, kEtch, cB0 all 0) |
 | `aldkin_create(&p)` / `aldkin_clone(h)` / `aldkin_destroy(h)` | handle lifetime; `create` returns NULL on invalid parameters (`aldkin_last_error(NULL)` says why) |
 | `aldkin_set_faces(h, n, radius_m)` | define `n` faces by their centre radius (m); `radius_m` may be NULL when no profiles are used; coverages reset to 0 |
 | `aldkin_set_profile(h, which, n, r, v)` | radial table for `ALDKIN_PROFILE_AR` or `ALDKIN_PROFILE_DENSITY` (independent radii, as the OpenFOAM `ARProfile` / `holeDensityProfile`); linear between points, clamped outside, repeated radius = step, negatives clamp to 0; `n = 0` removes it |
@@ -50,7 +50,8 @@ neither. Requirements: CMake >= 3.15, a C++17 compiler (tested: Apple clang 21, 
 | `aldkin_step(h, T_face, dt, flux, keff)` | advance every face by `dt` with `T_face[i] = n_i / c0`, then evaluate; outputs the net uptake flux (molecules/(m2 s)) and `K_eff` (m/s), either may be NULL |
 | `aldkin_evaluate(h, T_face, flux, keff)` | re-evaluate `K_eff` for new face values without advancing (inner iterations) |
 | `aldkin_mixed_bc(h, D_over_delta, refValue, refGrad, valueFraction)` | the mixed-BC coefficients, see below |
-| `aldkin_theta(h, which, out)` / `aldkin_set_theta(h, which, in)` | coverages: `ALDKIN_THETA_FLAT`, `_MID` (cell nCells/2), `_BOTTOM` (cell nCells-1) per face, `_HOLE` the whole profile (n_faces x nCells, cell index fastest); set FLAT or HOLE for restarts |
+| `aldkin_theta(h, which, out)` / `aldkin_set_theta(h, which, in)` | coverages: `ALDKIN_THETA_FLAT`, `_MID` (cell nCells/2), `_BOTTOM` (cell nCells-1) per face, `_HOLE` the whole profile (n_faces x nCells, cell index fastest); `_BLOCKED_FLAT`, `_BLOCKED_BOTTOM`, `_BLOCKED_HOLE` the sites blocked by the byproduct (two-species option); set FLAT, HOLE, BLOCKED_FLAT or BLOCKED_HOLE for restarts |
+| `aldkin_set_byproduct_mouth(h, nB_face)`, `aldkin_byproduct_flux(h, out)`, `aldkin_byproduct_balance(h, face, out5)`, `aldkin_hole_byproduct_gas(h, face, out)` | two-species option: per-face byproduct density at the face and hole mouth (1/m3, NULL = the scalar `cB0`); net byproduct flux into the chamber per unit wafer area; the hole's bookkeeping rates produced, desorbed, escaped, re-adsorbed, etched per unit mouth area; the byproduct density along the hole |
 | `aldkin_keff`, `aldkin_desorption_flux`, `aldkin_hole_gas(h, face, nrel)`, `aldkin_face_pattern`, `aldkin_n_faces`, `aldkin_n_cells`, `aldkin_get_params` | read-back of the last evaluation and the setup |
 | `aldkin_last_error(h)` | message of the last failed call on `h` |
 
@@ -73,6 +74,20 @@ patch, a Fluent compute node one per partition).
 | `nCells` | cells along the hole (the chamber runs use 200) | - |
 | `flatOnly` | 1: flat Langmuir surface only | - |
 | `scheme` | `ALDKIN_SCHEME_EULER` (the boundary conditions: forward Euler once per step, clamped to [0, 1]) or `ALDKIN_SCHEME_EXPONENTIAL` (the Python twin `aldconf.solver`: `theta <- 1 - (1 - theta) exp(-a dt)`, exact at frozen gas, stable for any `dt`) | - |
+| `nu` | two-species option: byproduct molecules released per adsorbed precursor (3 CH4 per TMA over an Al2O3 cycle; 4 HCl per TiCl4 over a TiN cycle, about 0.5 of them in the TiCl4 half-step) | - |
+| `vbarB` | mean thermal speed of the byproduct (sets its Knudsen diffusivity `d vbarB/3`); required > 0 when `sB > 0` or `kEtch > 0` | m/s |
+| `sB` | byproduct sticking on a free site (reversible site blocking); 0 (default) with `kEtch 0` keeps the single-species path bit for bit | - |
+| `kB` | desorption rate of a blocked site (0 = irreversible blocking) | 1/s |
+| `kEtch` | probability that a byproduct collision removes a precursor-covered site (0 = no etching) | - |
+| `cB0` | byproduct number density at the face and hole mouth, absolute (0 = the chamber sweeps it away; `aldkin_set_byproduct_mouth` overrides it per face, for a host that transports the byproduct) | 1/m3 |
+
+Two-species option (version 1.1, `aldconf.multispecies` is the Python twin): coverages `theta` (precursor, irreversible)
+and `thetaB` (blocked) per cell with the free fraction `1 - theta - thetaB` in the precursor sink and in both
+adsorption terms; the byproduct gas is quasi-steady in the hole with the source `(4/d)[nu x precursor uptake +
+kB N0 thetaB]` and the sink `(4/d)(vbarB/4)[sB free + kEtch theta]`, mouth density `cB0`. Exponential scheme: exact
+closed-form solution of the linear 2 x 2 coverage system at frozen gas; Euler scheme: one forward-Euler step of both,
+clamped. The boundary conditions do not read these fields yet (next step: dictionary keywords `nu`, `vbarB`, `sB`,
+`kB`, `kEtch`, `cB0` and a transported byproduct field for `aldkin_set_byproduct_mouth`).
 
 Gas densities go in and come out relative to `c0` (`T_face = n/c0`); negative face values are treated as 0. `dt` in s.
 
@@ -140,7 +155,7 @@ linearise it as `K_eff` times the unknown face value in its own matrix.
 
 ## Tests
 
-`ctest` (11 tests, `tests/test_aldkin.cpp` plus the C example):
+`ctest` (16 tests, `tests/test_aldkin.cpp` plus the C example):
 
 | test | checks |
 |---|---|
@@ -152,6 +167,11 @@ linearise it as `K_eff` times the unknown face value in its own matrix.
 | `profiles_interpolate` | AR 80 at r = 0.0875 m from the Night-3 table, clamping, step at a repeated radius, negatives to 0, independent tables, density 0 gives a flat face |
 | `zero_density_and_zero_holes_are_safe` | T = 0 and T < 0, `holeDensity 0`, `AR 0`, `nCells 1`, zero faces, `dt = 0` |
 | `clone_and_restart`, `error_codes`, `version_and_defaults`, `plain_c_example` | state copy and restart continue bit-identically; every error path returns a code and leaves the handle usable; the C example runs through the recorded drive |
+| `two_species_defaults_are_bit_identical` | `sB = kEtch = 0` with any `nu`, `vbarB`, `kB`, `cB0`: coverages, `K_eff` and flux `==` the handle without the fields, both models, both schemes |
+| `two_species_fast_desorption_limit` | `kB = 1e14`: precursor coverages within 1e-9 of the single-species handle, blocked coverage below 1e-9 |
+| `two_species_mass_balance` | produced + desorbed = escaped + re-adsorbed + etched after every step to 1e-9 (with and without etching, with and without a mouth byproduct density); the per-face byproduct flux is the open-area blend; the per-face mouth override |
+| `two_species_blocking_slows_the_bottom` | TiCl4/HCl-like hole at 0.3 Pa: re-adsorption lowers the bottom coverage at 12 s, etching lowers it further, Euler and exponential schemes agree within 0.01 |
+| `two_species_errors` | `vbarB = 0` with `sB > 0`, out-of-range `sB`, `kEtch`, `nu`, `cB0`, mouth override before `set_faces`, bad face indices |
 
 Python (`tests/test_aldkin.py`, 9 tests, skipped with the build command when the library is absent): the analytic
 flat face; profiles; the hole model against `aldconf.solver.simulate_driven` on the long case's centre-face drive

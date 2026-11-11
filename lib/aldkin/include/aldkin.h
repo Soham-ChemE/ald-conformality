@@ -32,6 +32,20 @@
  * (scheme ALDKIN_SCHEME_EULER). ALDKIN_SCHEME_EXPONENTIAL instead uses the exact exponential coverage update of
  * the Python twin aldconf.solver (theta <- 1 - (1 - theta) exp(-a dt)), unconditionally stable for any dt.
  *
+ * Two-species option (version 1.1). A reaction byproduct B (methane for TMA, HCl for chlorides) is released at the wall
+ * at nu molecules per adsorbed precursor, diffuses in the hole with its own Knudsen diffusivity d vbarB/3, re-adsorbs
+ * on free sites with sticking sB (blocking them until it desorbs at kB) and may remove a precursor-covered site with
+ * probability kEtch per collision. Coverages per cell: theta (precursor, irreversible) and thetaB (blocked);
+ * free fraction 1 - theta - thetaB. Gas: the precursor as before with the free fraction in its sink; the byproduct
+ * quasi-steady with the source (4/d)[nu x precursor uptake + kB N0 thetaB] and the sink (4/d)(vbarB/4)[sB free +
+ * kEtch theta], mouth density cB0 (or the per-face values of aldkin_set_byproduct_mouth; 0 = the chamber sweeps it
+ * away). The option is active when sB > 0 or kEtch > 0; at the defaults (nu 0, vbarB 0, sB 0, kB 0, kEtch 0, cB0 0)
+ * the single-species code path runs unchanged and bit for bit. With the exponential scheme the coverage pair is
+ * advanced by the exact solution of its linear 2 x 2 system at frozen gas (the Python twin aldconf.multispecies);
+ * with the Euler scheme by one forward-Euler step of both, clamped. aldkin_byproduct_flux gives the net byproduct
+ * flux leaving the wafer surface for a host that transports the byproduct; aldkin_byproduct_balance the per-face
+ * bookkeeping of the hole (produced + desorbed = escaped + re-adsorbed + etched).
+ *
  * Errors are return codes (ALDKIN_OK = 0); aldkin_last_error(h) gives the message of the last failure on that handle
  * (aldkin_last_error(NULL) the message of the last failed aldkin_create in this thread). No exception crosses the ABI.
  * Handles are independent; one handle must not be used from two threads at once.
@@ -60,7 +74,7 @@ extern "C" {
 #endif
 
 #define ALDKIN_VERSION_MAJOR 1
-#define ALDKIN_VERSION_MINOR 0
+#define ALDKIN_VERSION_MINOR 1
 #define ALDKIN_VERSION_PATCH 0
 
 /* return codes */
@@ -84,7 +98,10 @@ enum {
     ALDKIN_THETA_FLAT = 0,     /* n_faces values: flat-surface coverage (the only coverage when flatOnly = 1) */
     ALDKIN_THETA_MID = 1,      /* n_faces values: hole coverage at half depth (cell nCells/2) */
     ALDKIN_THETA_BOTTOM = 2,   /* n_faces values: hole coverage at the bottom (cell nCells - 1) */
-    ALDKIN_THETA_HOLE = 3      /* n_faces * nCells values, cell index fastest: the whole hole profile */
+    ALDKIN_THETA_HOLE = 3,     /* n_faces * nCells values, cell index fastest: the whole hole profile */
+    ALDKIN_THETA_BLOCKED_FLAT = 4,    /* n_faces values: flat-surface coverage blocked by the byproduct (two-species) */
+    ALDKIN_THETA_BLOCKED_BOTTOM = 5,  /* n_faces values: blocked coverage at the hole bottom */
+    ALDKIN_THETA_BLOCKED_HOLE = 6     /* n_faces * nCells values: blocked coverage along the hole */
 };
 
 /* selectors for aldkin_set_profile */
@@ -108,13 +125,20 @@ typedef struct aldkin_params {
     int nCells;          /* cells along the hole depth (>= 1) */
     int flatOnly;        /* 1: flat Langmuir surface only (langmuirSticking model, kdes allowed); 0: patterned */
     int scheme;          /* ALDKIN_SCHEME_EULER or ALDKIN_SCHEME_EXPONENTIAL */
+    /* two-species option (version 1.1); all 0 by default = the single-species path, bit for bit */
+    double nu;           /* byproduct molecules released per adsorbed precursor [-] */
+    double vbarB;        /* mean thermal speed of the byproduct [m/s]; must be > 0 when sB > 0 or kEtch > 0 */
+    double sB;           /* byproduct sticking on a free site (reversible site blocking) [-] */
+    double kB;           /* desorption rate of a blocked site [1/s]; 0 = irreversible blocking */
+    double kEtch;        /* probability that a byproduct collision removes a precursor-covered site [-] */
+    double cB0;          /* byproduct number density at the face and hole mouth [1/m3] (absolute, not over c0); 0 = swept away */
 } aldkin_params;
 
 /* "major.minor.patch" */
 ALDKIN_API const char* aldkin_version(void);
 
 /* Fill p with the defaults of the OpenFOAM boundary conditions: s 1, r 0, kdes 0, vbar 410, N0 4e18, c0 1, d 1e-7,
- * AR 50, holeDensity 0, nCells 100, flatOnly 0, scheme Euler. */
+ * AR 50, holeDensity 0, nCells 100, flatOnly 0, scheme Euler; the two-species fields nu, vbarB, sB, kB, kEtch, cB0 all 0. */
 ALDKIN_API void aldkin_params_default(aldkin_params* p);
 
 /* New handle with no faces. NULL on failure (see aldkin_last_error(NULL)). */
@@ -165,11 +189,30 @@ ALDKIN_API int aldkin_step(aldkin_t* h, const double* T_face, double dt, double*
  * host that updates its boundary coefficients several times per time step). */
 ALDKIN_API int aldkin_evaluate(aldkin_t* h, const double* T_face, double* uptake_flux_out, double* keff_out);
 
-/* Coverages (see the ALDKIN_THETA_* selectors for the sizes). For flatOnly handles MID/BOTTOM/HOLE read as 0. */
+/* Coverages (see the ALDKIN_THETA_* selectors for the sizes). For flatOnly handles MID/BOTTOM/HOLE and the blocked
+ * hole selectors read as 0; the blocked selectors read as 0 without the two-species option. */
 ALDKIN_API int aldkin_theta(const aldkin_t* h, int which, double* out);
 
-/* Overwrite coverages (restart): ALDKIN_THETA_FLAT (n_faces) or ALDKIN_THETA_HOLE (n_faces * nCells). */
+/* Overwrite coverages (restart): ALDKIN_THETA_FLAT (n_faces), ALDKIN_THETA_HOLE (n_faces * nCells),
+ * ALDKIN_THETA_BLOCKED_FLAT or ALDKIN_THETA_BLOCKED_HOLE. */
 ALDKIN_API int aldkin_set_theta(aldkin_t* h, int which, const double* in);
+
+/* Two-species option. Byproduct number density at every face (and hole mouth), n_faces absolute values in 1/m3
+ * (negative values are treated as 0); NULL restores the scalar cB0. Takes effect at the next step/evaluate. */
+ALDKIN_API int aldkin_set_byproduct_mouth(aldkin_t* h, const double* nB_face);
+
+/* Net byproduct flux leaving the wafer surface per unit wafer area from the last step/evaluate, n_faces values
+ * [molecules/(m2 s)]: (1 - phi) x (flat production + desorption - re-adsorption - etch consumption) + phi x the
+ * hole-mouth escape flux; positive into the chamber. 0 when nu = 0 and the option is inactive. */
+ALDKIN_API int aldkin_byproduct_flux(const aldkin_t* h, double* out);
+
+/* Byproduct bookkeeping of the hole of one face from the last step/evaluate, rates per unit mouth area
+ * [molecules/(m2 s)] in out[0..4] = produced, desorbed, escaped, re-adsorbed, etched (zeros without holes); the
+ * quasi-steady solve gives produced + desorbed = escaped + re-adsorbed + etched to round-off. */
+ALDKIN_API int aldkin_byproduct_balance(const aldkin_t* h, int face, double* out5);
+
+/* Absolute byproduct density n_B [1/m3] along the hole of one face from the last step/evaluate (nCells values). */
+ALDKIN_API int aldkin_hole_byproduct_gas(const aldkin_t* h, int face, double* nB_out);
 
 /* K_eff of the last step/evaluate (n_faces). */
 ALDKIN_API int aldkin_keff(const aldkin_t* h, double* out);

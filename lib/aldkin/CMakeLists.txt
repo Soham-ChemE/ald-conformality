@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.15)
-project(aldkin VERSION 1.0.0 LANGUAGES C CXX)
+project(aldkin VERSION 1.1.0 LANGUAGES C CXX)
 
 # aldkin: multiscale ALD wall kinetics with a C ABI (see README.md).
 #   cmake -S lib/aldkin -B lib/aldkin/build -DCMAKE_BUILD_TYPE=Release
@@ -82,7 +82,12 @@ if(ALDKIN_BUILD_TESTS)
       profiles_interpolate
       zero_density_and_zero_holes_are_safe
       clone_and_restart
-      error_codes)
+      error_codes
+      two_species_defaults_are_bit_identical
+      two_species_fast_desorption_limit
+      two_species_mass_balance
+      two_species_blocking_slows_the_bottom
+      two_species_errors)
     add_test(NAME aldkin.${name} COMMAND test_aldkin ${name})
   endforeach()
 endif()

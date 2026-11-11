@@ -57,12 +57,15 @@ class Result:
         return self.x / self.process.geometry.gap
 
 
-def _solve_gas(x, D_face, k, n0, A_face=None, A_cell=None):
+def _solve_gas(x, D_face, k, n0, A_face=None, A_cell=None, source=None):
     """Steady diffusion with first-order sink k(x) [1/s]; Dirichlet at x=0, Neumann at x=L.
 
     Cell-centred finite volumes, D on faces, tridiagonal solve. With `A_face` / `A_cell` (cross-section on the
     N+1 faces and in the N cells) the conservative form (1/A) d/dx (A D dn/dx) = k n is solved, which is the 1D
-    equation for a channel of varying cross-section (tapered hole); without them the cross-section is uniform."""
+    equation for a channel of varying cross-section (tapered hole); without them the cross-section is uniform.
+    `source` (N values, molecules/(m3 s)) adds a volumetric source to the right-hand side, -(1/A) d/dx (A D dn/dx) + k n
+    = source, which the two-species model (aldconf.multispecies) uses for the byproduct released at the wall; None
+    (the default) leaves the equation and its arithmetic unchanged."""
     N = len(x)
     dx = x[1] - x[0]
     # Faces: D_face has N+1 entries; face 0 is the mouth, face N is the closed end.
@@ -77,6 +80,8 @@ def _solve_gas(x, D_face, k, n0, A_face=None, A_cell=None):
     lower = -aW[1:]
     upper = -aE[:-1]
     rhs = np.zeros(N)
+    if source is not None:
+        rhs += source
     # Dirichlet ghost at the mouth: n_ghost = 2 n0 - n_0 -> modifies first row
     diag[0] += aW[0]
     rhs[0] += 2.0 * aW[0] * n0

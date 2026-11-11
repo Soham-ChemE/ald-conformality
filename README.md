@@ -47,7 +47,7 @@ Seven follow-ups, each answered with runs rather than argument (details in `pape
 |---|---|---|
 | Chamber model | `reactor/showerhead_*`, `reactor/edgering_*` | OpenFOAM v2606, axisymmetric showerhead chamber, laminar N2, pulsed precursor with a total-flux (Danckwerts) inlet |
 | Multiscale wall | `reactor/lib/aldWallKinetics` | Two OpenFOAM boundary conditions compiled with wmake: `langmuirSticking` (self-limiting flat surface, optional radical loss and desorption) and `patternedSurface` (a Knudsen/Langmuir hole model on every wafer face, two-way coupled) |
-| Feature solver | `src/aldconf` | Python: Knudsen diffusion + Langmuir uptake in slits and holes, constant or time-driven mouth density, fitting, scaling tests |
+| Feature solver | `src/aldconf` | Python: Knudsen diffusion + Langmuir uptake in slits, holes, tapered holes and recessed slits, constant or time-driven mouth density, fitting, scaling tests; a two-species variant (`multispecies.py`) with byproduct re-adsorption and etching, which shows that methane cannot block TMA in the molecular-flow regime and that HCl re-adsorption can cost 10 to 50 % of pulse time in chloride chemistries |
 | Cross-checks | `tests/` | Scaling laws, embedded-BC vs standalone solver, Machball (Argonne) ballistic model |
 | Validation data | `data/zenodo_3974438` | PillarHall LHAR Al2O3 profiles (CC BY 4.0); fit in `coupling/fit_pillarhall.py` |
 | Studies | `coupling/`, `reactor/sweep_*.py`, `reactor/doe_patterned.py` | One-way and two-way coupling, pulse-time map, operating sweep, DOE, PEALD ceiling, temporal-vs-spatial chart |

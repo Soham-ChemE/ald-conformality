@@ -674,3 +674,51 @@ invented); the library's step uses the host's dt as the coverage sub-step, so a 
 aldkin_step several times per step or use the exponential scheme; Fluent and Star-CCM+ hooks are untested in those
 codes.
 ```
+
+## Night 4, part 3: two-species kinetics (src/aldconf/multispecies.py, coupling/multispecies.py, lib/aldkin 1.1; figures/multispecies.png, .csv)
+Physics first: at 100-1,000 Pa the mean free path is 123-12 um (N2, 3.8 A, 573 K), Kn = 1,233-123 in a 100 nm hole,
+so a byproduct cannot block the precursor in the gas phase; each species diffuses with its own Knudsen diffusivity
+(CH4 2.12 x TMA, HCl 2.28 x TiCl4) and a byproduct acts only at the surface (re-adsorption, etching). The feature
+solver gained a two-species variant: precursor P (irreversible, sticking on the free fraction 1 - theta_P - theta_B),
+byproduct B released at nu per adsorbed P, quasi-steady gas for both (two tridiagonal solves per substep, the second
+with the wall source nu x uptake + k_B N0 theta_B on the right-hand side; _solve_gas gained an optional source
+argument, None leaves the earlier arithmetic unchanged), re-adsorption s_B, desorption k_B, etch probability k_etch
+per collision on a coated site, byproduct mouth density as a fraction of the precursor's; the coverage pair advanced
+per substep by the exact closed-form solution of its linear 2 x 2 system at frozen gas (eigenvalue of smaller
+magnitude from det/l2, no cancellation at k_B -> infinity). Limits tested: s_B = 0 or nu = 0 reproduces simulate
+(difference 0), k_B = 1e12 to 1e-9, the driven variant equals simulate_driven to 1e-12; the byproduct balance
+produced + desorbed = escaped + re-adsorbed + etched closes to 1e-16 to 1e-14 (gas side, frozen coverages); the
+surface inventory agrees with it to first order in the substep, and the HCl rates (a_B up to 50 1/s) set the substep
+at 1 ms (t90 10.111 / 10.074 / 10.059 / 10.052 s at 4 / 2 / 1 / 0.5 ms). Stoichiometries: 3 CH4 per TMA per cycle
+(Puurunen 2005); 4 HCl per TiCl4 per cycle (Ritala 1995), 0.5 in the TiCl4 half-step (Cl:Ti 4 -> 3.5, Tiznado and
+Zaera 2006); nu 4 run as the bound. HCl kinetics: no value on TiN or TiO2 at 573 K; s_B 1e-3 (reactive sticking on
+alpha-Al2O3(0001) at 298 K, Elam 2000) to 0.4 (Knudsen-cell initial uptake 0.38 on alumina at 296 K, Lostier 2026);
+k_B 0.1-1,000 1/s from the 300-650 K TPD span of Elam 2000 (E_des 0.8-1.8 eV, k 1e-3-1e6 1/s at 573 K); k_etch 0
+with bounds 1e-4, 1e-3 (HCl does not etch TiO2, Leem 2014; Ti removal by surface Cl in the TiN kMC of Kim 2022, no
+rate). Results, AR-100 hole: (a) TMA/CH4 at s_B 0 identical to the single-species solver (15.600 s constant 0.3 Pa,
+14.005 s chamber-driven), the hypothetical bound s_B 1e-3, k_B 1e3 +0.01 % with 99.95 % of the methane escaping;
+(b) TiCl4/HCl constant 0.3 Pa: 7.754 s without HCl action; k_B >= 100: 0 to +0.5 %; k_B 1: 8.59 / 8.65 / 10.06 /
+12.00 s for s_B 1e-3 / 1e-2 / 0.1 / 0.4 (nu 0.5), 8.41-20.39 s (nu 4); k_B 0.1: 23.5-27.7 s (nu 0.5), no saturation
+in 30 s at nu 4 and s_B >= 0.1; etch bounds 1e-4 / 1e-3: +20-35 % / +70-80 % at nu 0.5, no saturation at nu 4
+(etch-limited steady state); (c) under the chamber's centre-face history (the TMA run as a stand-in; only changes
+are meaningful): 9.622 s without HCl action, +11 / +22 / +36 % (nu 0.5, k_B 1, s_B 1e-2 / 0.1 / 0.4), +46 / +74 %
+(nu 4, s_B 0.1 / 0.4), 0 to +2.3 % at k_B 100, etch bounds +30 / +43 %; the relative cost is 20-40 % below the
+constant-mouth one (the rising late-pulse density refills released sites); profiles at the rule pulse show a
+broader, deeper front with blocking and the blocked coverage peaking ahead of it; (d) HCl at the mouth at 1 / 3 /
+10 % of the precursor density: +0.5 / +1.6 / +5.1 % constant and +0.4 / +1.2 / +4.0 % driven at k_B 1, nothing at
+k_B 100, nothing for the TMA bound. Library: aldkin 1.1.0 with nu, vbarB, sB, kB, kEtch, cB0 appended to
+aldkin_params (defaults 0 = the single-species path), blocked-coverage selectors, aldkin_set_byproduct_mouth,
+aldkin_byproduct_flux, aldkin_byproduct_balance, aldkin_hole_byproduct_gas; exponential scheme uses the same
+closed-form 2 x 2 advance, Euler one forward step of both; 5 new ctest cases (16 passed): inactive fields ==
+bit-identical for both models and schemes, k_B 1e14 within 1e-9, balance to 1e-9 per step, blocking and etching
+ordering with Euler/exponential within 0.01, error paths; the binding exposes the fields and 3 new tests compare the
+library with aldconf.multispecies within 1e-9 over 2,000 steps (a free-fraction inconsistency in the library's
+precursor sink was caught by this test and fixed; the single-species path was not affected). pytest: 106 passed
+(95 + 8 + 3; tests/test_voxel_mc.py excluded while the other package builds). ./reproduce.sh --regress through the
+launcher with the 1.1 library: ctest 16 passed (aldkin) and 10 passed (aldmc), wmake, steady flow, regression pulse,
+"3 passed" (the boundary conditions run the single-species path unchanged). The boundary conditions do not read
+the new fields yet (next step: dictionary keywords and a transported HCl field). Caveats: every HCl kinetic number
+is a range or a bound, labelled in the tables; the TiCl4 sticking is the TiCl4/H2O value; the chamber-driven TiCl4
+runs use the TMA run's density history; the etch product is not tracked; byproduct produced on the flat wafer
+surface is not fed back to the feature unless mouth_fraction > 0.
+```

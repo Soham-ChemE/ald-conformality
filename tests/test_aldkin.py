@@ -45,7 +45,7 @@ def drive_csv():
 
 
 def test_version_and_defaults():
-    assert aldkin.version() == "1.0.0"
+    assert aldkin.version() == "1.1.0"
     p = aldkin.default_params()
     assert p == Params()
     assert mean_speed(T_GAS, MASS) == pytest.approx(VBAR, rel=1e-14)
@@ -253,3 +253,72 @@ def test_errors_are_exceptions_not_crashes():
     k.step([0.1], 1e-3)                            # still usable
     assert k.n_faces == 1 and k.n_cells == NCELLS
     assert k.params == tma()
+
+
+# ---- two-species option (library 1.1) --------------------------------------------------------------------------------
+TICL4_M, HCL_M = 189.68, 36.46
+
+
+def ticl4(**kw) -> Params:
+    """TiCl4-like hole parameters at the temperature T_GAS (vbar from the same mean_speed as the Python twin)."""
+    base = dict(s=0.10, r=0.0, vbar=mean_speed(T_GAS, TICL4_M), N0=1.24e18, c0=C0, d=D, AR=AR, holeDensity=DENS, nCells=NCELLS,
+                nu=0.5, vbarB=mean_speed(T_GAS, HCL_M))
+    base.update(kw)
+    return Params(**base)
+
+
+def test_two_species_fields_round_trip_and_defaults_inactive():
+    p = ticl4(sB=0.1, kB=1.0, kEtch=1e-3, cB0=1e18)
+    k = AldKin(p)
+    assert k.params == p
+    assert aldkin.default_params().sB == 0.0 and aldkin.default_params().nu == 0.0
+    # inactive fields (sB = kEtch = 0) leave the single-species path bit-identical
+    a, b = AldKin(tma()), AldKin(tma(nu=4.0, vbarB=600.0, kB=5.0, cB0=1e18))
+    a.set_faces(n=1); b.set_faces(n=1)
+    for _ in range(100):
+        fa, ka = a.step([0.1], 1e-3)
+        fb, kb = b.step([0.1], 1e-3)
+    assert ka[0] == kb[0] and fa[0] == fb[0]
+    assert np.all(a.theta("hole") == b.theta("hole")) and np.all(b.theta("blocked_hole") == 0.0)
+    assert b.byproduct_flux()[0] > 0.0 and a.byproduct_flux()[0] == 0.0
+    with pytest.raises(AldKinError, match="vbarB"):
+        AldKin(ticl4(sB=0.1, vbarB=0.0))
+
+
+def test_two_species_hole_matches_the_python_twin():
+    """Library (exponential scheme, 1 ms steps) against aldconf.multispecies.simulate_two_species on the same AR-100
+    hole at a constant mouth density: precursor and blocked coverages within 1e-9 over 2 s, byproduct gas within 1e-9
+    relative, and the bookkeeping closes."""
+    from aldconf.multispecies import Byproduct, simulate_two_species
+    p = ticl4(sB=0.1, kB=1.0, kEtch=1e-3, scheme="exponential")
+    k = AldKin(p)
+    k.set_faces(n=1)
+    Tf, dt, nsteps = 0.1, 1e-3, 2000
+    for _ in range(nsteps):
+        k.step([Tf], dt)
+    pr = Precursor(name="TiCl4", sticking=0.10, site_density=1.24e18, mass_amu=TICL4_M)
+    bp = Byproduct("HCl", HCL_M, nu=0.5, sticking=0.1, k_des=1.0, k_etch=1e-3)
+    proc = Process(geometry=Hole(D, AR * D), precursor=pr, T=T_GAS, p_partial=Tf * C0 * K_B * T_GAS, t_dose=nsteps * dt,
+                   n_cells=NCELLS, n_substeps=nsteps, narrowing=False)
+    res = simulate_two_species(proc, bp)
+    assert np.abs(k.theta("hole")[0] - res.theta_P).max() < 1e-9
+    assert np.abs(k.theta("blocked_hole")[0] - res.theta_B).max() < 1e-9
+    assert res.theta_B.max() > 1e-3                      # the blocking is not trivially zero
+    # the last step solved the byproduct gas with the coverages before its update, as the Python twin's n_B
+    nB = k.hole_byproduct_gas(0)
+    assert np.abs(nB - res.n_B).max() <= 1e-9 * res.n_B.max()
+    b = k.byproduct_balance(0)
+    assert abs((b["produced"] + b["desorbed"]) - (b["escaped"] + b["adsorbed"] + b["etched"])) <= 1e-9 * (b["produced"] + b["desorbed"])
+    assert b["etched"] > 0.0
+
+
+def test_two_species_mouth_density_blocks_the_flat_face():
+    k = AldKin(ticl4(sB=0.1, kB=1.0, scheme="exponential"))
+    k.set_faces(n=2)
+    k.set_byproduct_mouth([0.0, 3e18])
+    for _ in range(50):
+        k.step([0.1, 0.1], 1e-3)
+    bf = k.theta("blocked_flat")
+    assert bf[0] == 0.0 and bf[1] > 0.0
+    assert k.theta("blocked_bottom").shape == (2,)
+    k.set_byproduct_mouth(None)
