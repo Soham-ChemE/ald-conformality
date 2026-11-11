@@ -2,8 +2,9 @@
 # One entry point for reproducing ald-conformality, used by the Dockerfile and by .github/workflows/ci.yml.
 #
 #   ./reproduce.sh --tests     pytest over tests/ (default; the OpenFOAM regression test skips unless --regress ran)
-#   ./reproduce.sh --build     build the kinetics library lib/aldkin with cmake (and run its ctest suite), then compile
-#                              the boundary-condition adapters reactor/lib/aldWallKinetics with wmake against it
+#   ./reproduce.sh --build     build the kinetics library lib/aldkin and the 3D voxel Monte Carlo solver lib/aldmc with
+#                              cmake (and run their ctest suites), then compile the boundary-condition adapters
+#                              reactor/lib/aldWallKinetics with wmake against lib/aldkin
 #   ./reproduce.sh --flow      steady N2 flow: blockMesh + simpleFoam in reactor/showerhead_steady (2000 iterations,
 #                              1-3 min; ALD_STEADY_END_TIME=<n> shortens it for exploration only, the regression
 #                              reference was made with 2000)
@@ -24,8 +25,9 @@
 # ) or FOAM_BASHRC names another bashrc. The user library goes to ALDCONF_FOAM_USER_DIR (default
 # <repo>/.openfoam-user) so no home directory needs to be writable.
 # Python: ALDCONF_PYTHON (default <repo>/.venv/bin/python, falling back to python3 on PATH).
-# cmake: ALDCONF_CMAKE (default: cmake on PATH, then ~/.local/bin/cmake); the library build directory is lib/aldkin/build
-# (ALDKIN_BUILD_DIR overrides it; Make/options of the adapters reads ALDKIN_ROOT, default lib/aldkin).
+# cmake: ALDCONF_CMAKE (default: cmake on PATH, then ~/.local/bin/cmake); the library build directories are
+# lib/aldkin/build and lib/aldmc/build (ALDKIN_BUILD_DIR / ALDMC_BUILD_DIR override them; Make/options of the adapters
+# reads ALDKIN_ROOT, default lib/aldkin).
 set -euo pipefail
 
 # The bash bundled with the macOS openfoam-app (<volume>/env/bin/bash) segfaults part-way through this script
@@ -85,22 +87,31 @@ SHIM
     say "launcher shim installed at $L"
 }
 
-build_kinlib() {   # lib/aldkin: cmake configure + build + ctest; the adapters link lib/aldkin/build/libaldkin.a
+find_cmake() {
     local CM=${ALDCONF_CMAKE:-}
     [ -n "$CM" ] || CM=$(command -v cmake || true)
     [ -n "$CM" ] || { [ -x "$HOME/.local/bin/cmake" ] && CM="$HOME/.local/bin/cmake"; }
     [ -n "$CM" ] || die "cmake not found (install it or set ALDCONF_CMAKE)"
+    echo "$CM"
+}
+
+cmake_lib() {   # $1 = library name under lib/, $2 = build dir: cmake configure + build + ctest, log in lib/<name>/log.cmake
+    local NAME=$1 B=$2 CM; CM=$(find_cmake)
     local CT="$(dirname "$CM")/ctest"; [ -x "$CT" ] || CT=ctest
-    local B=${ALDKIN_BUILD_DIR:-$ROOT/lib/aldkin/build}
-    say "cmake lib/aldkin -> $B ($("$CM" --version | head -1))"
-    "$CM" -S "$ROOT/lib/aldkin" -B "$B" -DCMAKE_BUILD_TYPE=Release > "$ROOT/lib/aldkin/log.cmake" 2>&1 \
-        || { tail -20 "$ROOT/lib/aldkin/log.cmake"; die "cmake configure failed (lib/aldkin/log.cmake)"; }
-    "$CM" --build "$B" --config Release -j 4 >> "$ROOT/lib/aldkin/log.cmake" 2>&1 \
-        || { tail -20 "$ROOT/lib/aldkin/log.cmake"; die "cmake build failed (lib/aldkin/log.cmake)"; }
-    ls -l "$B"/libaldkin.* || die "libaldkin did not build"
-    say "ctest lib/aldkin"
+    say "cmake lib/$NAME -> $B ($("$CM" --version | head -1))"
+    "$CM" -S "$ROOT/lib/$NAME" -B "$B" -DCMAKE_BUILD_TYPE=Release > "$ROOT/lib/$NAME/log.cmake" 2>&1 \
+        || { tail -20 "$ROOT/lib/$NAME/log.cmake"; die "cmake configure failed (lib/$NAME/log.cmake)"; }
+    "$CM" --build "$B" --config Release -j 4 >> "$ROOT/lib/$NAME/log.cmake" 2>&1 \
+        || { tail -20 "$ROOT/lib/$NAME/log.cmake"; die "cmake build failed (lib/$NAME/log.cmake)"; }
+    ls -l "$B"/lib$NAME.* || die "lib$NAME did not build"
+    say "ctest lib/$NAME"
     "$CT" --test-dir "$B" --output-on-failure 2>&1 | tail -4
-    [ "${PIPESTATUS[0]}" -eq 0 ] || die "ctest failed"
+    [ "${PIPESTATUS[0]}" -eq 0 ] || die "ctest failed (lib/$NAME)"
+}
+
+build_kinlib() {   # lib/aldkin (the adapters link lib/aldkin/build/libaldkin.a) and lib/aldmc (the 3D voxel Monte Carlo solver)
+    cmake_lib aldkin "${ALDKIN_BUILD_DIR:-$ROOT/lib/aldkin/build}"
+    cmake_lib aldmc "${ALDMC_BUILD_DIR:-$ROOT/lib/aldmc/build}"
 }
 
 build_lib() {

@@ -31,6 +31,8 @@ reactor/lib/*/lnInclude
 reactor/lib/*/log.wmake
 lib/aldkin/build
 lib/aldkin/log.cmake
+lib/aldmc/build
+lib/aldmc/log.cmake
 .openfoam-user
 
 # large derived files

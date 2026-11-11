@@ -722,3 +722,42 @@ is a range or a bound, labelled in the tables; the TiCl4 sticking is the TiCl4/H
 runs use the TMA run's density history; the etch product is not tracked; byproduct produced on the flat wafer
 surface is not fed back to the feature unless mouth_fraction > 0.
 ```
+
+## Night 4, part 2: 3D voxel Monte Carlo feature solver (lib/aldmc; src/aldconf/voxel.py; coupling/voxel_mc_crosscheck.py; figures/voxel_mc_crosscheck.png, .csv)
+A second feature solver on a voxel grid: test-particle Monte Carlo in the molecular-flow regime (straight flights,
+no gas-phase collisions; cosine entry over the open mouth; sticking s (1 - theta) on the face's own coverage, loss
+r, diffuse re-emission about the facet normal; escape through the mouth), C++17 with a C ABI (include/aldmc.h:
+aldmc_create from nx, ny, nz, voxel size, uint8 occupancy, params s, r, N0, vbar, seed, threads, periodicX/Y,
+areaCorrection, update, emission; aldmc_step(h, n_mouth, dt, M); per-face, per-slice and floor coverage; counts
+escaped / stuck / lost / left), std::thread (Apple clang has no OpenMP), per-block xoshiro256** streams and integer
+hit counts merged per thread, so a seed gives bitwise the same result at any thread count. A step of M particles
+carries n vbar/4 A_mouth dt molecules; the coverage update is the Langmuir relaxation of the collisions counted per
+face (the 1D solver's update with the Monte Carlo impingement), which uses every collision and so has 1/s times the
+variance of counting sticking events; the literal deposit-per-stick update is kept as an option (+1.5 % at dt 0.1 s).
+Faces carry N0 h^2 |n . e| sites with n the smooth normal estimated from the occupancy (cone kernel, 5 voxels), and
+stick and lose in the same proportion, which removes the 4/pi staircase excess (plain faces: +26 % on t90). The
+digital disc of a hole takes exactly round(pi r^2) voxels per slice (a radius threshold gave mouth areas 1-4 % off
+and t90 3-4 % off). Open voxel tubes transmit 0.108 / 0.059 at L/d 10 / 20 (Berman 0.1093 / 0.0595); the bare
+AR-50 hole sticks 0.1450 of the entering particles at 16 and 32 across (Machball 0.1457 at Nz 400). Re-emission about
+the smooth normal was tried and rejected (10 % under-counted uptake). No film narrowing.
+Cross-checks (s 5e-3, N0 4e18, 573 K, 0.3 Pa, 100 nm; 16 voxels across; t90 of the floor): straight holes AR 20 / 50 /
+100: voxel 1.148 / 4.513 / 16.454 s (dt t90/200), 1D 1.035 / 4.230 / 15.931 s, Machball 1.158 / 4.476 / 16.191 s. The
+last are Machball's converged values (Nz = 8-16 AR); at the Nz = 2 AR of tests/test_machball_crosscheck.py Machball
+gives 1.123 / 4.247 / 15.279 s (t95 1.289 / 4.465 / 15.590 s, the numbers quoted so far), 3-6 % short. Voxel vs
+Machball within 2 % everywhere (within 1 % at dt -> 0); the 1D continuum model 11 / 7 / 3 % fast, converging to the
+ballistic answer with AR. Convergence at AR 100: M 25 000-400 000 and seed within 0.4 %; 16 / 24 / 32 across 16.79 /
+16.72 / 16.61 s; dt 0.025-0.2 s linear (16.45-17.13 s, 3.9 s per s of dt). Frustum 60 %: 20.02 vs 19.12 s 1D
+(tapered/straight 1.192 vs 1.200). Word-line slit w100_Lr365 at 0.3 Pa (h 5 nm, g_r 30 / p_r 50 nm): slit floor
+10.70 s, deepest recess end 10.88 s vs the nested model's 14.53 / 14.68 s; the 27 % is the 1D slit transport: on a plain
+AR-50 slit voxel 1.08-1.11 s and Machball Trench 1.12 s agree while the 1D slit model (D_K = 2 w vbar/3) gives 1.38 s
+(the logarithmic parallel-plate correction transport.py mentions; the hole's d vbar/3 is exact). Chamber-driven AR-100
+hole on the long case's centre-face history: 14.32 s with the native 0.05 s samples, 14.55 s subsampled to 0.25 s,
+14.54 s at 24 across, vs 14.03 s simulate_driven / 14.05 s boundary condition; depth profiles at 5 / 10 / 13 s agree on
+the saturated and empty parts and differ in the front width (pointwise up to 0.06 / 0.11 / 0.14 with the 0.05 s drive).
+Cost: 24 runs, 6.1e8 particles, 93 min on 7-8 threads of an M4 (6 000-49 000 particles/s per thread; 700-5 800
+voxel segments per particle), no run above 10 min. ctest 10 passed; pytest 118 passed in 21 s (12 new, skipped with
+the build command when the library is absent). CI: the library job builds and ctests lib/aldmc and runs its binding
+tests; reproduce.sh --build cmakes both libraries. Caveats: no narrowing, no gas-phase collisions by construction,
+first-order time-step bias (use dt <= t90/100), slit and recess dimensions rounded to whole voxels, statistical
+noise on single faces and on minima over many faces.
+```

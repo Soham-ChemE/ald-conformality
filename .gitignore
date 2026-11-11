@@ -52,6 +52,8 @@ reactor/**/0/Cz
 reactor/chamber3d/pulse_timing/
 reactor/**/*.npz
 
-# kinetics library build (lib/aldkin; reproduce.sh --build or cmake)
+# kinetics library and voxel Monte Carlo solver builds (lib/aldkin, lib/aldmc; reproduce.sh --build or cmake)
 lib/aldkin/build/
 lib/aldkin/log.cmake
+lib/aldmc/build/
+lib/aldmc/log.cmake

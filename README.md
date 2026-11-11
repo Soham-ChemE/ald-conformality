@@ -17,7 +17,7 @@ of a high-aspect-ratio hole, two-way coupled to the chamber gas, and asks how lo
 > wafer: 14 s. Pressure, gap and carrier flow do not move it; precursor delivery rate does.
 
 The rule reproduces Argonne's measured fluidized-bed ALD saturation (1.12x the supply limit by their own numbers) and
-the trend of their rotary-drum utilization data; the feature model agrees with Argonne's Machball code to 7 % and fits
+the trend of their rotary-drum utilization data; the 1D feature model sits 3 to 11 % below the converged ballistic reference (Argonne's Machball and this repository's own 3D voxel Monte Carlo solver, which agree within 2 %) and fits
 published PillarHall thickness profiles.
 
 | | |
@@ -48,7 +48,8 @@ Seven follow-ups, each answered with runs rather than argument (details in `pape
 | Chamber model | `reactor/showerhead_*`, `reactor/edgering_*` | OpenFOAM v2606, axisymmetric showerhead chamber, laminar N2, pulsed precursor with a total-flux (Danckwerts) inlet |
 | Multiscale wall | `reactor/lib/aldWallKinetics` | Two OpenFOAM boundary conditions compiled with wmake: `langmuirSticking` (self-limiting flat surface, optional radical loss and desorption) and `patternedSurface` (a Knudsen/Langmuir hole model on every wafer face, two-way coupled) |
 | Feature solver | `src/aldconf` | Python: Knudsen diffusion + Langmuir uptake in slits, holes, tapered holes and recessed slits, constant or time-driven mouth density, fitting, scaling tests; a two-species variant (`multispecies.py`) with byproduct re-adsorption and etching, which shows that methane cannot block TMA in the molecular-flow regime and that HCl re-adsorption can cost 10 to 50 % of pulse time in chloride chemistries |
-| Cross-checks | `tests/` | Scaling laws, embedded-BC vs standalone solver, Machball (Argonne) ballistic model |
+| 3D feature solver | `lib/aldmc`, `src/aldconf/voxel.py` | C++ test-particle Monte Carlo on a voxel grid (molecular flow, Langmuir sticking, diffuse re-emission; holes, tapered holes, slits, recessed slits, any occupancy array); agrees with Machball within 2 % at AR 20 to 100; threaded and bitwise reproducible |
+| Cross-checks | `tests/` | Scaling laws, embedded-BC vs standalone solver, 1D solver vs the 3D voxel solver vs Machball (Argonne); 118 tests |
 | Validation data | `data/zenodo_3974438` | PillarHall LHAR Al2O3 profiles (CC BY 4.0); fit in `coupling/fit_pillarhall.py` |
 | Studies | `coupling/`, `reactor/sweep_*.py`, `reactor/doe_patterned.py` | One-way and two-way coupling, pulse-time map, operating sweep, DOE, PEALD ceiling, temporal-vs-spatial chart |
 | Analysis | `analysis/` | JMP (JSL) response surface, MATLAB and scikit-learn Gaussian-process surrogates with Monte Carlo bands, cost-of-ownership front |
@@ -64,7 +65,9 @@ Apple Silicon Mac; everything open source except MATLAB and JMP, which are used 
 # Python side (feature solver, tests, figures)
 ~/.local/bin/python3.12 -m venv .venv && .venv/bin/pip install -e . viennaps machball pytest
 sh scripts/fix_viennaps_libomp.sh .venv          # macOS: ViennaPS and ViennaLS each bundle an OpenMP runtime
-PYTHONPATH=src .venv/bin/python -m pytest -q      # 77 tests
+cmake -S lib/aldkin -B lib/aldkin/build && cmake --build lib/aldkin/build   # the kinetics library (also built by reproduce.sh)
+cmake -S lib/aldmc -B lib/aldmc/build && cmake --build lib/aldmc/build     # the 3D voxel Monte Carlo solver
+PYTHONPATH=src .venv/bin/python -m pytest -q      # 118 tests
 
 # OpenFOAM side (chamber + multiscale wall): native build from github.com/gerlero/openfoam-app
 OF=~/Applications/OpenFOAM-v2606.app/Contents/Resources/etc/openfoam
@@ -93,13 +96,21 @@ centre point's pulse time.
 
 ### Use the kinetics in your own solver
 
-```
+The wall model (flat Langmuir surface plus a Knudsen/Langmuir hole per face, coverages integrated per time step,
+`K_eff` returned for a Robin wall condition) is a standalone C-ABI library, `lib/aldkin` (`cmake -S lib/aldkin -B
+lib/aldkin/build && cmake --build lib/aldkin/build`; `ctest` runs 11 checks). Three hooks exist:
+- OpenFOAM: `reactor/lib/aldWallKinetics` are thin adapters around it (`patternedSurface`, `langmuirSticking`;
+  bit-identical to the earlier boundary conditions on the regression case).
+- Fluent: `adapters/fluent/ald_wall_udf.c` (DEFINE_INIT / DEFINE_ADJUST / DEFINE_SR_RATE); compiled against a stub,
+  not yet run in Fluent.
+- Any other code: `lib/aldkin/examples/plain_c_example.c` steps one face through a recorded chamber density history;
+  Python through `aldconf.aldkin` (ctypes). API, units and the per-step call sequence: `lib/aldkin/README.md`.
 
 ### Continuous integration and Docker
 
 ![CI](https://github.com/Soham-ChemE/ald-conformality/actions/workflows/ci.yml/badge.svg)
 
-Every push runs three jobs: the Python feature solver and its 77 tests on Python 3.12; the OpenFOAM chain in
+Every push runs three jobs: the Python feature solver and its 118 tests on Python 3.12; the OpenFOAM chain in
 OpenCFD's `opencfd/openfoam-default:2512` container (the two boundary conditions compiled with wmake, the steady
 chamber flow, a 2 s TMA pulse over a patterned wafer, and a regression test of the wafer coverage against a stored
 reference to 1e-6); and a check that the live page ships every asset it references.
@@ -116,7 +127,6 @@ docker run --rm ald-conformality --quick                                      # 
 the entry point the image uses; it also runs natively inside the OpenFOAM launcher.
 ```
 
-Also update the test count in the existing Reproduce block: `PYTHONPATH=src .venv/bin/python -m pytest -q      # 77 tests` -> `# 77 tests`.
 
 ## Method in one paragraph
 
