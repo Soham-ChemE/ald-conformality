@@ -454,7 +454,7 @@ def build_preview():
             except Exception: pass
         return ImageFont.load_default()
     d.text((70, 70), "SOHAM KAVATHEKAR  ·  ALD CHAMBER-TO-FEATURE MODEL", fill=MUTED, font=font(20))
-    d.text((70, 120), "Every blanket-wafer ALD recipe", fill=INK, font=font(50)); d.text((70, 182), "hides a 40x under-dose.", fill=INK, font=font(50))
+    d.text((70, 120), "A pulse sized on a blanket wafer is", fill=INK, font=font(44)); d.text((70, 178), "40x too short for a 3D-NAND wafer.", fill=INK, font=font(44))
     d.text((70, 262), "OpenFOAM showerhead chamber, one hole model per point on the wafer, two-way coupled.", fill="#c9d4e2", font=font(21, False))
     d.text((70, 292), "The pulse that saturates a 3D-NAND wafer is 1.2 x (1 + wall area ratio) x one monolayer of supply.", fill="#c9d4e2", font=font(21, False))
     for i, (big, small) in enumerate([("0.35 s → 14 s", "blanket wafer vs AR-100 patterned wafer"), ("within 25 %", "rule across AR 20-100, 20x feed range"), ("τ = 1.12", "measured fluidized-bed ALD, 940 m², on the same axis")]):

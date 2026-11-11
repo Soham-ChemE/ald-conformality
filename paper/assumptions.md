@@ -421,6 +421,7 @@ long case is the 5e-3 point) and s = 5e-4, 1e-3, 2e-3, 5e-3, 8.5e-3 on the blank
 writes 0.01 s). Cases are copies of showerhead_pulse_patterned_AR100_long and showerhead_pulse_langmuir_p0.5 with the
 wafer BC line, pulse table and endTime/writeInterval substituted (each regex asserted to hit once), under
 reactor/sticking/. Wall time 84-96 s per blanket case, 197-206 s per patterned case, 21 min in all.
+Added 2026-11-11 (review): s = 2e-2, the upper PillarHall fit (parallel-plate slit diffusivity), on both wafers. Patterned bottom t90 14.05 / 14.10 s (centre / worst), 1.176 supply-limit times, utilization 85.0 %, flat surface 1.05 / 1.10 s; blanket 0.26 / 0.28 s, 1.33 supply-limit times, utilization 75.2 %. Nothing on the patterned wafer moves; eleven runs in all. Wall time 88 s (blanket) and 3.4 min (patterned).
 | s | blanket t90 centre / worst | patterned flat t90 | patterned bottom t90 centre / worst | bottom t90 / 11.99 s (worst) | utilization patterned / blanket |
 | 5e-4 | 0.92 / 1.01 s | 6.00 s | 14.15 / 14.20 s | 1.184 | 84.4 % / 20.9 % |
 | 1e-3 | 0.64 / 0.71 | 4.25 | 14.05 / 14.10 | 1.176 | 85.0 / 29.7 |

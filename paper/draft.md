@@ -1,4 +1,4 @@
-# Every blanket-wafer ALD recipe hides a 40x under-dose: a chamber-to-feature model of supply-limited atomic layer deposition
+# A pulse sized on a blanket wafer is 40x too short for a 3D-NAND wafer: a chamber-to-feature model of supply-limited atomic layer deposition
 
 Soham Kavathekar, Department of Chemical and Biomolecular Engineering, University of Pennsylvania
 
@@ -27,7 +27,8 @@ turns a day of recipe transfer into arithmetic, and says where a tool's throughp
 
 If your recipe was saturated on a monitor wafer, multiply the pulse by one plus the product wafer's wall-area ratio
 before you trust it on product. Size the pulse on the densest or deepest region's own wall-area ratio; the wafer
-average under-doses it. Pressure, gap and carrier flow are uniformity knobs; they buy no time. Time comes
+average under-doses it. Pressure and gap are uniformity knobs; they buy no time. Carrier flow and precursor
+fraction buy time only through their product, the delivery rate U c0. Time comes
 from precursor molecules per second: vapour pressure, bubbler flow, injector design, or an architecture that exposes
 the wafer to a denser zone (spatial ALD wins by the same factor the rule predicts). Low-sticking reactants are not
 the bottleneck on patterned wafers; their cost is on blanket wafers only. And when the deepest feature saturates,
@@ -755,8 +756,9 @@ are given; times in s to 90 / 99 %):
 | | TiCl4, chamber | 2.99 / 4.43 | 20.25 / - | not reached by the end of the 20 s pulse: recesses from index 172 (65 % depth) down are below 90 % except the two next to the floor; 13.8 % of the area below 90 % at 22 s | - | same |
 
 ## 4. Discussion
-- Throughput on patterned wafers is bought with precursor delivery rate (vapour pressure, bubbler carrier flow,
-  injector design), not with chamber pressure, gap or carrier flow; those knobs move uniformity.
+- Throughput on patterned wafers is bought with precursor delivery rate U c0 (vapour pressure, bubbler flow,
+  precursor fraction, injector design); at fixed delivery, chamber pressure, gap and dilution flow move
+  uniformity and utilization, not time.
 - Recipe transfer: the blanket-to-product factor is the wall-area ratio, 11 to 56 here; monitor-wafer recipes
   under-dose product wafers by that factor at the same supply.
 - Precursor utilization: 60 % (TMA) and 50 % (H2O) over the saturating pulse on the patterned wafer; the remainder

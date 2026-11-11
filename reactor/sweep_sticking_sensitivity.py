@@ -1,7 +1,7 @@
 """Sticking-coefficient sensitivity of the saturating pulse at the baseline operating point (300 Pa, 573 K, 300 sccm,
 1 % TMA, 15 mm gap): blanket wafer and the 3D-NAND-like AR-100 patterned wafer (wall-area ratio 55.9) at
-s = 5e-4, 1e-3, 2e-3, 5e-3, 8.5e-3. The range spans the Arts et al. 2019 lumped-model estimate (0.5-2e-3) and the
-PillarHall fit of coupling/fit_pillarhall.py (8.5e-3); 5e-3 is the value used in every other chamber run.
+s = 5e-4, 1e-3, 2e-3, 5e-3, 8.5e-3, 2e-2. The range spans the Arts et al. 2019 lumped-model estimate (0.5-2e-3) and both
+PillarHall fits (8.5e-3 hydraulic slit, 2e-2 ideal plates); 5e-3 is the value used in every other chamber run.
 
 Cases are copies of the two templates with only the wafer BC line, the pulse table and endTime/writeInterval changed:
   patterned: reactor/showerhead_pulse_patterned_AR100_long  -> 24 s pulse, endTime 26, writes every 0.05 s
@@ -34,8 +34,8 @@ FIG = ROOT.parent / "figures"
 LAUNCHER = Path.home() / "Applications/OpenFOAM-v2606.app/Contents/Resources/etc/openfoam"
 PAT_SRC = ROOT / "showerhead_pulse_patterned_AR100_long"
 BLK_SRC = ROOT / "showerhead_pulse_langmuir_p0.5"
-S_PAT = (5e-4, 1e-3, 2e-3, 8.5e-3)              # 5e-3 is PAT_SRC itself
-S_BLK = (5e-4, 1e-3, 2e-3, 5e-3, 8.5e-3)
+S_PAT = (5e-4, 1e-3, 2e-3, 8.5e-3, 2e-2)             # 5e-3 is PAT_SRC itself
+S_BLK = (5e-4, 1e-3, 2e-3, 5e-3, 8.5e-3, 2e-2)
 PAT_PULSE, PAT_END, PAT_WI = 24.0, 26.0, 0.05
 BLK_PULSE, BLK_END, BLK_WI = 8.0, 9.0, 0.01
 U, N0, C0, D_HOLE, AR, HOLES = 0.0501, 4e18, 3.79e20, 100e-9, 100, 1.78e13
@@ -178,5 +178,5 @@ ax2.set_xscale("log"); ax2.set_yscale("log"); ax2.set_xlabel("TMA sticking coeff
 ax2.set_title("Saturation time relative to the supply limit", fontsize=9)
 ax2.set_ylim(0.9, 12); ax2.grid(True, which="both", alpha=0.3); ax2.legend(fontsize=6, loc="upper right")
 for a in (ax, ax2):                                        # tick at the five run values only (after the log scale is set)
-    a.set_xticks(list(S_BLK)); a.set_xticklabels([f"{v:g}" for v in S_BLK]); a.set_xticks([], minor=True); a.set_xlim(4e-4, 1.05e-2)
+    a.set_xticks(list(S_BLK)); a.set_xticklabels([f"{v:g}" for v in S_BLK]); a.set_xticks([], minor=True); a.set_xlim(4e-4, 2.5e-2)
 fig.tight_layout(); fig.savefig(FIG / "sticking_sensitivity.png", dpi=150); print("saved", FIG / "sticking_sensitivity.png")
