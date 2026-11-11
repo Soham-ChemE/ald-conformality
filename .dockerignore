@@ -29,6 +29,8 @@ reactor/lib/*/Make/darwin*
 reactor/lib/*/Make/linux*
 reactor/lib/*/lnInclude
 reactor/lib/*/log.wmake
+lib/aldkin/build
+lib/aldkin/log.cmake
 .openfoam-user
 
 # large derived files

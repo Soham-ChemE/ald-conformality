@@ -24,8 +24,39 @@ jobs:
         run: python -m pip install -e '.[test,crosscheck]'
       - name: Console script works
         run: aldconf rule --x 0.01 --Q 300 --p 300 --T 573.15 --AR 100 --d 100e-9 --density 1.78e13
-      - name: Tests (the OpenFOAM regression test skips here; the openfoam job runs it)
-        run: python -m pytest -q tests
+      - name: Tests (the OpenFOAM regression test and the library tests skip here; the openfoam and library jobs run them)
+        run: python -m pytest -q tests -rs
+
+  library:
+    name: Kinetics library (cmake, ctest, Python binding)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: cmake and a C++17 compiler
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends cmake g++
+          cmake --version
+      - name: Configure and build lib/aldkin (shared and static)
+        run: |
+          cmake -S lib/aldkin -B lib/aldkin/build -DCMAKE_BUILD_TYPE=Release
+          cmake --build lib/aldkin/build -j 2
+          ls -l lib/aldkin/build/libaldkin.*
+      - name: ctest
+        run: ctest --test-dir lib/aldkin/build --output-on-failure
+      - name: Fluent adapter compiles and links against the stub
+        run: |
+          cd adapters/fluent
+          cc -std=c99 -Wall -Wextra -pedantic -I. -I../../lib/aldkin/include -c ald_wall_udf.c -o /tmp/ald_wall_udf.o
+          cc -shared -fPIC -I. -I../../lib/aldkin/include ald_wall_udf.c -L../../lib/aldkin/build -laldkin -o /tmp/libudf_check.so
+      - name: Install the package and run the binding tests
+        run: |
+          python -m pip install -e '.[test]'
+          python -m pytest -q tests/test_aldkin.py -rs
 
   openfoam:
     name: OpenFOAM chamber chain and regression
@@ -42,14 +73,14 @@ jobs:
       MPLBACKEND: Agg
     steps:
       - uses: actions/checkout@v4
-      - name: Python 3.12 from Ubuntu 24.04
+      - name: Python 3.12, cmake and g++ from Ubuntu 24.04
         run: |
           apt-get update
-          apt-get install -y --no-install-recommends python3 python3-venv python3-pip
+          apt-get install -y --no-install-recommends python3 python3-venv python3-pip cmake g++
           python3 -m venv .venv
           .venv/bin/pip install --upgrade pip
           .venv/bin/pip install -e '.[test,crosscheck]'
-      - name: Compile the boundary-condition library (wmake)
+      - name: Build lib/aldkin (cmake, ctest) and the boundary-condition adapters (wmake)
         run: bash ./reproduce.sh --build
       - name: Steady flow, regression pulse, regression test
         run: bash ./reproduce.sh --regress
@@ -66,6 +97,7 @@ jobs:
             reactor/showerhead_steady/log.checkMesh
             reactor/showerhead_steady/log.simpleFoam
             reactor/lib/aldWallKinetics/log.wmake
+            lib/aldkin/log.cmake
           if-no-files-found: warn
 
   pages-check:

@@ -12,8 +12,9 @@ FROM opencfd/openfoam-default:2512
 
 ARG DEBIAN_FRONTEND=noninteractive
 # The image is Ubuntu 24.04 without Python; python3 there is 3.12, the version the project is developed with.
+# cmake and g++ build lib/aldkin (the kinetics library the boundary conditions link).
 RUN apt-get update \
- && apt-get install -y --no-install-recommends python3 python3-venv python3-pip \
+ && apt-get install -y --no-install-recommends python3 python3-venv python3-pip cmake g++ \
  && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /work
@@ -27,7 +28,8 @@ RUN python3 -m venv .venv \
 # the rest of the repository (.dockerignore keeps the OpenFOAM results and the local venv out)
 COPY . .
 
-# Compile the two boundary conditions into a user library inside the image (no home directory needed)
+# Build the kinetics library lib/aldkin (cmake, ctest) and compile the two boundary-condition adapters against it
+# into a user library inside the image (no home directory needed)
 ENV ALDCONF_FOAM_USER_DIR=/work/.openfoam-user \
     ALDCONF_PYTHON=/work/.venv/bin/python \
     MPLBACKEND=Agg

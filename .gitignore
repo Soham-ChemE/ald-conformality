@@ -51,3 +51,7 @@ reactor/**/0/Cy
 reactor/**/0/Cz
 reactor/chamber3d/pulse_timing/
 reactor/**/*.npz
+
+# kinetics library build (lib/aldkin; reproduce.sh --build or cmake)
+lib/aldkin/build/
+lib/aldkin/log.cmake

@@ -23,12 +23,19 @@
     Coverages advance once per time step. Hole gas is quasi-steady (Ylilammi 2018).
     Writes thetaFlat, thetaBottom (hole bottom), thetaMid (half depth), Keff,
     ARField and holeDensityField (per face), and thetaHole (all cells, for restart).
+
+    The physics lives in lib/aldkin (libaldkin, C ABI); this class is the OpenFOAM
+    adapter: it reads the dictionary, hands the face radii, the profiles and the
+    face values to the library once per time step (aldkin_step; aldkin_evaluate on
+    the further calls within a step) and maps K_eff onto the mixed-BC coefficients.
+    Results are bit-identical to the pre-library implementation kept in legacy/.
 \*---------------------------------------------------------------------------*/
 #ifndef patternedSurfaceFvPatchScalarField_H
 #define patternedSurfaceFvPatchScalarField_H
 
 #include "mixedFvPatchFields.H"
 #include "Tuple2.H"
+#include "aldkinHandle.H"
 
 namespace Foam
 {
@@ -44,30 +51,23 @@ class patternedSurfaceFvPatchScalarField
     label nCells_;
     profileTable ARProfile_;            // empty when AR is uniform
     profileTable holeDensityProfile_;   // empty when holeDensity is uniform
-    scalarField ARField_;               // per-face aspect ratio
-    scalarField holeDensityField_;      // per-face holes per m2
-    scalarField thetaFlat_;
-    scalarField thetaHole_;      // nFaces * nCells, cell index fastest
-    scalarField Keff_;
+    aldkinHandle kin_;                  // the kinetics state of every face (libaldkin)
     label curTimeIndex_;
 
     // read an optional "name table ((r v) ...)" entry; returns an empty list when absent
     static profileTable readProfile(const dictionary& dict, const word& name);
 
-    // piecewise-linear interpolation of a profile at radius r, clamped at the ends
-    static scalar interpolateProfile(const profileTable& tab, const scalar r);
+    // library parameters from the dictionary values
+    aldkin_params params() const;
 
-    // fill ARField_ and holeDensityField_ from the scalars and the profiles at the face-centre radii
-    void setPatternFields();
+    // face-centre radii sqrt(y^2 + z^2) of this patch
+    scalarField faceRadii() const;
 
-    // true when the face carries holes that are solved
-    bool hasHoles(const label facei) const
-    {
-        return holeDensityField_[facei] > 0 && ARField_[facei] > 0;
-    }
+    // (re)create the library handle for the current patch: faces at their radii, profiles installed, coverages 0
+    void resetKinetics();
 
-    // quasi-steady hole gas for one face: returns mouth flux / (c0 T_face) and fills n (relative to mouth density = 1)
-    scalar solveHole(const label facei, scalarField& nrel) const;
+    // hand a profile table to the library
+    void setProfile(int which, const profileTable& tab);
 
 public:
 

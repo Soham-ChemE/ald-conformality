@@ -3,7 +3,6 @@
 #include "fvPatchFieldMapper.H"
 #include "volFields.H"
 #include "IOdictionary.H"
-#include "mathematicalConstants.H"
 
 namespace Foam
 {
@@ -42,42 +41,46 @@ patternedSurfaceFvPatchScalarField::readProfile(const dictionary& dict, const wo
 }
 
 
-scalar patternedSurfaceFvPatchScalarField::interpolateProfile(const profileTable& tab, const scalar r)
+// * * * * * * * * * * * * * * * library plumbing * * * * * * * * * * * * * * * //
+
+aldkin_params patternedSurfaceFvPatchScalarField::params() const
 {
-    const label n = tab.size();
-    if (r <= tab[0].first()) return tab[0].second();
-    if (r >= tab[n-1].first()) return tab[n-1].second();
-    for (label i = 1; i < n; ++i)
-    {
-        if (r <= tab[i].first())
-        {
-            const scalar r0 = tab[i-1].first(), r1 = tab[i].first();
-            const scalar v0 = tab[i-1].second(), v1 = tab[i].second();
-            if (r1 <= r0) return v1;                  // repeated radius: step
-            return v0 + (v1 - v0)*(r - r0)/(r1 - r0);
-        }
-    }
-    return tab[n-1].second();
+    aldkin_params p;
+    aldkin_params_default(&p);
+    p.s = s_; p.r = r_; p.kdes = 0.0; p.vbar = vbar_; p.N0 = N0_; p.c0 = c0_;
+    p.d = d_; p.AR = AR_; p.holeDensity = holeDensity_; p.nCells = nCells_;
+    p.flatOnly = 0; p.scheme = ALDKIN_SCHEME_EULER;
+    return p;
 }
 
 
-void patternedSurfaceFvPatchScalarField::setPatternFields()
+scalarField patternedSurfaceFvPatchScalarField::faceRadii() const
 {
-    ARField_.setSize(size());
-    holeDensityField_.setSize(size());
-    ARField_ = AR_;
-    holeDensityField_ = holeDensity_;
-    if (ARProfile_.empty() && holeDensityProfile_.empty()) return;
-
     const vectorField& Cf = patch().Cf();
+    scalarField r(Cf.size());
     forAll(Cf, facei)
     {
-        const scalar r = Foam::sqrt(sqr(Cf[facei].y()) + sqr(Cf[facei].z()));   // wedge axis is x
-        if (!ARProfile_.empty()) ARField_[facei] = interpolateProfile(ARProfile_, r);
-        if (!holeDensityProfile_.empty()) holeDensityField_[facei] = interpolateProfile(holeDensityProfile_, r);
-        if (ARField_[facei] < 0) ARField_[facei] = 0;
-        if (holeDensityField_[facei] < 0) holeDensityField_[facei] = 0;
+        r[facei] = Foam::sqrt(sqr(Cf[facei].y()) + sqr(Cf[facei].z()));   // wedge axis is x
     }
+    return r;
+}
+
+
+void patternedSurfaceFvPatchScalarField::setProfile(int which, const profileTable& tab)
+{
+    scalarField r(tab.size()), v(tab.size());
+    forAll(tab, i) { r[i] = tab[i].first(); v[i] = tab[i].second(); }
+    kin_.check(aldkin_set_profile(kin_.get(), which, tab.size(), r.cdata(), v.cdata()), "aldkin_set_profile");
+}
+
+
+void patternedSurfaceFvPatchScalarField::resetKinetics()
+{
+    kin_ = aldkinHandle(params());
+    const scalarField r(faceRadii());
+    kin_.check(aldkin_set_faces(kin_.get(), r.size(), r.cdata()), "aldkin_set_faces");
+    if (!ARProfile_.empty()) setProfile(ALDKIN_PROFILE_AR, ARProfile_);
+    if (!holeDensityProfile_.empty()) setProfile(ALDKIN_PROFILE_DENSITY, holeDensityProfile_);
 }
 
 
@@ -93,10 +96,10 @@ patternedSurfaceFvPatchScalarField::patternedSurfaceFvPatchScalarField
     s_(1), r_(0), vbar_(410), N0_(4e18), c0_(1), D_(-1),
     d_(1e-7), AR_(50), holeDensity_(0), nCells_(100),
     ARProfile_(), holeDensityProfile_(),
-    ARField_(p.size(), AR_), holeDensityField_(p.size(), holeDensity_),
-    thetaFlat_(p.size(), 0.0), thetaHole_(p.size()*nCells_, 0.0), Keff_(p.size(), 0.0),
+    kin_(),
     curTimeIndex_(-1)
 {
+    resetKinetics();
     refValue() = 0.0; refGrad() = 0.0; valueFraction() = 1.0;
 }
 
@@ -121,16 +124,20 @@ patternedSurfaceFvPatchScalarField::patternedSurfaceFvPatchScalarField
     nCells_(dict.getOrDefault<label>("nCells", 100)),
     ARProfile_(readProfile(dict, "ARProfile")),
     holeDensityProfile_(readProfile(dict, "holeDensityProfile")),
-    ARField_(p.size(), AR_),
-    holeDensityField_(p.size(), holeDensity_),
-    thetaFlat_(p.size(), 0.0),
-    thetaHole_(p.size()*nCells_, 0.0),
-    Keff_(p.size(), 0.0),
+    kin_(),
     curTimeIndex_(-1)
 {
-    setPatternFields();
-    if (dict.found("thetaFlat")) thetaFlat_ = scalarField("thetaFlat", dict, p.size());
-    if (dict.found("thetaHole")) thetaHole_ = scalarField("thetaHole", dict, p.size()*nCells_);
+    resetKinetics();
+    if (dict.found("thetaFlat"))
+    {
+        const scalarField thetaFlat("thetaFlat", dict, p.size());
+        kin_.check(aldkin_set_theta(kin_.get(), ALDKIN_THETA_FLAT, thetaFlat.cdata()), "aldkin_set_theta(thetaFlat)");
+    }
+    if (dict.found("thetaHole"))
+    {
+        const scalarField thetaHole("thetaHole", dict, p.size()*nCells_);
+        kin_.check(aldkin_set_theta(kin_.get(), ALDKIN_THETA_HOLE, thetaHole.cdata()), "aldkin_set_theta(thetaHole)");
+    }
     refValue() = 0.0; refGrad() = 0.0; valueFraction() = 1.0;
     if (dict.found("value"))
     {
@@ -155,13 +162,15 @@ patternedSurfaceFvPatchScalarField::patternedSurfaceFvPatchScalarField
     s_(ptf.s_), r_(ptf.r_), vbar_(ptf.vbar_), N0_(ptf.N0_), c0_(ptf.c0_), D_(ptf.D_),
     d_(ptf.d_), AR_(ptf.AR_), holeDensity_(ptf.holeDensity_), nCells_(ptf.nCells_),
     ARProfile_(ptf.ARProfile_), holeDensityProfile_(ptf.holeDensityProfile_),
-    ARField_(ptf.ARField_, mapper),
-    holeDensityField_(ptf.holeDensityField_, mapper),
-    thetaFlat_(ptf.thetaFlat_, mapper),
-    thetaHole_(p.size()*ptf.nCells_, 0.0),     // not mapped (mapping is not used in these cases)
-    Keff_(ptf.Keff_, mapper),
+    kin_(),
     curTimeIndex_(-1)
-{}
+{
+    // new faces at their own radii (pattern from the profiles); the flat coverage is mapped, the hole coverages
+    // start from 0 as before (mapping is not used in these cases)
+    resetKinetics();
+    const scalarField thetaFlat(ptf.kin_.theta(ALDKIN_THETA_FLAT, ptf.size()), mapper);
+    kin_.check(aldkin_set_theta(kin_.get(), ALDKIN_THETA_FLAT, thetaFlat.cdata()), "aldkin_set_theta(thetaFlat)");
+}
 
 
 patternedSurfaceFvPatchScalarField::patternedSurfaceFvPatchScalarField
@@ -174,8 +183,7 @@ patternedSurfaceFvPatchScalarField::patternedSurfaceFvPatchScalarField
     s_(ptf.s_), r_(ptf.r_), vbar_(ptf.vbar_), N0_(ptf.N0_), c0_(ptf.c0_), D_(ptf.D_),
     d_(ptf.d_), AR_(ptf.AR_), holeDensity_(ptf.holeDensity_), nCells_(ptf.nCells_),
     ARProfile_(ptf.ARProfile_), holeDensityProfile_(ptf.holeDensityProfile_),
-    ARField_(ptf.ARField_), holeDensityField_(ptf.holeDensityField_),
-    thetaFlat_(ptf.thetaFlat_), thetaHole_(ptf.thetaHole_), Keff_(ptf.Keff_),
+    kin_(ptf.kin_),                 // clones the whole kinetics state
     curTimeIndex_(-1)
 {}
 
@@ -185,12 +193,10 @@ patternedSurfaceFvPatchScalarField::patternedSurfaceFvPatchScalarField
 void patternedSurfaceFvPatchScalarField::autoMap(const fvPatchFieldMapper& m)
 {
     mixedFvPatchScalarField::autoMap(m);
-    thetaFlat_.autoMap(m);
-    Keff_.autoMap(m);
-    ARField_.autoMap(m);
-    holeDensityField_.autoMap(m);
-    thetaHole_.setSize(size()*nCells_, 0.0);
-    setPatternFields();     // recompute from the profiles at the new face centres
+    scalarField thetaFlat(kin_.theta(ALDKIN_THETA_FLAT, kin_.valid() ? aldkin_n_faces(kin_.get()) : 0));
+    thetaFlat.autoMap(m);
+    resetKinetics();     // recompute the pattern from the profiles at the new face centres; hole coverages 0
+    kin_.check(aldkin_set_theta(kin_.get(), ALDKIN_THETA_FLAT, thetaFlat.cdata()), "aldkin_set_theta(thetaFlat)");
 }
 
 
@@ -198,47 +204,9 @@ void patternedSurfaceFvPatchScalarField::rmap(const fvPatchScalarField& ptf, con
 {
     mixedFvPatchScalarField::rmap(ptf, addr);
     const patternedSurfaceFvPatchScalarField& tiptf = refCast<const patternedSurfaceFvPatchScalarField>(ptf);
-    thetaFlat_.rmap(tiptf.thetaFlat_, addr);
-    Keff_.rmap(tiptf.Keff_, addr);
-    ARField_.rmap(tiptf.ARField_, addr);
-    holeDensityField_.rmap(tiptf.holeDensityField_, addr);
-}
-
-
-// * * * * * * * * * * * * * * * * hole model * * * * * * * * * * * * * * * * //
-
-// Quasi-steady Knudsen diffusion with Langmuir sink down one hole; mouth density = 1 (relative), closed bottom.
-// Returns the mouth flux per unit mouth area per unit mouth density [m/s]; nrel receives the relative density profile.
-scalar patternedSurfaceFvPatchScalarField::solveHole(const label facei, scalarField& nrel) const
-{
-    const label N = nCells_;
-    const scalar Lh = ARField_[facei]*d_;
-    const scalar dx = Lh/N;
-    const scalar DK = d_*vbar_/3.0;                 // Knudsen diffusivity, cylinder
-    const scalar a = DK/(dx*dx);
-    List<scalar> lower(N, -a), diag(N, 0.0), upper(N, -a), rhs(N, 0.0);
-    for (label i = 0; i < N; ++i)
-    {
-        const scalar th = thetaHole_[facei*N + i];
-        const scalar k = (vbar_/d_)*(s_*(1.0 - th) + r_);   // (4/d)(vbar/4)[...]
-        diag[i] = 2.0*a + k;
-    }
-    diag[N-1] = a + (diag[N-1] - 2.0*a);            // Neumann at the bottom: only the west face conducts
-    diag[0] += a;                                   // Dirichlet ghost at the mouth: n_ghost = 2 - n_0
-    rhs[0] = 2.0*a;
-    // Thomas algorithm
-    List<scalar> cp(N, 0.0), dp(N, 0.0);
-    cp[0] = upper[0]/diag[0]; dp[0] = rhs[0]/diag[0];
-    for (label i = 1; i < N; ++i)
-    {
-        const scalar m = diag[i] - lower[i]*cp[i-1];
-        cp[i] = (i < N-1) ? upper[i]/m : 0.0;
-        dp[i] = (rhs[i] - lower[i]*dp[i-1])/m;
-    }
-    nrel[N-1] = dp[N-1];
-    for (label i = N-2; i >= 0; --i) nrel[i] = dp[i] - cp[i]*nrel[i+1];
-    // flux into the mouth: D (n_mouth - n_0)/(dx/2) with n_mouth = 1
-    return DK*(1.0 - nrel[0])/(0.5*dx);
+    scalarField thetaFlat(kin_.theta(ALDKIN_THETA_FLAT, size()));
+    thetaFlat.rmap(tiptf.kin_.theta(ALDKIN_THETA_FLAT, tiptf.size()), addr);
+    kin_.check(aldkin_set_theta(kin_.get(), ALDKIN_THETA_FLAT, thetaFlat.cdata()), "aldkin_set_theta(thetaFlat)");
 }
 
 
@@ -255,43 +223,29 @@ void patternedSurfaceFvPatchScalarField::updateCoeffs()
         D = tp.get<dimensionedScalar>("DT").value();
     }
 
-    const label N = nCells_;
     const label ti = db().time().timeIndex();
     const bool advance = (ti != curTimeIndex_);
     const scalar dt = db().time().deltaTValue();
     const scalarField& Tface = *this;
 
-    scalarField nrel(N, 0.0);
-    forAll(Keff_, facei)
+    // coverages advance once per time step with the face value of the previous step; the further calls within
+    // the step only re-evaluate K_eff with the current face value
+    if (advance)
     {
-        const scalar Tf = max(Tface[facei], scalar(0));
-        const bool holes = hasHoles(facei);
-        // open-area fraction of this face; 0 on a bare (flat Langmuir) face
-        const scalar phi = holes ? holeDensityField_[facei]*constant::mathematical::pi*d_*d_/4.0 : 0.0;
-        const scalar jhole = holes ? solveHole(facei, nrel) : 0.0;          // per unit mouth density
-        if (advance)
-        {
-            // flat part
-            thetaFlat_[facei] = min(scalar(1), thetaFlat_[facei]
-                + dt*(vbar_/4.0)*s_*(1.0 - thetaFlat_[facei])*c0_*Tf/N0_);
-            // hole cells with their local relative density
-            if (holes)
-            {
-                for (label i = 0; i < N; ++i)
-                {
-                    scalar& th = thetaHole_[facei*N + i];
-                    th = min(scalar(1), th + dt*(vbar_/4.0)*s_*(1.0 - th)*c0_*Tf*nrel[i]/N0_);
-                }
-            }
-        }
-        Keff_[facei] = (1.0 - phi)*(vbar_/4.0)*(s_*(1.0 - thetaFlat_[facei]) + r_) + phi*jhole;
+        kin_.check(aldkin_step(kin_.get(), Tface.cdata(), dt, nullptr, nullptr), "aldkin_step");
+        curTimeIndex_ = ti;
     }
-    if (advance) curTimeIndex_ = ti;
+    else
+    {
+        kin_.check(aldkin_evaluate(kin_.get(), Tface.cdata(), nullptr, nullptr), "aldkin_evaluate");
+    }
 
     const scalarField Dd(D*patch().deltaCoeffs());
-    refValue() = 0.0;
-    refGrad() = 0.0;
-    valueFraction() = Keff_/(Keff_ + Dd);
+    kin_.check
+    (
+        aldkin_mixed_bc(kin_.get(), Dd.cdata(), refValue().data(), refGrad().data(), valueFraction().data()),
+        "aldkin_mixed_bc"
+    );
 
     mixedFvPatchScalarField::updateCoeffs();
 }
@@ -315,19 +269,17 @@ void patternedSurfaceFvPatchScalarField::write(Ostream& os) const
     {
         os.writeKeyword("holeDensityProfile") << "table " << holeDensityProfile_ << token::END_STATEMENT << nl;
     }
-    ARField_.writeEntry("ARField", os);
-    holeDensityField_.writeEntry("holeDensityField", os);
-    thetaFlat_.writeEntry("thetaFlat", os);
-    scalarField bottom(size(), 0.0), mid(size(), 0.0);
-    forAll(bottom, facei)
-    {
-        bottom[facei] = thetaHole_[facei*nCells_ + nCells_ - 1];
-        mid[facei] = thetaHole_[facei*nCells_ + nCells_/2];
-    }
-    bottom.writeEntry("thetaBottom", os);
-    mid.writeEntry("thetaMid", os);
-    Keff_.writeEntry("Keff", os);
-    thetaHole_.writeEntry("thetaHole", os);
+    const label n = size();
+    scalarField ARField(n, 0.0), holeDensityField(n, 0.0), Keff(n, 0.0);
+    kin_.check(aldkin_face_pattern(kin_.get(), ARField.data(), holeDensityField.data()), "aldkin_face_pattern");
+    kin_.check(aldkin_keff(kin_.get(), Keff.data()), "aldkin_keff");
+    ARField.writeEntry("ARField", os);
+    holeDensityField.writeEntry("holeDensityField", os);
+    kin_.theta(ALDKIN_THETA_FLAT, n).writeEntry("thetaFlat", os);
+    kin_.theta(ALDKIN_THETA_BOTTOM, n).writeEntry("thetaBottom", os);
+    kin_.theta(ALDKIN_THETA_MID, n).writeEntry("thetaMid", os);
+    Keff.writeEntry("Keff", os);
+    kin_.theta(ALDKIN_THETA_HOLE, n*nCells_).writeEntry("thetaHole", os);
     writeEntry("value", os);
 }
 

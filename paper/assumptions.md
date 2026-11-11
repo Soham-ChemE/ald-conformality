@@ -644,3 +644,33 @@ W 227 s/nm (proportional to the film's metal-atom number density). Caveats: TDMA
 measurement; TiCl4 sticking is for TiCl4/H2O on TiO2 at 110 C, not TiCl4/NH3; WF6 sticking is on the Si-terminated
 surface, not the B-terminated one; film densities for ALD HfO2 (bulk used) and ALD W (bulk used) are not measured
 values; N0 therefore carries the GPC x density uncertainty (factor 1.1-1.3). Tests: 86 pass (9 new) in 14 s.
+
+## Night 4, part 1: standalone kinetics library (lib/aldkin; reactor/lib/aldWallKinetics as adapters; adapters/fluent; src/aldconf/aldkin.py)
+The wall kinetics of patternedSurface and langmuirSticking were moved into lib/aldkin, a C++17 library with a C ABI
+(include/aldkin.h: aldkin_create with the parameter struct s, r, kdes, vbar, N0, c0, d, AR, holeDensity, nCells,
+flatOnly, scheme; aldkin_set_faces by face-centre radius; aldkin_set_profile for the ARProfile/holeDensityProfile
+tables; aldkin_step once per solver step with the face values and dt, returning K_eff and the uptake flux;
+aldkin_evaluate for the further iterations of a step; aldkin_mixed_bc giving refValue = J_des/max(K, 1e-15), refGrad 0,
+valueFraction = K_eff/(K_eff + D/delta); aldkin_theta for flat/mid/bottom/whole hole; errors as return codes). The
+arithmetic was transcribed line by line in the same operand order; the boundary conditions became adapters that keep
+every keyword, written field and constructor, link lib/aldkin/build/libaldkin.a statically (Make/options; reproduce.sh
+--build runs cmake and ctest before wmake), and the old sources sit in reactor/lib/aldWallKinetics/legacy/ (.orig).
+Verification: showerhead_pulse_layout_regress rerun through ./reproduce.sh --regress gives thetaFlat, thetaBottom,
+thetaMid, Keff and value identical to the pre-library run at all 201 write times and 150 faces (max difference 0; the
+201 T files are byte-identical) and passes tests/test_regression_reference.py (3 passed); the first 3 s of
+showerhead_pulse_patterned_AR100_long rerun in a scratch copy give all five fields identical to the existing time
+directories at the 61 write times (difference 0). The library's second update scheme (exponential, the aldconf
+solver's) reproduces aldconf.simulate_driven on the long case's centre-face drive within 1e-6 over the whole coverage
+history (bottom t90 14.05 s in both) and the Python t90 of 15.616 s for an AR-100 hole at constant 0.3 Pa; the
+boundary conditions' Euler scheme gives 15.612 s there. A flat face reproduces 1 - exp(-s vbar/4 n t/N0) to 2.4e-14.
+A Fluent UDF (DEFINE_INIT/DEFINE_ADJUST/DEFINE_SR_RATE/DEFINE_PROFILE/DEFINE_EXECUTE_AT_END) compiles and links
+against a stub header and libaldkin but has not been run in Fluent. A plain-C example steps one face through the
+recorded 50 ms centre-face drive and reaches bottom t90 at 14.008 s (14.05 s recorded). ctest: 11 passed; pytest:
+95 passed (9 new in tests/test_aldkin.py, which skip with the build command when the library is absent). CI: new
+library job (cmake, ctest, Fluent stub check, binding tests); the openfoam job and the Dockerfile build the library
+before wmake. CMake 4.4.5 installed from Kitware's macOS binary into ~/.local/bin (not on the Mac before).
+Caveats: kdes is available in the flat-only model only (the patterned model had no desorption term and none was
+invented); the library's step uses the host's dt as the coverage sub-step, so a host with a coarse step should call
+aldkin_step several times per step or use the exponential scheme; Fluent and Star-CCM+ hooks are untested in those
+codes.
+```

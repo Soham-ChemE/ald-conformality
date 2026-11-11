@@ -91,6 +91,10 @@ The scikit-learn GP reproduces the MATLAB fitrgp leave-one-out R^2: 0.999 / 0.98
 front of pulse time against precursor use (`figures/doe_pareto.png`) cuts the TMA per wafer pass by 12 % at the
 centre point's pulse time.
 
+### Use the kinetics in your own solver
+
+```
+
 ### Continuous integration and Docker
 
 ![CI](https://github.com/Soham-ChemE/ald-conformality/actions/workflows/ci.yml/badge.svg)

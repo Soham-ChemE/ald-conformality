@@ -7,6 +7,28 @@
 namespace Foam
 {
 
+// * * * * * * * * * * * * * * * library plumbing * * * * * * * * * * * * * * * //
+
+aldkin_params langmuirStickingFvPatchScalarField::params() const
+{
+    aldkin_params p;
+    aldkin_params_default(&p);
+    p.s = s_; p.r = r_; p.kdes = kdes_; p.vbar = vbar_; p.N0 = N0_; p.c0 = c0_;
+    p.flatOnly = 1; p.scheme = ALDKIN_SCHEME_EULER;
+    return p;
+}
+
+
+void langmuirStickingFvPatchScalarField::resetKinetics()
+{
+    kin_ = aldkinHandle(params());
+    kin_.check(aldkin_set_faces(kin_.get(), theta_.size(), nullptr), "aldkin_set_faces");
+    kin_.check(aldkin_set_theta(kin_.get(), ALDKIN_THETA_FLAT, theta_.cdata()), "aldkin_set_theta");
+}
+
+
+// * * * * * * * * * * * * * * * * constructors * * * * * * * * * * * * * * * * //
+
 langmuirStickingFvPatchScalarField::langmuirStickingFvPatchScalarField
 (
     const fvPatch& p,
@@ -15,9 +37,11 @@ langmuirStickingFvPatchScalarField::langmuirStickingFvPatchScalarField
 :
     mixedFvPatchScalarField(p, iF),
     s_(1), r_(0), kdes_(0), vbar_(410), N0_(4e18), c0_(1), D_(-1),
+    kin_(),
     theta_(p.size(), 0.0),
     curTimeIndex_(-1)
 {
+    resetKinetics();
     refValue() = 0.0;
     refGrad() = 0.0;
     valueFraction() = 1.0;
@@ -39,6 +63,7 @@ langmuirStickingFvPatchScalarField::langmuirStickingFvPatchScalarField
     N0_(dict.get<scalar>("N0")),
     c0_(dict.get<scalar>("c0")),
     D_(dict.getOrDefault<scalar>("D", -1.0)),
+    kin_(),
     theta_(p.size(), 0.0),
     curTimeIndex_(-1)
 {
@@ -46,6 +71,7 @@ langmuirStickingFvPatchScalarField::langmuirStickingFvPatchScalarField
     {
         theta_ = scalarField("theta", dict, p.size());
     }
+    resetKinetics();
     refValue() = 0.0;
     refGrad() = 0.0;
     valueFraction() = 1.0;
@@ -70,9 +96,12 @@ langmuirStickingFvPatchScalarField::langmuirStickingFvPatchScalarField
 :
     mixedFvPatchScalarField(ptf, p, iF, mapper),
     s_(ptf.s_), r_(ptf.r_), kdes_(ptf.kdes_), vbar_(ptf.vbar_), N0_(ptf.N0_), c0_(ptf.c0_), D_(ptf.D_),
+    kin_(),
     theta_(ptf.theta_, mapper),
     curTimeIndex_(-1)
-{}
+{
+    resetKinetics();
+}
 
 
 langmuirStickingFvPatchScalarField::langmuirStickingFvPatchScalarField
@@ -83,15 +112,19 @@ langmuirStickingFvPatchScalarField::langmuirStickingFvPatchScalarField
 :
     mixedFvPatchScalarField(ptf, iF),
     s_(ptf.s_), r_(ptf.r_), kdes_(ptf.kdes_), vbar_(ptf.vbar_), N0_(ptf.N0_), c0_(ptf.c0_), D_(ptf.D_),
+    kin_(ptf.kin_),
     theta_(ptf.theta_),
     curTimeIndex_(-1)
 {}
 
 
+// * * * * * * * * * * * * * * * * * mapping * * * * * * * * * * * * * * * * * //
+
 void langmuirStickingFvPatchScalarField::autoMap(const fvPatchFieldMapper& m)
 {
     mixedFvPatchScalarField::autoMap(m);
     theta_.autoMap(m);
+    resetKinetics();
 }
 
 
@@ -105,8 +138,11 @@ void langmuirStickingFvPatchScalarField::rmap
     const langmuirStickingFvPatchScalarField& tiptf =
         refCast<const langmuirStickingFvPatchScalarField>(ptf);
     theta_.rmap(tiptf.theta_, addr);
+    kin_.check(aldkin_set_theta(kin_.get(), ALDKIN_THETA_FLAT, theta_.cdata()), "aldkin_set_theta");
 }
 
+
+// * * * * * * * * * * * * * * * * * update * * * * * * * * * * * * * * * * * //
 
 void langmuirStickingFvPatchScalarField::updateCoeffs()
 {
@@ -124,33 +160,29 @@ void langmuirStickingFvPatchScalarField::updateCoeffs()
     }
 
     const label ti = db().time().timeIndex();
+    const scalarField& Tface = *this;
     if (ti != curTimeIndex_)
     {
         // advance coverage once per time step using the face concentration of the previous step
+        // (adsorption on open sites minus first-order desorption; kdes = 0 recovers irreversible Langmuir)
         const scalar dt = db().time().deltaTValue();
-        const scalarField& Tface = *this;
-        // adsorption on open sites minus first-order desorption (kdes = 0 recovers irreversible Langmuir)
-        theta_ = min
-        (
-            scalar(1),
-            max
-            (
-                scalar(0),
-                theta_ + dt*((vbar_/4.0)*s_*(1.0 - theta_)*c0_*max(Tface, scalar(0))/N0_ - kdes_*theta_)
-            )
-        );
+        kin_.check(aldkin_step(kin_.get(), Tface.cdata(), dt, nullptr, nullptr), "aldkin_step");
+        kin_.check(aldkin_theta(kin_.get(), ALDKIN_THETA_FLAT, theta_.data()), "aldkin_theta");
         curTimeIndex_ = ti;
     }
+    else
+    {
+        kin_.check(aldkin_evaluate(kin_.get(), Tface.cdata(), nullptr, nullptr), "aldkin_evaluate");
+    }
 
-    const scalarField K((vbar_/4.0)*(s_*(1.0 - theta_) + r_));
+    // Wall balance with desorption: K c_face - J_des = D (c_cell - c_face)/delta, J_des = kdes theta N0 / c0
+    // -> mixed BC with refValue = J_des/K and valueFraction = K/(K + D/delta)
     const scalarField Dd(D*patch().deltaCoeffs());   // D/delta
-
-    // Wall balance with desorption: K c_face - J_des = D (c_cell - c_face)/delta, J_des = kdes theta N0 / c0 (in T units)
-    // -> c_face = [Dd c_cell + J_des]/(K + Dd): mixed BC with refValue = J_des/K and valueFraction = K/(K + Dd)
-    const scalarField Jdes(kdes_*theta_*N0_/c0_);
-    refValue() = Jdes/max(K, SMALL);
-    refGrad() = 0.0;
-    valueFraction() = K/(K + Dd);
+    kin_.check
+    (
+        aldkin_mixed_bc(kin_.get(), Dd.cdata(), refValue().data(), refGrad().data(), valueFraction().data()),
+        "aldkin_mixed_bc"
+    );
 
     mixedFvPatchScalarField::updateCoeffs();
 }
