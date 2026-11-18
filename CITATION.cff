@@ -1,6 +1,6 @@
 cff-version: 1.2.0
 message: "If you use this model or its results, please cite it as below."
-title: "ald-conformality: a chamber-to-feature digital twin of supply-limited atomic layer deposition"
+title: "ald-conformality: an open chamber-to-feature model of supply-limited atomic layer deposition, with a ballistic re-analysis of lateral-channel sticking coefficients"
 authors:
   - family-names: Kavathekar
     given-names: Soham
@@ -14,5 +14,5 @@ keywords:
   - 3D NAND
   - OpenFOAM
   - multiscale modeling
-  - digital twin
+  - sticking coefficient
   - conformality

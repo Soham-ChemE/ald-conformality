@@ -7,7 +7,7 @@ Yanguas-Gil and Elam, arXiv 2408.13116]. Supply-limited means tau_sat -> 1 from 
 Measured point, Argonne fluidized-bed Al2O3 ALD (OSTI 1902316 / JVST A 2022), all numbers theirs:
   10 g Silicycle silica gel, 940 m2 total; TMA supplied 0.0115 +/- 0.0020 mol during the 24 min TMA dose; TMA needed for
   saturation (from the deposited Al2O3 mass) 0.0103 mol; QMS breakthrough (saturation) at 24 min; utilization 91.8 +/- 14.6 %.
-  -> t0 = 0.0103 / (0.0115/24 min) = 21.5 min, tau_sat = 24 / 21.5 = 1.12 (range 1.00-1.27 from the +/-0.002 mol supply).
+  -> t0 = 0.0103 / (0.0115/24 min) = 21.5 min, tau_sat = 24 / 21.5 = 1.12 (range 0.92-1.31 from the +/-0.002 mol supply, as the code computes).
   Their Damkoehler number: ~1e4.
 Our chamber model: tau_sat = t90 / [(1 + A) N0/(U c0)] from figures/pulse_time_map.csv; the 1.2 in the design rule is this
 ratio. Damkoehler number for the chamber, their definition Da = (S/V) beta (vbar/4) t_res with S the total reactive area,

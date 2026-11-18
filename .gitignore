@@ -59,3 +59,14 @@ lib/aldmc/build/
 lib/aldmc/log.cmake
 # Monte Carlo run cache (4.9 MB, regenerable by coupling/device_geometries.py)
 figures/device_geometries_runs.json
+
+# downloaded paywalled papers: never tracked
+data/papers_inbox/
+
+# manuscript drafts and author-side working notes: not published with the repository (the paper goes to arXiv separately)
+docs/paper/draft_*
+docs/paper/build_docx.py
+docs/paper/NUMBERS_AUDIT.md
+docs/paper/SI_outline.md
+docs/novelty/
+figures/ballistic_frames/

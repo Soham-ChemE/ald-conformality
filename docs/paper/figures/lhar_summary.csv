@@ -1,0 +1,31 @@
+profile,basis,transport,s,rms,exposure_Pa_s,note
+Zenodo 3974438 (Al2O3 300 C; Yim 2020 sample 8),"full profile, single exposure, no narrowing, x <= 150 um",hydraulic,0.005312092254692319,0.011824722828820253,5.639967558396294,rms plateau / front / tail 0.009 / 0.012 / 0.019
+Zenodo 3974438 (Al2O3 300 C; Yim 2020 sample 8),"full profile, single exposure, no narrowing, x <= 150 um","corrected, cut-off 1 mm (factor 2.85)",0.015138220862846071,0.011824709808393105,1.9787642800381495,rms plateau / front / tail 0.009 / 0.012 / 0.019
+Zenodo 3974438 (Al2O3 300 C; Yim 2020 sample 8),"full profile, single exposure, no narrowing, x <= 150 um",ballistic (Machball trench AR 800),0.020663608081743504,0.023426993736283774,2.991971276263026,rms plateau / front / tail 0.012 / 0.028 / 0.042
+Ylilammi 2018 Fig. 6 (Al2O3 300 C),"full profile, single exposure, no narrowing",hydraulic,0.0038142557723274866,0.017173314590824253,8.736887358052828,rms plateau / front / tail 0.015 / 0.021 / 0.023
+Ylilammi 2018 Fig. 6 (Al2O3 300 C),"full profile, single exposure, no narrowing","corrected, cut-off 1 mm (factor 2.85)",0.010869024606403713,0.017173315756527936,3.0652285286184586,rms plateau / front / tail 0.015 / 0.021 / 0.023
+Ylilammi 2018 Fig. 6 (Al2O3 300 C),"full profile, single exposure, no narrowing",ballistic (Machball trench AR 800),0.013868286058546344,0.02586970542081166,4.451348890666082,rms plateau / front / tail 0.018 / 0.040 / 0.038
+Zenodo 3974438 (Al2O3 300 C; Yim 2020 sample 8),"full profile, 500 cycles with narrowing",hydraulic,0.0085,0.038,7.5,
+Zenodo 3974438 (Al2O3 300 C; Yim 2020 sample 8),"full profile, 500 cycles with narrowing","corrected, cut-off 250 um (factor 2.33)",0.01963327181021359,0.03809082117075626,3.2274402804707436,
+Zenodo 3974438 (Al2O3 300 C; Yim 2020 sample 8),"full profile, 500 cycles with narrowing","corrected, cut-off 0.5 mm (factor 2.59)",0.021845660138194348,0.03809087921636286,2.9033759685150646,
+Zenodo 3974438 (Al2O3 300 C; Yim 2020 sample 8),"full profile, 500 cycles with narrowing","corrected, cut-off 1 mm (factor 2.85)",0.024200606472841085,0.038090833339358865,2.6399045816310864,
+Zenodo 3974438 (Al2O3 300 C; Yim 2020 sample 8),"full profile, 500 cycles with narrowing","corrected, cut-off 5 mm (factor 3.45)",0.029258608275896963,0.038090757354835775,2.1782345133119003,
+Ylilammi 2018 Fig. 6 (Al2O3 300 C),"full profile, 500 cycles with narrowing",hydraulic,0.007608473771401088,0.02055249518524751,11.982222346397647,
+Ylilammi 2018 Fig. 6 (Al2O3 300 C),"full profile, 500 cycles with narrowing","corrected, cut-off 1 mm (factor 2.85)",0.021540622647267853,0.02055237254349492,4.202777208882805,
+"Gao 2015 Fig. 5a (Al2O3 300 C, first-generation LHAR, 107 nm film in a 500 nm gap)","full profile, 1109 cycles with narrowing",hydraulic,0.0025985966626492813,0.04073798919672981,4.501189150678538,
+"Gao 2015 Fig. 5a (Al2O3 300 C, first-generation LHAR, 107 nm film in a 500 nm gap)","full profile, 1109 cycles with narrowing","corrected, cut-off 1 mm (factor 2.85)",0.007426004256561522,0.04073809340676143,1.5785453253052317,
+Ylilammi 2018 Fig. 7 (TiO2 110 C),"full profile, 1000 cycles with narrowing",hydraulic,0.0004738179809193505,0.07903164763838165,7.054290136638254,poor fit: not Langmuir-like
+Ylilammi 2018 Fig. 7 (TiO2 110 C),"full profile, 1000 cycles with narrowing","corrected, cut-off 1 mm (factor 2.85)",0.0013496676486013384,0.07903163613208458,2.4749132549363506,poor fit: not Langmuir-like
+"Yim 2020 Table 1, 8 like-for-like samples (500 nm, 50x, 500 cycles, 0.1 s)",tabulated front slope; geometric mean,"hydraulic (Arts slope relation, A = 13.9)",0.0038058063113758154,,,x/÷ 1.55; range 1.7e-03 to 6.1e-03
+"Yim 2020 Table 1, 8 like-for-like samples (500 nm, 50x, 500 cycles, 0.1 s)",tabulated front slope; geometric mean,"hydraulic (Gonsalves slope relation, A = 11.1)",0.003039169068796512,,,x/÷ 1.55; range 1.3e-03 to 4.9e-03
+"Yim 2020 Table 1, 8 like-for-like samples (500 nm, 50x, 500 cycles, 0.1 s)",tabulated front slope; geometric mean,"corrected, cut-off at the front",0.007721663408670953,,,x/÷ 1.51; range 3.6e-03 to 1.2e-02
+"Yim 2020 Table 1, 8 like-for-like samples (500 nm, 50x, 500 cycles, 0.1 s)",tabulated front slope; geometric mean,"corrected, cut-off at the pillar mean free path",0.009921880636060202,,,x/÷ 1.62; range 4.4e-03 to 1.6e-02
+"Yim 2020 Table 1, 8 like-for-like samples (500 nm, 50x, 500 cycles, 0.1 s)",tabulated front slope; geometric mean,ballistic slope relation,0.011800769608622802,,,x/÷ 1.57; range 5.1e-03 to 1.9e-02
+"Arts 2019 Fig. 2, TMA-limited (about 220 C), digitised",front slope from the digitised raster,hydraulic (Arts slope relation),0.0008194807293617768,,,interval 6.6e-04 to 9.9e-04; z50 486
+"Arts 2019 Fig. 2, TMA-limited (about 220 C), digitised",front slope from the digitised raster,"corrected, cut-off at the front",0.0019011195412086174,,,interval 1.5e-03 to 2.3e-03; z50 486
+"Arts 2019 Fig. 2, TMA-limited (about 220 C), digitised",front slope from the digitised raster,ballistic slope relation,0.0027063121236747018,,,interval 2.1e-03 to 3.3e-03; z50 486
+"Arts 2019 Fig. 2, H2O-limited (about 220 C), digitised",front slope from the digitised raster,hydraulic (Arts slope relation),0.00010253358331151009,,,interval 7.9e-05 to 1.3e-04; z50 1084
+"Arts 2019 Fig. 2, H2O-limited (about 220 C), digitised",front slope from the digitised raster,"corrected, cut-off at the front",0.0002687150728899806,,,interval 2.1e-04 to 3.4e-04; z50 1084
+"Arts 2019 Fig. 2, H2O-limited (about 220 C), digitised",front slope from the digitised raster,ballistic slope relation (outside calibration),0.00035208900579442655,,,interval 2.7e-04 to 4.5e-04; z50 1084
+"Vandalon and Kessels 2016, SFG, 300 C","optical, planar surface",none,0.004,,,4 +/- 1e-3
+"Gakis et al. 2019, reactor CFD fit, 300 C",reactor scale,none,0.00344,,,s0 0.004 x 86 % reaction probability

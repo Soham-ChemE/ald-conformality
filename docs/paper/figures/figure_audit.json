@@ -1,0 +1,73 @@
+{
+ "fig1a_tau_patterned_min_max": [
+  1.046,
+  1.267
+ ],
+ "fig1a_tau_blanket_min_max": [
+  1.541,
+  4.274
+ ],
+ "fig1b_t99_over_rule": [
+  0.956,
+  0.955,
+  0.995,
+  0.994
+ ],
+ "fig2a_patterned_t90_worst_range": [
+  14.05,
+  14.2
+ ],
+ "fig2a_blanket_t90_worst_range": [
+  0.28,
+  1.01
+ ],
+ "fig2b_doe_tau_min_max": [
+  1.03,
+  1.958
+ ],
+ "fig3_dense_centre_bottom_t90_centre_edge": [
+  11.85,
+  8.75
+ ],
+ "fig3_dense_centre_flat_t90_bare_edge_range": [
+  0.4,
+  0.5
+ ],
+ "fig3_ar_ramp_bottom_t90_centre_edge": [
+  12.5,
+  7.6
+ ],
+ "fig4_p2p_pct_r50": 0.09,
+ "fig4_p2p_pct_r100": 0.37,
+ "fig4_p2p_pct_r140": 0.95,
+ "fig4_worst_t90": 14.1682,
+ "fig4_min_t90": 13.5443,
+ "fig5_voxel_over_machball_pct": [
+  -0.9,
+  0.8,
+  1.6
+ ],
+ "fig5_1d_over_machball_pct": [
+  -10.6,
+  -5.5,
+  -1.6
+ ],
+ "fig5_1d_over_voxel_pct": [
+  -9.8,
+  -6.3,
+  -3.2
+ ],
+ "fig5b_1d_slit_corrected_t90_run_here": 1.0859,
+ "fig5b_1d_slit_uncorrected_t90_run_here": 1.3788,
+ "fig5b_slit_t90_machball_voxel_1d": [
+  1.1169880112318697,
+  1.082895499751093,
+  1.3813041462851878
+ ],
+ "fig6_rms_uncorrected": 0.0381,
+ "fig6_rms_corrected": 0.0381,
+ "fig6_plateau_nm": 51.54,
+ "fig6_n_sheets": 8,
+ "fig6_half_depth_AR": 215.0,
+ "fig6_slit_factor_AR500": 2.33
+}

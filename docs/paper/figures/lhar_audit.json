@@ -1,0 +1,231 @@
+{
+ "A_continuum_this_code_median": 14.13,
+ "A_continuum_range": [
+  13.97,
+  14.15
+ ],
+ "A_ballistic_range_80_500": [
+  28.7,
+  76.8
+ ],
+ "A_ballistic_over_13.9_range": [
+  2.07,
+  5.52
+ ],
+ "ballistic_relation_prefactor_expz_exps": [
+  14.74,
+  0.303,
+  0.121
+ ],
+ "ballistic_relation_fit_error_range": [
+  0.948,
+  1.187
+ ],
+ "ballistic_relation_rms_log": 0.04,
+ "ballistic_relation_n": 1403,
+ "A_ballistic_s0.004_at_z100_200_300_400": [
+  31.3,
+  37.4,
+  41.7,
+  45.1
+ ],
+ "A_ballistic_s0.008_at_z100_200_300_400": [
+  32.6,
+  39.8,
+  44.8,
+  48.8
+ ],
+ "A_ballistic_s0.016_at_z100_200_300_400": [
+  34.7,
+  43.1,
+  49.0,
+  53.8
+ ],
+ "A_ballistic_s0.0002_at_z500_1000": [
+  39.3,
+  45.5
+ ],
+ "A_ballistic_s0.0005_at_z500_1000": [
+  40.8,
+  47.9
+ ],
+ "A_ballistic_full_range": [
+  28.7,
+  76.8
+ ],
+ "ref_group_s_arts_gmean": 0.003806,
+ "ref_group_s_arts_spread": 1.55,
+ "ref_group_s_arts_range": [
+  0.00168,
+  0.00613
+ ],
+ "ref_group_s_gonsalves_gmean": 0.003039,
+ "ref_group_s_gonsalves_spread": 1.55,
+ "ref_group_s_gonsalves_range": [
+  0.00134,
+  0.0049
+ ],
+ "ref_group_s_corr_front_gmean": 0.007722,
+ "ref_group_s_corr_front_spread": 1.51,
+ "ref_group_s_corr_front_range": [
+  0.00355,
+  0.0121
+ ],
+ "ref_group_s_corr_pillar_gmean": 0.009922,
+ "ref_group_s_corr_pillar_spread": 1.62,
+ "ref_group_s_corr_pillar_range": [
+  0.00438,
+  0.016
+ ],
+ "ref_group_s_ballistic_gmean": 0.0118,
+ "ref_group_s_ballistic_spread": 1.57,
+ "ref_group_s_ballistic_range": [
+  0.00507,
+  0.0193
+ ],
+ "ref_group_samples": [
+  1,
+  2,
+  3,
+  4,
+  8,
+  12,
+  15,
+  16
+ ],
+ "ref_group_v1b_only_gmean_arts_ballistic": [
+  0.00401,
+  0.01238,
+  6
+ ],
+ "zenodo_single_exposure_hyd_corr1mm_ball": [
+  5.64,
+  1.98,
+  2.99
+ ],
+ "zenodo_rms_plateau_front_tail_hyd": [
+  0.0086,
+  0.0119,
+  0.0192
+ ],
+ "zenodo_rms_plateau_front_tail_ball": [
+  0.0117,
+  0.0281,
+  0.042
+ ],
+ "zenodo_msq_ratio_ball_over_hyd": 3.93,
+ "zenodo_single_s_hyd_corr1mm_ball": [
+  0.005312,
+  0.01514,
+  0.02066
+ ],
+ "zenodo_single_rms_hyd_corr_ball": [
+  0.0118,
+  0.0118,
+  0.0234
+ ],
+ "zenodo_ballistic_over_hydraulic_s": 3.89,
+ "zenodo_hydraulic_over_ballistic_exposure": 1.89,
+ "zenodo_ballistic_over_corr1mm_s": 1.36,
+ "ylilammi_al2o3_single_exposure_hyd_corr1mm_ball": [
+  8.74,
+  3.07,
+  4.45
+ ],
+ "ylilammi_al2o3_rms_plateau_front_tail_hyd": [
+  0.0152,
+  0.0207,
+  0.0235
+ ],
+ "ylilammi_al2o3_rms_plateau_front_tail_ball": [
+  0.0183,
+  0.04,
+  0.0375
+ ],
+ "ylilammi_al2o3_msq_ratio_ball_over_hyd": 2.27,
+ "ylilammi_al2o3_single_s_hyd_corr1mm_ball": [
+  0.003814,
+  0.01087,
+  0.01387
+ ],
+ "ylilammi_al2o3_single_rms_hyd_corr_ball": [
+  0.0172,
+  0.0172,
+  0.0259
+ ],
+ "ylilammi_al2o3_ballistic_over_hydraulic_s": 3.64,
+ "ylilammi_al2o3_hydraulic_over_ballistic_exposure": 1.96,
+ "ylilammi_al2o3_ballistic_over_corr1mm_s": 1.28,
+ "ylilammi_al2o3_multicycle_s_hyd_corr": [
+  0.007608,
+  0.02154
+ ],
+ "ylilammi_al2o3_multicycle_rms": 0.0206,
+ "ylilammi_al2o3_multicycle_exposure_hyd_corr": [
+  11.98,
+  4.2
+ ],
+ "gao_al2o3_multicycle_s_hyd_corr": [
+  0.002599,
+  0.007426
+ ],
+ "gao_al2o3_multicycle_rms": 0.0407,
+ "gao_al2o3_multicycle_exposure_hyd_corr": [
+  4.5,
+  1.58
+ ],
+ "ylilammi_tio2_multicycle_s_hyd_corr": [
+  0.0004738,
+  0.00135
+ ],
+ "ylilammi_tio2_multicycle_rms": 0.079,
+ "ylilammi_tio2_multicycle_exposure_hyd_corr": [
+  7.05,
+  2.47
+ ],
+ "arts_tma_z50_slope": [
+  486,
+  0.00768
+ ],
+ "arts_h2o_z50_slope": [
+  1084,
+  0.00272
+ ],
+ "arts_tma_s_arts_corrfront_ball": [
+  0.000819,
+  0.0019,
+  0.00271
+ ],
+ "arts_h2o_s_arts_corrfront_ball": [
+  0.000103,
+  0.000269,
+  0.000352
+ ],
+ "zenodo_scans_s_hyd_range_gmean": [
+  0.00333,
+  0.00619,
+  0.0053
+ ],
+ "zenodo_scans_s_ball_range_gmean": [
+  0.014,
+  0.0241,
+  0.0207
+ ],
+ "zenodo_scans_ratio_range": [
+  3.69,
+  4.21
+ ],
+ "zenodo_scans_prefer_hydraulic": [
+  7,
+  8
+ ],
+ "set_ratio_hyd_ball": [
+  4.64,
+  4.36
+ ],
+ "pillar_mfp_um_v1a_v1b_v2a": [
+  170,
+  520,
+  2079
+ ]
+}

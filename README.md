@@ -4,7 +4,7 @@
 
 <p align="center"><b><a href="https://soham-cheme.github.io/ald-conformality/">Open the live page</a></b> · scrub a 16-second pulse through the chamber, watch one hole fill from the mouth down, and run the rule and the surrogate on your own wafer</p>
 
-**A chamber-to-feature digital twin of atomic layer deposition, and the one-line rule it produced.**
+**An open chamber-to-feature model of atomic layer deposition: supply-limited pulse times on patterned wafers, and a ballistic re-analysis of the sticking coefficients extracted from lateral test structures.**
 
 ALD recipes are tuned on blank wafers. A 3D-NAND wafer carries 56x the surface area of the wafer under it. This
 repository models a 300 mm showerhead ALD chamber in which every point on the wafer runs its own feature-scale model
@@ -16,9 +16,30 @@ of a high-aspect-ratio hole, two-way coupled to the chamber gas, and asks how lo
 > It held within 25 % across aspect ratios 20-100 and a 20x range of precursor feed. Blank wafer: 0.35 s. Product
 > wafer: 14 s. Pressure, gap and carrier flow do not move it; precursor delivery rate does.
 
-The rule reproduces Argonne's measured fluidized-bed ALD saturation (1.12x the supply limit by their own numbers) and
-the trend of their rotary-drum utilization data; the 1D feature model sits 3 to 11 % below the converged ballistic reference (Argonne's Machball and this repository's own 3D voxel Monte Carlo solver, which agree within 2 %) and fits
+The rule is consistent with Argonne's measured fluidized-bed ALD saturation (1.12x the supply limit by their own numbers) and
+the trend of their rotary-drum utilization data; the 1D feature model sits 2 to 11 % below the converged ballistic reference (Argonne's Machball and this repository's own 3D voxel Monte Carlo solver, which agree within 2 %) and fits
 published PillarHall thickness profiles.
+
+## Key results and where each one stands
+
+- **The coupled chamber-to-feature prediction is not validated against a measurement.** The supply limit itself is a mass balance and coupled reactor-feature ALD models exist in the literature (Gobbert and Cale 1997 for CVD; Miyano et al. 2018; Yanguas-Gil et al. 2014, 2021; Christofides and co-workers; Chen et al. 2023; Lee et al. 2026). What this repository adds is an open, tested implementation for a 300 mm showerhead chamber and the computed prefactor (1.05 to 1.27, 1.03 to 1.96 over a 25-run design) with the list of what does not move it. No public dataset gives film thickness at depth together with pattern wall area, pulse and precursor delivery rate, so the prefactor is a model result. Miyano 2018 and Chen 2023 were read in full and lack the quantities a test needs.
+- **A slit-transport correction.** One-dimensional slit models of lateral high-aspect-ratio (LHAR) test structures use the hydraulic-diameter Knudsen diffusivity, 2 H vbar/3, which is exact for a tube and low for parallel plates. The closed-form factor (3/8) ln(L/H), from Clausing's slit transmission and calibrated on Machball, brings the 1D slit model within 5 % of the ballistic solvers from aspect ratio 20 to 100.
+- **Sticking coefficients from LHAR profiles are conditional on the transport model by a factor of about 3.** The three PillarHall-based TMA extractions examined (Ylilammi 2018, Arts 2019, Yim 2020) and the groups' public codes use the hydraulic diffusivity; Järvilehto et al. 2023 showed for one simulated channel that a ballistic model changes the extracted parameters. Carried through the published data with an ideal-slit ballistic solver:
+
+  | Data (Al2O3 from TMA/water) | hydraulic | corrected | ideal-slit ballistic |
+  |---|---|---|---|
+  | Zenodo 3974438, 300 C, single-exposure full-profile fit | 5.3e-3 | 1.5e-2 | 2.1e-2 |
+  | Ylilammi et al. 2018 Fig. 6, 300 C, single-exposure full-profile fit | 3.8e-3 | 1.1e-2 | 1.4e-2 |
+  | Yim et al. 2020, eight samples at the same conditions, tabulated slopes, 300 C | 3.8e-3 | 7.7e-3 to 9.9e-3 | 1.2e-2 |
+  | Arts et al. 2019 Fig. 2, TMA-limited, about 220 C, digitised | 8.2e-4 | 1.9e-3 | 2.7e-3 |
+
+  For an ideal slit the ballistic counterpart of the slope relation s = A x slope^2 has A = 14.7 z50^0.30 s^0.12 (29 to 77) against the continuum 13.9. Fits that include channel narrowing over all cycles give higher values still (hydraulic 7.6e-3 and 8.5e-3 for the two full profiles).
+- **The measured profiles do not look like an ideal ballistic slit.** With the same two parameters the continuum front shape fits both full profiles better (mean-square residual lower by factors 3.9 and 2.3; seven of eight Zenodo scans): an ideal ballistic slit predicts a slow tail ahead of the front that the data lack. The ballistic values above are therefore what an ideal slit would imply, not measurements, and the real cavities transport less ballistically than an ideal slit, or the kinetics are not a single Langmuir step.
+- **The corrected values do not cluster on the independent ones (a negative result, stated as such).** The optical (sum-frequency generation) value is 4 +/- 1e-3 and a reactor-scale fit gives 3.4e-3. At 300 C the hydraulic slope and single-exposure values agree with them, hydraulic fits with channel narrowing are about twice the optical value, and ideal-slit ballistic values are three to five times it; the 220 C value is five times below it (hydraulic) or within 30 % (ballistic). An LHAR-derived sticking coefficient is conditional on the slit transport model, and neither transport model is validated for the real cavities. Which value is right is not settled here.
+
+Sources, per-curve provenance and reading errors: `data/lhar_profiles/PROVENANCE.md`. Every number: `CLAIMS.md`.
+
+![slope relation and sticking coefficients under five transport descriptions](docs/assets/lhar_slope_relation.png)
 
 | | |
 |---|---|
@@ -150,7 +171,7 @@ with the local wall-area ratio of the most demanding region (conservative by 15-
 
 ## Status
 
-Paper at draft 0.9.5: complete, typeset in `paper/main.tex` (`paper/main.pdf`, 42 pages); arXiv submission to follow. Live page at https://soham-cheme.github.io/ald-conformality/ with the rule-and-surrogate calculator.
+The earlier long write-up (`paper/main.tex`, `paper/main.pdf`, draft 0.9.5) is kept as the project record; its framing has been superseded by the prior-art review summarised above, and a shorter manuscript is in preparation. Live page at https://soham-cheme.github.io/ald-conformality/ with the rule-and-surrogate calculator.
 
 ## Citation
 
