@@ -1,0 +1,439 @@
+{
+ "replicate_sigma_ln_slope": 0.25,
+ "models": {
+  "hydraulic": {
+   "s": 0.0044975383712442555,
+   "n": 15,
+   "rms_ln": 0.531,
+   "mean_ln": 0.207,
+   "chi2_per_point": 4.5,
+   "worst": "Yim7",
+   "per_sample": {
+    "Yim1": 0.0179,
+    "Yim2": 0.0179,
+    "Yim3": 0.0179,
+    "Yim4": 0.0179,
+    "Yim5": 0.0179,
+    "Yim6": 0.0179,
+    "Yim7": 0.0178,
+    "Yim9": 0.0179,
+    "Yim10": 0.0179,
+    "Yim11": 0.0179,
+    "Yim12": 0.0179,
+    "Yim13": 0.0179,
+    "Yim15": 0.0179,
+    "Yim16": 0.0179,
+    "HaimiA": 0.0179,
+    "Arts": 0.018
+   }
+  },
+  "hydraulic+narrowing": {
+   "s": 0.008913957127164458,
+   "n": 15,
+   "rms_ln": 0.192,
+   "mean_ln": -0.014,
+   "chi2_per_point": 0.59,
+   "worst": "Yim9",
+   "per_sample": {
+    "Yim1": 0.0139,
+    "Yim2": 0.0136,
+    "Yim3": 0.0168,
+    "Yim4": 0.0188,
+    "Yim5": 0.0146,
+    "Yim6": 0.0088,
+    "Yim7": 0.0059,
+    "Yim9": 0.0253,
+    "Yim10": 0.0228,
+    "Yim11": 0.0101,
+    "Yim12": 0.0191,
+    "Yim13": 0.0154,
+    "Yim15": 0.0184,
+    "Yim16": 0.018,
+    "HaimiA": 0.0089,
+    "Arts": 0.0096
+   }
+  },
+  "ballistic": {
+   "s": 0.01479001582230184,
+   "n": 13,
+   "rms_ln": 0.426,
+   "mean_ln": 0.309,
+   "chi2_per_point": 2.89,
+   "worst": "Yim6",
+   "per_sample": {
+    "Yim1": 0.019,
+    "Yim2": 0.019,
+    "Yim3": 0.0192,
+    "Yim4": 0.0199,
+    "Yim5": 0.0199,
+    "Yim6": 0.0198,
+    "Yim7": NaN,
+    "Yim9": NaN,
+    "Yim10": 0.0189,
+    "Yim11": 0.0202,
+    "Yim12": 0.0202,
+    "Yim13": 0.0193,
+    "Yim15": 0.0202,
+    "Yim16": 0.0195,
+    "HaimiA": 0.0204,
+    "Arts": 0.0148
+   }
+  },
+  "ballistic+narrowing": {
+   "s": 0.03587052609762056,
+   "n": 12,
+   "rms_ln": 0.133,
+   "mean_ln": -0.063,
+   "chi2_per_point": 0.28,
+   "worst": "Yim9",
+   "per_sample": {
+    "Yim1": NaN,
+    "Yim2": NaN,
+    "Yim3": 0.0161,
+    "Yim4": 0.0182,
+    "Yim5": 0.0139,
+    "Yim6": 0.0083,
+    "Yim7": NaN,
+    "Yim9": 0.0339,
+    "Yim10": 0.0229,
+    "Yim11": 0.0097,
+    "Yim12": 0.0186,
+    "Yim13": 0.0142,
+    "Yim15": 0.0177,
+    "Yim16": 0.0174,
+    "HaimiA": 0.0086,
+    "Arts": 0.0089
+   }
+  },
+  "gas": {
+   "s": 0.00813662390558469,
+   "n": 15,
+   "rms_ln": 0.487,
+   "mean_ln": 0.223,
+   "chi2_per_point": 3.78,
+   "worst": "Yim7",
+   "per_sample": {
+    "Yim1": 0.0162,
+    "Yim2": 0.0178,
+    "Yim3": 0.0178,
+    "Yim4": 0.0183,
+    "Yim5": 0.0183,
+    "Yim6": 0.0182,
+    "Yim7": 0.0163,
+    "Yim9": 0.0239,
+    "Yim10": 0.0182,
+    "Yim11": 0.0181,
+    "Yim12": 0.0178,
+    "Yim13": 0.0185,
+    "Yim15": 0.018,
+    "Yim16": 0.018,
+    "HaimiA": 0.0182,
+    "Arts": 0.0133
+   }
+  },
+  "gas+narrowing": {
+   "s": 0.02120163243354938,
+   "n": 14,
+   "rms_ln": 0.128,
+   "mean_ln": 0.006,
+   "chi2_per_point": 0.26,
+   "worst": "Yim9",
+   "per_sample": {
+    "Yim1": 0.0139,
+    "Yim2": NaN,
+    "Yim3": 0.0167,
+    "Yim4": 0.0193,
+    "Yim5": 0.0148,
+    "Yim6": 0.0087,
+    "Yim7": 0.0059,
+    "Yim9": 0.0351,
+    "Yim10": 0.0245,
+    "Yim11": 0.0101,
+    "Yim12": 0.0196,
+    "Yim13": 0.0154,
+    "Yim15": 0.0187,
+    "Yim16": 0.0184,
+    "HaimiA": 0.0088,
+    "Arts": 0.0091
+   }
+  }
+ },
+ "global": {
+  "hydraulic": {
+   "n": 15,
+   "s_best": 0.003,
+   "chi2_min_per_point": 3.82,
+   "s_lo": 0.003,
+   "s_hi": 0.00324,
+   "at_scan_edge": true
+  },
+  "hydraulic+narrowing": {
+   "n": 15,
+   "s_best": 0.019,
+   "chi2_min_per_point": 0.42,
+   "s_lo": 0.012,
+   "s_hi": 0.0325,
+   "at_scan_edge": false
+  },
+  "ballistic": {
+   "n": 13,
+   "s_best": 0.00754,
+   "chi2_min_per_point": 1.37,
+   "s_lo": 0.00647,
+   "s_hi": 0.00814,
+   "at_scan_edge": false
+  },
+  "ballistic+narrowing": {
+   "n": 12,
+   "s_best": 0.06,
+   "chi2_min_per_point": 0.19,
+   "s_lo": 0.0378,
+   "s_hi": 0.06,
+   "at_scan_edge": true
+  },
+  "gas": {
+   "n": 15,
+   "s_best": 0.00555,
+   "chi2_min_per_point": 3.14,
+   "s_lo": 0.0044,
+   "s_hi": 0.00599,
+   "at_scan_edge": false
+  },
+  "gas+narrowing": {
+   "n": 14,
+   "s_best": 0.0278,
+   "chi2_min_per_point": 0.24,
+   "s_lo": 0.0176,
+   "s_hi": 0.0477,
+   "at_scan_edge": false
+  }
+ },
+ "identifiability": {
+  "hydraulic+narrowing": {
+   "Yim1": {
+    "dlnslope_dlns": 0.064,
+    "fill": 0.213,
+    "narrowing_number": 0.87
+   },
+   "Yim2": {
+    "dlnslope_dlns": 0.058,
+    "fill": 0.218,
+    "narrowing_number": 0.75
+   },
+   "Yim3": {
+    "dlnslope_dlns": 0.132,
+    "fill": 0.214,
+    "narrowing_number": 0.95
+   },
+   "Yim4": {
+    "dlnslope_dlns": 0.195,
+    "fill": 0.191,
+    "narrowing_number": 0.84
+   },
+   "Yim5": {
+    "dlnslope_dlns": 0.137,
+    "fill": 0.2,
+    "narrowing_number": 0.69
+   },
+   "Yim6": {
+    "dlnslope_dlns": 0.023,
+    "fill": 0.212,
+    "narrowing_number": 0.42
+   },
+   "Yim7": {
+    "dlnslope_dlns": 0.0,
+    "fill": 0.956,
+    "narrowing_number": 0.92
+   },
+   "Yim9": {
+    "dlnslope_dlns": 0.481,
+    "fill": 0.049,
+    "narrowing_number": 0.44
+   },
+   "Yim10": {
+    "dlnslope_dlns": 0.358,
+    "fill": 0.104,
+    "narrowing_number": 0.53
+   },
+   "Yim11": {
+    "dlnslope_dlns": 0.006,
+    "fill": 0.397,
+    "narrowing_number": 0.94
+   },
+   "Yim12": {
+    "dlnslope_dlns": 0.203,
+    "fill": 0.201,
+    "narrowing_number": 0.9
+   },
+   "Yim13": {
+    "dlnslope_dlns": 0.1,
+    "fill": 0.199,
+    "narrowing_number": 0.82
+   },
+   "Yim15": {
+    "dlnslope_dlns": 0.179,
+    "fill": 0.208,
+    "narrowing_number": 0.73
+   },
+   "Yim16": {
+    "dlnslope_dlns": 0.171,
+    "fill": 0.196,
+    "narrowing_number": 0.85
+   },
+   "HaimiA": {
+    "dlnslope_dlns": 0.002,
+    "fill": 0.432,
+    "narrowing_number": 1.16
+   },
+   "Arts": {
+    "dlnslope_dlns": 0.015,
+    "fill": 0.184,
+    "narrowing_number": 0.76
+   }
+  },
+  "ballistic+narrowing": {
+   "Yim3": {
+    "dlnslope_dlns": 0.055,
+    "fill": 0.214,
+    "narrowing_number": 0.95
+   },
+   "Yim4": {
+    "dlnslope_dlns": 0.093,
+    "fill": 0.191,
+    "narrowing_number": 0.84
+   },
+   "Yim5": {
+    "dlnslope_dlns": 0.062,
+    "fill": 0.2,
+    "narrowing_number": 0.69
+   },
+   "Yim6": {
+    "dlnslope_dlns": 0.004,
+    "fill": 0.212,
+    "narrowing_number": 0.42
+   },
+   "Yim9": {
+    "dlnslope_dlns": 0.387,
+    "fill": 0.049,
+    "narrowing_number": 0.44
+   },
+   "Yim10": {
+    "dlnslope_dlns": 0.231,
+    "fill": 0.104,
+    "narrowing_number": 0.53
+   },
+   "Yim11": {
+    "dlnslope_dlns": 0.001,
+    "fill": 0.397,
+    "narrowing_number": 0.94
+   },
+   "Yim12": {
+    "dlnslope_dlns": 0.095,
+    "fill": 0.201,
+    "narrowing_number": 0.9
+   },
+   "Yim13": {
+    "dlnslope_dlns": 0.026,
+    "fill": 0.199,
+    "narrowing_number": 0.82
+   },
+   "Yim15": {
+    "dlnslope_dlns": 0.076,
+    "fill": 0.208,
+    "narrowing_number": 0.73
+   },
+   "Yim16": {
+    "dlnslope_dlns": 0.077,
+    "fill": 0.196,
+    "narrowing_number": 0.85
+   },
+   "HaimiA": {
+    "dlnslope_dlns": -0.001,
+    "fill": 0.432,
+    "narrowing_number": 1.16
+   },
+   "Arts": {
+    "dlnslope_dlns": 0.001,
+    "fill": 0.184,
+    "narrowing_number": 0.76
+   }
+  },
+  "gas+narrowing": {
+   "Yim1": {
+    "dlnslope_dlns": 0.029,
+    "fill": 0.213,
+    "narrowing_number": 0.87
+   },
+   "Yim3": {
+    "dlnslope_dlns": 0.089,
+    "fill": 0.214,
+    "narrowing_number": 0.95
+   },
+   "Yim4": {
+    "dlnslope_dlns": 0.124,
+    "fill": 0.191,
+    "narrowing_number": 0.84
+   },
+   "Yim5": {
+    "dlnslope_dlns": 0.093,
+    "fill": 0.2,
+    "narrowing_number": 0.69
+   },
+   "Yim6": {
+    "dlnslope_dlns": 0.011,
+    "fill": 0.212,
+    "narrowing_number": 0.42
+   },
+   "Yim7": {
+    "dlnslope_dlns": 0.001,
+    "fill": 0.956,
+    "narrowing_number": 0.92
+   },
+   "Yim9": {
+    "dlnslope_dlns": 0.427,
+    "fill": 0.049,
+    "narrowing_number": 0.44
+   },
+   "Yim10": {
+    "dlnslope_dlns": 0.275,
+    "fill": 0.104,
+    "narrowing_number": 0.53
+   },
+   "Yim11": {
+    "dlnslope_dlns": 0.004,
+    "fill": 0.397,
+    "narrowing_number": 0.94
+   },
+   "Yim12": {
+    "dlnslope_dlns": 0.134,
+    "fill": 0.201,
+    "narrowing_number": 0.9
+   },
+   "Yim13": {
+    "dlnslope_dlns": 0.054,
+    "fill": 0.199,
+    "narrowing_number": 0.82
+   },
+   "Yim15": {
+    "dlnslope_dlns": 0.11,
+    "fill": 0.208,
+    "narrowing_number": 0.73
+   },
+   "Yim16": {
+    "dlnslope_dlns": 0.109,
+    "fill": 0.196,
+    "narrowing_number": 0.85
+   },
+   "HaimiA": {
+    "dlnslope_dlns": 0.0,
+    "fill": 0.432,
+    "narrowing_number": 1.16
+   },
+   "Arts": {
+    "dlnslope_dlns": 0.01,
+    "fill": 0.184,
+    "narrowing_number": 0.76
+   }
+  }
+ }
+}
