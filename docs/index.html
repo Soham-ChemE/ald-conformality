@@ -18,9 +18,10 @@
 <script defer src="https://cdn.jsdelivr.net/npm/lenis@1.3.27/dist/lenis.min.js"></script>
 <script defer src="assets/data.js"></script>
 <script defer src="assets/data-lhar.js"></script>
+<script defer src="assets/data-mech.js?v=20261118c"></script>
 <script defer src="assets/site.js"></script>
 <script defer src="assets/layout-tool.js"></script>
-<script type="module">if(!(window.SITE&&window.SITE.softGL)){import('./assets/scene.js');import('./assets/body.js');import('./assets/body2.js');import('./assets/body3.js');}</script>
+<script type="module">if(!(window.SITE&&window.SITE.softGL)){import('./assets/scene.js?v=20261118c');import('./assets/body.js');import('./assets/body2.js');import('./assets/body3.js');}</script>
 <style>
 .readout{position:absolute;right:16px;top:66px;background:var(--glass);border:1px solid var(--line);border-radius:16px;padding:12px 14px;backdrop-filter:blur(8px);min-width:250px;font-size:13px;color:var(--muted)}
 .readout .big{font-size:34px;font-weight:800;letter-spacing:-.03em;color:var(--ink);line-height:1;font-variant-numeric:tabular-nums}.readout .big small{font-size:14px;color:var(--muted);font-weight:600;margin-left:4px}
@@ -41,21 +42,40 @@ tr.hl td{color:var(--acc2);font-weight:700}
 .calc .warn{font-size:13px;color:var(--c-warm);margin-top:8px;min-height:1.4em}
 .papers a{display:inline-flex;align-items:center;gap:8px;margin:6px 10px 0 0}
 .vizctl label{display:inline-flex;align-items:center;gap:8px;flex:1 1 160px}.vizctl .seg{display:inline-flex;gap:6px;flex-wrap:wrap}.vizctl .vbtn{border:1px solid var(--line);background:var(--card);color:var(--ink);font:inherit;font-size:12.5px;font-weight:600;padding:4px 11px;border-radius:999px;cursor:pointer}.vizctl .vbtn:hover{border-color:var(--acc)}.vizctl .vbtn.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}.vizctl .info{flex:1 1 100%;font-size:12.5px}html.viz-static .vizctl{display:none}
+.hero-track{height:680vh}@media (max-width:640px){.hero-track{height:520vh}}
+.readout[hidden]{display:none}.readout .seg{display:flex;gap:6px;margin:8px 0 2px;pointer-events:auto}.readout .seg button{flex:1;font:inherit;font-size:12px;padding:5px 8px;border-radius:9px;border:1px solid var(--line);background:transparent;color:var(--muted);cursor:pointer}.readout .seg button.on{background:var(--acc);border-color:var(--acc);color:#fff;font-weight:700}
+.readout input[type=range]{width:100%;margin:6px 0 0;accent-color:var(--acc);pointer-events:auto}.readout .src span{font-size:11px;opacity:.8}#roSlit{max-width:300px}
+.hero .legend ol{list-style:none;margin:0 0 8px;padding:0}.hero .legend li{padding:3px 0 3px 8px;border-left:3px solid var(--line);opacity:.6;transition:opacity .3s,border-color .3s}.hero .legend li.on{opacity:1;border-left-color:var(--acc);color:var(--ink)}.hero .legend li b{margin-right:4px}
+.hero .legend .keys{display:flex;flex-wrap:wrap;gap:2px 2px}.hero .legend .keys i{margin-left:0}.hero .legend .keys span{margin-right:8px;white-space:nowrap}
+@media (max-width:640px){#roSlit{max-width:none}#roSlit .src{display:none}}
+.idata{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:20px;align-items:start}@media (max-width:860px){.idata{grid-template-columns:1fr}}
+.idata canvas{width:100%;height:auto;aspect-ratio:16/10;display:block;border-radius:12px;background:var(--card);border:1px solid var(--line)}
+.idata label{display:block;font-size:13px;color:var(--muted);margin:10px 0 2px}.idata label b{color:var(--ink);font-variant-numeric:tabular-nums}.idata input[type=range],.idata select{width:100%;accent-color:var(--acc)}.idata select,.idata button{font:inherit;font-size:13px;padding:6px 8px;border-radius:9px;border:1px solid var(--line);background:var(--card);color:var(--ink)}.idata button{cursor:pointer;margin-top:10px}
+.idata .ro{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}.idata .ro div{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:8px 10px}.idata .ro b{display:block;font-size:19px;letter-spacing:-.02em;color:var(--ink);font-variant-numeric:tabular-nums}.idata .ro span{font-size:12px;color:var(--muted)}
+.idata .srcline{font-size:12px;color:var(--muted);margin-top:10px;overflow-wrap:anywhere}.idata .flag{color:var(--c-warm)}
 </style>
 <noscript><style>.hero .fallback{opacity:1}.reveal{opacity:1;transform:none}.viz img.fallback{opacity:1}</style></noscript>
 </head>
 <body>
 <nav><div class="wrap"><a class="brand" href="#top">ALD: the 40× under-dose</a>
-<div class="links"><a href="#rule">Rule</a><a href="#layout" class="hide-sm">Layouts</a><a href="#validation">Checks</a><a href="#sticking" class="hide-sm">Sticking</a><a href="#narrowing" class="hide-sm">Narrowing</a><a href="#knobs" class="hide-sm">Knobs</a><a href="#try">Try it</a><a href="#night3" class="hide-sm">More checks</a><a href="#layout-tool" class="hide-sm">Layouts tool</a><a href="#gpu-solver" class="hide-sm">GPU solver</a><a href="#robust" class="hide-sm">Limits</a><a href="https://github.com/Soham-ChemE/ald-conformality">GitHub</a></div>
+<div class="links"><a href="#rule">Rule</a><a href="#layout" class="hide-sm">Layouts</a><a href="#validation">Checks</a><a href="#sticking" class="hide-sm">Sticking</a><a href="#narrowing" class="hide-sm">Narrowing</a><a href="#inside" class="hide-sm">Data</a><a href="#knobs" class="hide-sm">Knobs</a><a href="#try">Try it</a><a href="#night3" class="hide-sm">More checks</a><a href="#layout-tool" class="hide-sm">Layouts tool</a><a href="#gpu-solver" class="hide-sm">GPU solver</a><a href="#robust" class="hide-sm">Limits</a><a href="https://github.com/Soham-ChemE/ald-conformality">GitHub</a></div>
 <button class="toggle" id="themeBtn" aria-label="Toggle dark or light theme" title="Toggle theme">◐</button></div></nav>
 
 <div class="hero-track" id="top"><div class="hero">
-<canvas id="heroCanvas" role="img" aria-label="3D view of a 300 mm showerhead ALD chamber: TMA flows down from the showerhead into a 15 mm gap above a wafer patterned with 100 nm holes of aspect ratio 100. Scrolling runs the pulse from 0 to 16 seconds; the flat wafer surface turns green within two seconds while a magnified cut-open hole beside the chamber fills from the top down and its bottom reaches 90 percent coverage at 14 seconds."></canvas>
+<canvas id="heroCanvas" role="img" aria-label="3D story in four steps. Steps 1 and 2, a 300 mm showerhead ALD chamber: TMA flows down from the showerhead into a 15 mm gap above a wafer patterned with 100 nm holes of aspect ratio 100. Scrolling runs the pulse from 0 to 16 seconds; the flat wafer surface turns green within two seconds while a magnified cut-open hole beside the chamber fills from the top down and its bottom reaches 90 percent coverage at 14 seconds."></canvas>
 <img class="fallback" alt="" data-src="assets/hero.png" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==">
 <div class="shade"></div>
-<div class="readout" aria-live="polite"><div>TMA pulse, 1 % in N₂ at 300 Pa</div><div class="big"><span id="roT">0.00</span><small>s</small></div><div class="track"><i id="roBar"></i><em style="left:2.2%" title="blanket wafer saturates: 0.35 s"></em><em style="left:87.8%;background:var(--c-green)" title="hole bottoms saturate: 14.05 s"></em></div>
+<div class="readout" id="roChamber" aria-live="polite"><div>TMA pulse, 1 % in N₂ at 300 Pa</div><div class="big"><span id="roT">0.00</span><small>s</small></div><div class="track"><i id="roBar"></i><em style="left:2.2%" title="blanket wafer saturates: 0.35 s"></em><em style="left:87.8%;background:var(--c-green)" title="hole bottoms saturate: 14.05 s"></em></div>
 <div class="two"><div><b id="roFlat">0 %</b><span>flat surface coverage</span></div><div><b id="roBot">0 %</b><span>hole-bottom coverage, wafer centre</span></div></div>
 <div class="row"><span>monolayers delivered to the patterned area</span><b id="roML">0.00</b></div><div class="row"><span id="roHint">scroll to run the pulse</span></div></div>
+<div class="readout" id="roSlit" hidden><div>TMA exposure in the channel · gap 500 nm</div><div class="big"><span id="rsE">0.00</span><small>Pa s</small></div>
+<div class="seg" role="group" aria-label="Carrier gas"><button type="button" id="rsGasOff" aria-pressed="false">no carrier gas</button><button type="button" id="rsGasOn" class="on" aria-pressed="true">N₂ at 300 Pa</button></div>
+<div class="two"><div><b id="rsZ">0</b><span>half-coverage depth</span></div><div><b id="rsTail">0</b><span>coverage 60 gaps ahead of the front</span></div></div>
+<div class="row"><span>cycles <b id="rsCyc">1</b> · gap filled <b id="rsFill">0 %</b></span></div><input type="range" id="rsRange" min="1" max="1000" step="1" value="1" aria-label="Number of ALD cycles">
+<div class="row"><span id="rsHint">scroll to run the exposure</span></div><div class="row src"><span>data: figures/pillar_mc → assets/data-mech.js</span></div></div>
+<div class="legend" id="heroLegend"><ol id="heroSteps"><li class="on"><b>1</b> The chamber: TMA leaves the showerhead</li><li><b>2</b> The patterned wafer uses up the supply</li><li><b>3</b> Inside a PillarHall channel: fly, bounce, stick</li><li><b>4</b> Hundreds of cycles: the film narrows the gap</li></ol>
+<div class="keys"><span><i style="background:var(--c-warm)"></i>TMA</span><span><i style="background:var(--c-blue)"></i>N₂</span><span><i style="background:var(--c-cyan)"></i>water</span><span><i style="background:var(--c-green)"></i>coated</span><span><i style="background:var(--c-grey)"></i>bare</span><span><i style="background:var(--c-rose)"></i>front</span></div></div>
+<div class="caption" id="heroCap"></div>
 <div class="copy"><div class="wrap">
 <h1>A pulse sized on a blanket wafer is 40× too short for a 3D-NAND wafer.</h1>
 <p>A 3D-NAND wafer carries 56 times the surface area of the wafer under it, and all of it has to saturate in one pulse. This is a 300 mm showerhead ALD chamber in OpenFOAM in which every point on the wafer runs its own feature-scale model of a hole, coupled both ways to the gas. The answer it gives is one line of arithmetic, and it reproduces a measured saturation time on 940 m² of powder.</p>
@@ -174,6 +194,23 @@ tr.hl td{color:var(--acc2);font-weight:700}
 <h3 class="reveal" style="margin-top:26px">Carrier gas at 300 Pa removes most of the ballistic tail. The wall-scattering laws tried do not.</h3>
 <p class="note reveal">The Monte Carlo of the real cavity now follows hard-sphere collisions of TMA with the N₂ carrier (diffusion coefficient within 1 % of kinetic theory in the reference run). At 300 Pa the collision mean free path of TMA in N₂ is 19 µm, 39 gap heights: free molecular by the usual criterion, but shorter than the flights of 60 to 100 heights that build the tail. For a front 215 heights deep at s = 0.0158, the coverage 60 heights ahead falls from 0.071 without gas to 0.018 at 300 Pa. Specular reflection raises it (0.087 and 0.117 for 20 % and 50 %); back-scattering and narrower re-emission lobes leave it at 0.045 to 0.071. Source: <code>figures/mechanism_transport.json</code>.</p>
 <div class="reveal" style="margin-top:16px"><img src="assets/mech_transport.png?v=20261118b" alt="Coverage profiles for wall-scattering laws and carrier-gas pressures, and the tail 60 gap heights ahead of the front" loading="lazy" style="width:100%;height:auto;border-radius:10px;background:#fff;padding:6px;box-sizing:border-box"></div>
+</div></section>
+
+<section class="story alt" id="inside"><div class="wrap">
+<div class="eyebrow reveal">03d · Inside the data</div>
+<h2 class="reveal">Move the exposure, the sticking coefficient, the pressure and the cycle count.</h2>
+<p class="lead reveal">The curve is the simulated thickness profile in a 500 nm channel; the points are a measured profile. Sticking coefficient and pressure snap to the values that were simulated. Exposure is interpolated between simulated steps, and the readout says so. Cycles apply the narrowing law of the section above; the spot is the 5.5 µm reflectometer spot.</p>
+<div class="idata reveal"><div><canvas id="idCanvas" width="960" height="600" role="img" aria-label="Simulated thickness profile against distance in gap heights, with a measured profile overlaid"></canvas>
+<div class="srcline" id="idSrc"></div></div>
+<div><label>Transport model<select id="idModel"><option value="gas300">real cavity, N₂ at 300 Pa (Monte Carlo)</option><option value="free">real cavity, no carrier gas (Monte Carlo)</option><option value="gas100">real cavity, N₂ at 100 Pa (Monte Carlo)</option><option value="gas1000">real cavity, N₂ at 1000 Pa (Monte Carlo)</option><option value="hyd">hydraulic-diameter diffusion (1D)</option></select></label>
+<label>Sticking coefficient <b id="idSv"></b><input type="range" id="idS" min="0" max="5" step="1" value="3"></label>
+<label>Exposure per cycle <b id="idEv"></b><input type="range" id="idE" min="0.05" max="6" step="0.01" value="3.8"></label>
+<label>ALD cycles <b id="idCv"></b><input type="range" id="idC" min="1" max="1100" step="1" value="500"></label>
+<label><input type="checkbox" id="idSpot" checked> average over the 5.5 µm measurement spot</label>
+<label>Measured profile<select id="idMeas"><option value="zenodo">Zenodo 3974438, mean of 8 scans</option><option value="ylilammi">Ylilammi et al. 2018, Fig. 6</option></select></label>
+<button type="button" id="idMatch">Set the exposure to match the measured depth</button>
+<div class="ro"><div><b id="idZ50"></b><span>half-thickness depth</span></div><div><b id="idSlope"></b><span>front slope, per gap height</span></div><div><b id="idFill"></b><span>of the gap filled</span></div><div><b id="idRms"></b><span>rms difference from the measured profile</span></div></div>
+<div class="srcline" id="idNote"></div></div></div>
 </div></section>
 
 <section class="story alt" id="hole"><div class="wrap">
@@ -648,6 +685,40 @@ document.addEventListener('siteready',()=>{
     else {$('oGP').textContent='—'; $('oUtil').textContent='—'; $('oLag').textContent='—'; if(!D.gp) warn.push('surrogate export not loaded; the rule still applies');}
     $('oWarn').textContent=warn.join(' · ');}
   document.querySelectorAll('.calc input').forEach(i=>i.addEventListener('input',calc)); calc();
+});
+</script>
+<script>
+document.addEventListener('DOMContentLoaded',function(){var M=window.ALD_MECH,cv=document.getElementById('idCanvas');if(!M||!cv)return;var $=function(i){return document.getElementById(i)},NZ=M.z.length;
+var el={model:$('idModel'),s:$('idS'),E:$('idE'),C:$('idC'),spot:$('idSpot'),meas:$('idMeas'),match:$('idMatch')};
+function samp(a,z){var u=z/4;if(u<0)u=-u;if(u>=NZ-1)return 0;var i=Math.floor(u);return a[i]+(a[i+1]-a[i])*(u-i)}
+function single(key,si,e){var K=M.kernels[key].theta[si],Es=M.E,o=new Array(NZ),j=1,f,i;if(e<=Es[0]){f=e/Es[0];for(i=0;i<NZ;i++)o[i]=K[0][i]*f;return{th:o,note:'below the lowest simulated exposure ('+Es[0]+' Pa s): scaled from it'}}
+while(j<Es.length-1&&Es[j]<e)j++;f=Math.min(1,Math.max(0,(e-Es[j-1])/(Es[j]-Es[j-1])));for(i=0;i<NZ;i++)o[i]=K[j-1][i]+(K[j][i]-K[j-1][i])*f;
+return{th:o,note:(f<0.005||f>0.995)?'':'exposure interpolated between the simulated steps '+Es[j-1]+' and '+Es[j]+' Pa s'}}
+function profile(key,si,e,cyc,spot){var r=single(key,si,e),th=r.th,fill=cyc<=1?0:Math.min(0.95,2*cyc*M.gpc_nm/M.gap_nm),n=M.kernels[key].gap_exponent,o=new Array(NZ),i,k,a;
+var cum=function(z){if(fill<=0)return samp(th,z);var a=0;for(var k=0;k<=10;k++)a+=samp(th,z/Math.pow(Math.max(0.02,1-fill+fill*k/10),n));return a/11};
+for(i=0;i<NZ;i++){if(spot){a=0;for(k=0;k<9;k++)a+=cum(M.z[i]+((k+0.5)/9-0.5)*11);o[i]=a/9}else o[i]=cum(M.z[i])}
+var n0=o[1]||1;for(i=0;i<NZ;i++)o[i]=o[i]/n0;return{y:o,single:th,fill:fill,note:r.note}}
+function cross(a,l){for(var i=1;i<NZ;i++)if(a[i]<l)return M.z[i-1]+(a[i-1]-l)/((a[i-1]-a[i])||1)*4;return NaN}
+function state(){return{key:el.model.value,si:+el.s.value,e:+el.E.value,cyc:+el.C.value,spot:el.spot.checked,meas:M.measured[el.meas.value]}}
+function css(v){return getComputedStyle(document.documentElement).getPropertyValue(v).trim()||'#888'}
+function draw(){var st=state(),P=profile(st.key,st.si,st.e,st.cyc,st.spot),g=cv.getContext('2d'),W=cv.width,H=cv.height,L=70,R=20,T=24,B=74,x=function(z){return L+z/400*(W-L-R)},y=function(v){return H-B-v/1.1*(H-T-B)},i;
+g.clearRect(0,0,W,H);g.font='20px system-ui,sans-serif';g.lineWidth=1;g.strokeStyle=css('--line');g.fillStyle=css('--muted');g.textAlign='center';
+for(i=0;i<=400;i+=100){g.beginPath();g.moveTo(x(i),y(0));g.lineTo(x(i),y(1.1));g.stroke();g.fillText(i,x(i),H-B+26)}g.textAlign='right';for(i=0;i<=10;i+=5){g.beginPath();g.moveTo(x(0),y(i/10));g.lineTo(x(400),y(i/10));g.stroke();g.fillText((i/10).toFixed(1),L-10,y(i/10)+7)}
+g.textAlign='center';g.fillText('distance into the channel, gap heights (1 gap = 0.5 µm)',(L+W-R)/2,H-12);g.save();g.translate(22,(T+H-B)/2);g.rotate(-Math.PI/2);g.fillText('thickness / plateau',0,0);g.restore();
+if(st.cyc>1){g.setLineDash([8,7]);g.strokeStyle=css('--muted');g.lineWidth=2;g.beginPath();for(i=0;i<NZ;i++){var v=P.single[i]/(P.single[1]||1);i?g.lineTo(x(M.z[i]),y(v)):g.moveTo(x(M.z[i]),y(v))}g.stroke();g.setLineDash([])}
+g.fillStyle=css('--ink');for(i=0;i<st.meas.x.length;i++){if(st.meas.x[i]>400)continue;g.beginPath();g.arc(x(st.meas.x[i]),y(st.meas.y[i]),4,0,7);g.fill()}
+g.strokeStyle=css('--c-green');g.lineWidth=4;g.beginPath();for(i=0;i<NZ;i++){i?g.lineTo(x(M.z[i]),y(P.y[i])):g.moveTo(x(M.z[i]),y(P.y[i]))}g.stroke();
+var z50=cross(P.y,0.5),z6=cross(P.y,0.6),z4=cross(P.y,0.4),slope=0.2/(z4-z6);if(isFinite(z50)){g.strokeStyle=css('--c-rose');g.lineWidth=2;g.beginPath();g.moveTo(x(z50),y(0));g.lineTo(x(z50),y(1.05));g.stroke()}
+g.textAlign='left';g.fillStyle=css('--c-green');g.fillText('model',x(300),y(1.02));g.fillStyle=css('--ink');g.fillText('● measured',x(300),y(0.94));if(st.cyc>1){g.fillStyle=css('--muted');g.fillText('- - one exposure',x(300),y(0.86))}
+var se=0,n=0;for(i=0;i<st.meas.x.length;i++){if(st.meas.x[i]>396)continue;var d=samp(P.y,st.meas.x[i])-st.meas.y[i];se+=d*d;n++}
+$('idSv').textContent=M.s[st.si];$('idEv').textContent=st.e.toFixed(2)+' Pa s';$('idCv').textContent=st.cyc;
+$('idZ50').textContent=isFinite(z50)?Math.round(z50)+' gaps · '+Math.round(z50*M.gap_nm/1000)+' µm':'beyond 400 gaps';$('idSlope').textContent=isFinite(slope)?slope.toFixed(4):'n/a';$('idFill').textContent=Math.round(P.fill*100)+' %';$('idRms').textContent=n?Math.sqrt(se/n).toFixed(3):'n/a';
+var k=M.kernels[st.key];$('idSrc').textContent='Model: '+(st.key==='hyd'?'hydraulic kernel of docs/paper/mechanism_test.py':'figures/pillar_mc/'+k.case+'_s'+M.s[st.si]+'.csv')+' · via assets/data-mech.js · Measured: '+st.meas.label+' ('+st.meas.file+')';
+$('idNote').innerHTML=(P.note?'<span class="flag">'+P.note+'.</span> ':'Exposure on a simulated step. ')+'Sticking coefficient and pressure are simulated values; narrowing and spot are applied to the simulated single-exposure profile (gap exponent '+k.gap_exponent+').';return z50}
+function match(){var st=state(),m=st.meas,t=NaN,i;for(i=1;i<m.x.length;i++)if(m.y[i]<0.5){t=m.x[i-1]+(m.y[i-1]-0.5)/((m.y[i-1]-m.y[i])||1)*(m.x[i]-m.x[i-1]);break}if(!isFinite(t))return;var lo=0.05,hi=6;
+for(i=0;i<30;i++){var mid=(lo+hi)/2,z=cross(profile(st.key,st.si,mid,st.cyc,st.spot).y,0.5);if(!isFinite(z)||z>t)hi=mid;else lo=mid}el.E.value=((lo+hi)/2).toFixed(2);draw()}
+['model','s','E','C','spot','meas'].forEach(function(k){el[k].addEventListener('input',draw);el[k].addEventListener('change',draw)});el.match.addEventListener('click',match);
+var tb=document.getElementById('themeBtn');if(tb)tb.addEventListener('click',function(){setTimeout(draw,60)});match();
 });
 </script>
 </body>

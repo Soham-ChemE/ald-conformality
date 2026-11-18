@@ -2,7 +2,7 @@
 
 <p align="center"><a href="https://soham-cheme.github.io/ald-conformality/"><img src="docs/assets/hero.svg" alt="ald-conformality: the TMA pulse that saturates a blanket wafer against the pulse the patterned wafer needs" width="100%"></a></p>
 
-<p align="center"><b><a href="https://soham-cheme.github.io/ald-conformality/">Open the live page</a></b> · scrub a 16-second pulse through the chamber, watch one hole fill from the mouth down, and run the rule and the surrogate on your own wafer</p>
+<p align="center"><b><a href="https://soham-cheme.github.io/ald-conformality/">Open the live page</a></b> · scrub a 16-second pulse through the chamber, watch one hole fill from the mouth down, follow TMA into a PillarHall channel where the film narrows the gap over hundreds of cycles, and run the rule and the surrogate on your own wafer</p>
 
 **An open chamber-to-feature model of atomic layer deposition: supply-limited pulse times on patterned wafers, and a ballistic re-analysis of the sticking coefficients extracted from lateral test structures.**
 

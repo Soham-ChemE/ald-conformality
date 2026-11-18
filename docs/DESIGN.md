@@ -117,3 +117,32 @@ a `gaaStack` builder (the same arithmetic as `gaa_stack`, periodic along x) and 
 is the bottom slot centre (wp10's `gap_bottom_mid` region, read through a per-preset probe instead of the floor) against
 the paper's 0.558 s; it runs with plain faces (area correction off) as the paper's run did, and at the reference budget the
 Metal GPU gives 0.558 s.
+
+## Hero story, steps 3 and 4: the PillarHall channel (added 18 November 2026)
+
+The hero track is now 680 vh (520 vh on phones) and `assets/scene.js` splits it at 46 %. The first part is the chamber and
+the cut-open hole as before (steps 1 and 2). The second part moves the camera to a lateral channel: two plates 500 nm apart,
+six support pillars, a closed end. One TMA exposure runs from 0 to 4.5 Pa s with the coverage front advancing (step 3), then
+purge and a water pulse, then the cycle count rises to 1000 and the film on both walls narrows the gap (step 4). The readout
+has a carrier-gas toggle (none / N2 at 300 Pa) and a cycle slider that overrides the scroll for six seconds.
+
+What is data and what is illustration:
+
+| element | source |
+|---|---|
+| wall coverage, film profile, front plane, readouts (exposure, half-coverage depth, coverage 60 gaps ahead, gap filled) | `assets/data-mech.js`, built by `docs/build_mech_assets.py` from the pillar-cavity Monte Carlo frames at s = 0.0158 (`figures/pillar_mc/`, listed in `figures/pillar_mc_manifest.csv`) |
+| film after N cycles | the narrowing law of `docs/paper/mechanism_test.py` applied in the browser: the single-exposure profile averaged over the gap stretch f^n, f uniform on [1 - 2 N gpc / gap, 1], n = 1 without gas and 0.92 with |
+| molecule paths (TMA, N2, water) | illustration only: cosine re-emission in the drawn geometry, where the gap is 28 times taller than to scale; sticking probability exaggerated; N2 collisions redirect TMA after a drawn mean free path of one unit (40 gaps) |
+
+The page says so in the hero caption. `prefers-reduced-motion` shows the final state (1000 cycles) without particle motion; the
+no-WebGL path keeps the static chamber image.
+
+## "Inside the data" (section `#inside`)
+
+A 2D canvas, no WebGL. The curve is the simulated thickness profile from `assets/data-mech.js` (five transport kernels, six
+sticking coefficients, twelve exposures, depth step four gap heights); the points are the Zenodo 3974438 mean profile or
+Ylilammi 2018 Fig. 6. Sticking coefficient and pressure take simulated values only. Exposure is interpolated linearly between
+simulated steps, and the note under the readouts says between which two. Cycles and the 5.5 um spot apply the same narrowing
+and top-hat average as `mechanism_test.py`. The source file of the model curve and of the measured profile is printed under the
+plot. The inline script waits for `DOMContentLoaded` because the data file is loaded with `defer`.
+
