@@ -71,3 +71,15 @@ def test_carrier_gas_cuts_tail_and_penetration(exe, tmp_path):
     # diffusion-limited front of an irreversible Langmuir film: x50^2 = 2 D H n t / (2 N0), with n t = 4 J1 E / vbar
     x50 = np.sqrt(2 * D * 0.5e-6 * 4 * J1 * 3.0 / vbar / (2 * 4e18)) / 0.5e-6
     assert abs(z[3] / x50 - 1) < 0.15
+
+
+def test_equilibrium_flux_is_uniform_with_and_without_gas(exe, tmp_path):
+    # a short closed cavity with a negligible sticking probability is in equilibrium with the reservoir: every wall element
+    # receives the reservoir flux, so the coverage is uniform and equal to 1 - exp(-s J E / N0), with or without carrier gas
+    kB, amu, T = 1.380649e-23, 1.66053906660e-27, 573.15
+    expect = 1 - np.exp(-1e-5 / np.sqrt(2 * np.pi * 72.09 * amu * kB * T) * 10.0 / 4e18)
+    for name, extra in (("eq_free", ()), ("eq_gas", ("p=3000",))):
+        f = tmp_path / f"{name}.csv"
+        subprocess.check_call([str(exe), "1e-5", "10", "4", "60000", "0.5", "20", "0", "2", "0", "1", "2", str(f), *extra], stderr=subprocess.DEVNULL)
+        th = np.loadtxt(f, delimiter=",", comments="#")[-1, 1:]
+        assert abs(th.mean() / expect - 1) < 0.03 and th.std() / th.mean() < 0.05

@@ -1,0 +1,102 @@
+{
+ "s": 0.0158,
+ "z50": 215.0,
+ "variants": {
+  "walls90_pillars49": {
+   "label": "real cavity, cosine walls, no gas",
+   "exposure_Pa_s": 3.26,
+   "A": 38.8,
+   "slope": 0.0202,
+   "tail_plus_60": 0.0707,
+   "tail_plus_100": 0.0382
+  },
+  "spec20": {
+   "label": "20 % specular",
+   "exposure_Pa_s": 2.5,
+   "A": 58.3,
+   "slope": 0.0165,
+   "tail_plus_60": 0.0869,
+   "tail_plus_100": 0.047
+  },
+  "spec50": {
+   "label": "50 % specular",
+   "exposure_Pa_s": 1.52,
+   "A": 98.2,
+   "slope": 0.0127,
+   "tail_plus_60": 0.1174,
+   "tail_plus_100": 0.0695
+  },
+  "retro20": {
+   "label": "20 % back-scattered",
+   "exposure_Pa_s": 4.97,
+   "A": 30.2,
+   "slope": 0.0229,
+   "tail_plus_60": 0.0714,
+   "tail_plus_100": 0.0415
+  },
+  "retro50": {
+   "label": "50 % back-scattered",
+   "exposure_Pa_s": 9.71,
+   "A": 21.9,
+   "slope": 0.0269,
+   "tail_plus_60": 0.0656,
+   "tail_plus_100": 0.0445
+  },
+  "cos2": {
+   "label": "cos^2 lobe",
+   "exposure_Pa_s": 4.66,
+   "A": 8.4,
+   "slope": 0.0435,
+   "tail_plus_60": 0.0454,
+   "tail_plus_100": 0.0333
+  },
+  "cos4": {
+   "label": "cos^4 lobe",
+   "exposure_Pa_s": 5.93,
+   "A": 3.0,
+   "slope": 0.0728,
+   "tail_plus_60": 0.0461,
+   "tail_plus_100": 0.0381
+  },
+  "cos8": {
+   "label": "cos^8 lobe",
+   "exposure_Pa_s": 7.73,
+   "A": 1.6,
+   "slope": 0.0999,
+   "tail_plus_60": 0.0575,
+   "tail_plus_100": 0.0266
+  },
+  "gas100": {
+   "label": "N_2 100 Pa",
+   "exposure_Pa_s": 3.52,
+   "A": 33.6,
+   "slope": 0.0217,
+   "tail_plus_60": 0.0446,
+   "tail_plus_100": 0.0157
+  },
+  "gas300": {
+   "label": "N_2 300 Pa",
+   "exposure_Pa_s": 3.82,
+   "A": 25.7,
+   "slope": 0.0248,
+   "tail_plus_60": 0.0179,
+   "tail_plus_100": 0.0031
+  },
+  "gas1000": {
+   "label": "N_2 1000 Pa",
+   "exposure_Pa_s": 4.77,
+   "A": 20.3,
+   "slope": 0.0279,
+   "tail_plus_60": 0.0042,
+   "tail_plus_100": 0.0002
+  },
+  "hyd": {
+   "label": "hydraulic diffusion model",
+   "exposure_Pa_s": 6.23,
+   "A": 14.0,
+   "slope": 0.0336,
+   "tail_plus_60": 0.0011,
+   "tail_plus_100": 0.0
+  }
+ }
+}

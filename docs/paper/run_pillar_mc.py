@@ -37,6 +37,7 @@ for _k in list(SCATTER) + list(GAS): CASES[_k] = CASES["walls90_pillars49"]
 GEO = {"h2000_gas300": (2.0, 49, 2, 90, 300, 2.6), "h100_gas300": (0.1, 49, 2, 90, 300, 1.1), "v1a_gas300": (0.5, 28, 2, 90, 300, 1.5),
        "v2a_gas300": (0.5, 98, 2, 90, 300, 1.3), "gao_gas150": (0.5, 10, 2, 90, 150, 2.8),
        "h2000_free": (2.0, 49, 2, 90, 0, 2.6), "h100_free": (0.1, 49, 2, 90, 0, 1.0),
+       "gas300_deep": (0.5, 49, 2, 90, 300, 2.2), "free_deep": (0.5, 49, 2, 90, 0, 1.8),   # longer exposure ladders for the deep 500-cycle fronts (z50 = 280)
        "arts_free": (0.5, 49, 2, 90, 0, 3.6), "arts_gas27": (0.5, 49, 2, 90, 27, 3.8)}   # Arts 2019: deep front (z50 = 486), 220 C; 27 Pa = 200 mTorr of Ar as an upper-range guess
 GEO_X = {"arts_free": (1200, ["T=493.15"]), "arts_gas27": (1200, ["T=493.15", "m2=39.948", "d12=4.66"])}   # cavity depth in gaps, extra options          # the same structures without carrier gas
 for _k, _v in GEO.items(): CASES[_k] = (_v[1], _v[2], _v[3])
