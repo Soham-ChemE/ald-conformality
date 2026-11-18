@@ -146,3 +146,19 @@ simulated steps, and the note under the readouts says between which two. Cycles 
 and top-hat average as `mechanism_test.py`. The source file of the model curve and of the measured profile is printed under the
 plot. The inline script waits for `DOMContentLoaded` because the data file is loaded with `defer`.
 
+
+## Section 03c as live scenes (`assets/body4.js`, 18 November 2026)
+
+The four static figures of the narrowing section were replaced by five scenes on the shared `Viz` renderer, all from
+`window.ALD_MECH.scenes` (`docs/build_mech_assets.py`):
+
+| Placeholder | Scene | Source files |
+|---|---|---|
+| `mechheld` | predicted against measured front slope for the held-out samples, one lane per model, stems to the diagonal | `figures/mechanism_comparison.csv`, `mechanism_summary.json` |
+| `mechcycles` | thickness profile after 1, 250, 500, 1000 cycles and for the closed 100 nm gap, from the narrowing law applied in the browser to one simulated exposure | `assets/data-mech.js` (Monte Carlo, N2 at 300 Pa, s = 0.0158) |
+| `mechlimit` | measured slope x depth against the filled fraction under a sheet at the narrowing limit | `data/lhar_profiles/`, `mechanism_comparison.csv` |
+| `mechsens` | model front slope against s for five samples (complete gas model), the slope-method line, a flat bar at each measured slope | `figures/mechanism_slope_curves.json`, `mechanism_summary.json` |
+| `mechtail` | coverage profiles of twelve transport variants with the front at 215 gap heights, labelled with the coverage 60 gaps ahead | `figures/mechanism_transport.json`, Monte Carlo frames |
+
+Fallbacks `assets/viz_mech*_{dark,light}.png` come from `python docs/tools/page_qa.py --docs docs --snap` (which re-renders
+every scene; unrelated snapshots are restored with `git restore`). The paper figures stay in `docs/paper/figures/`.
