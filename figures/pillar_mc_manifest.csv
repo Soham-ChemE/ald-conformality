@@ -1,0 +1,105 @@
+file,steps,bins,header,sha256
+arts_free_s0.002.csv,200,1200,s=0.002 H=5e-07 L=0.0006 a=4.9e-05 R=2e-06 W=9e-05 M=120000 N=200 seed=1 n_cos=1 f_spec=0 f_retro=0 lambda=0 p=0 T=493.15 m1=72.09 m2=28.0134 d12=4.825,cb4eefc19750c101
+arts_free_s0.004.csv,200,1200,s=0.004 H=5e-07 L=0.0006 a=4.9e-05 R=2e-06 W=9e-05 M=120000 N=200 seed=1 n_cos=1 f_spec=0 f_retro=0 lambda=0 p=0 T=493.15 m1=72.09 m2=28.0134 d12=4.825,5e95db0d405e20ca
+arts_free_s0.008.csv,200,1200,s=0.008 H=5e-07 L=0.0006 a=4.9e-05 R=2e-06 W=9e-05 M=120000 N=200 seed=1 n_cos=1 f_spec=0 f_retro=0 lambda=0 p=0 T=493.15 m1=72.09 m2=28.0134 d12=4.825,62cbf1b6f85d5fbe
+arts_free_s0.016.csv,200,1200,s=0.016 H=5e-07 L=0.0006 a=4.9e-05 R=2e-06 W=9e-05 M=120000 N=200 seed=1 n_cos=1 f_spec=0 f_retro=0 lambda=0 p=0 T=493.15 m1=72.09 m2=28.0134 d12=4.825,089656ae9142285f
+arts_free_s0.03.csv,200,1200,s=0.03 H=5e-07 L=0.0006 a=4.9e-05 R=2e-06 W=9e-05 M=120000 N=200 seed=1 n_cos=1 f_spec=0 f_retro=0 lambda=0 p=0 T=493.15 m1=72.09 m2=28.0134 d12=4.825,4e543312ee040196
+arts_gas27_s0.002.csv,200,1200,s=0.002 H=5e-07 L=0.0006 a=4.9e-05 R=2e-06 W=9e-05 M=120000 N=200 seed=1 n_cos=1 f_spec=0 f_retro=0 lambda=0 p=27 T=493.15 m1=72.09 m2=39.948 d12=4.66,8d39358b2b450e4b
+arts_gas27_s0.004.csv,200,1200,s=0.004 H=5e-07 L=0.0006 a=4.9e-05 R=2e-06 W=9e-05 M=120000 N=200 seed=1 n_cos=1 f_spec=0 f_retro=0 lambda=0 p=27 T=493.15 m1=72.09 m2=39.948 d12=4.66,5c2f26e3b2915a6f
+arts_gas27_s0.008.csv,200,1200,s=0.008 H=5e-07 L=0.0006 a=4.9e-05 R=2e-06 W=9e-05 M=120000 N=200 seed=1 n_cos=1 f_spec=0 f_retro=0 lambda=0 p=27 T=493.15 m1=72.09 m2=39.948 d12=4.66,48c72373ee7338fd
+arts_gas27_s0.016.csv,200,1200,s=0.016 H=5e-07 L=0.0006 a=4.9e-05 R=2e-06 W=9e-05 M=120000 N=200 seed=1 n_cos=1 f_spec=0 f_retro=0 lambda=0 p=27 T=493.15 m1=72.09 m2=39.948 d12=4.66,c43df729e7de5c76
+arts_gas27_s0.03.csv,200,1200,s=0.03 H=5e-07 L=0.0006 a=4.9e-05 R=2e-06 W=9e-05 M=120000 N=200 seed=1 n_cos=1 f_spec=0 f_retro=0 lambda=0 p=27 T=493.15 m1=72.09 m2=39.948 d12=4.66,f01e743024309fc0
+cos2_s0.0158.csv,150,800,s=0.0158 H=5e-07 L=0.0004 a=4.9e-05 R=2e-06 W=9e-05 M=80000 N=150 seed=1 n_cos=2 f_spec=0 f_retro=0 lambda=0 p=0 T=573.15 m1=72.09 m2=28.0134 d12=4.825,13c09d3460818de2
+cos4_s0.0158.csv,150,800,s=0.0158 H=5e-07 L=0.0004 a=4.9e-05 R=2e-06 W=9e-05 M=80000 N=150 seed=1 n_cos=4 f_spec=0 f_retro=0 lambda=0 p=0 T=573.15 m1=72.09 m2=28.0134 d12=4.825,d24138646e10095c
+cos8_s0.0158.csv,150,800,s=0.0158 H=5e-07 L=0.0004 a=4.9e-05 R=2e-06 W=9e-05 M=80000 N=150 seed=1 n_cos=8 f_spec=0 f_retro=0 lambda=0 p=0 T=573.15 m1=72.09 m2=28.0134 d12=4.825,44f9b99433b46b6d
+gas1000_s0.004.csv,200,800,s=0.004 H=5e-07 L=0.0004 a=4.9e-05 R=2e-06 W=9e-05 M=150000 N=200 seed=1 n_cos=1 f_spec=0 f_retro=0 lambda=0 p=1000 T=573.15 m1=72.09 m2=28.0134 d12=4.825,4a584bb426c81480
+gas1000_s0.0063.csv,200,800,s=0.0063 H=5e-07 L=0.0004 a=4.9e-05 R=2e-06 W=9e-05 M=150000 N=200 seed=1 n_cos=1 f_spec=0 f_retro=0 lambda=0 p=1000 T=573.15 m1=72.09 m2=28.0134 d12=4.825,c0efe3c5e1299f61
+gas1000_s0.01.csv,200,800,s=0.01 H=5e-07 L=0.0004 a=4.9e-05 R=2e-06 W=9e-05 M=150000 N=200 seed=1 n_cos=1 f_spec=0 f_retro=0 lambda=0 p=1000 T=573.15 m1=72.09 m2=28.0134 d12=4.825,80a8889c85fd080b
+gas1000_s0.0158.csv,200,800,s=0.0158 H=5e-07 L=0.0004 a=4.9e-05 R=2e-06 W=9e-05 M=150000 N=200 seed=1 n_cos=1 f_spec=0 f_retro=0 lambda=0 p=1000 T=573.15 m1=72.09 m2=28.0134 d12=4.825,b5b77c36e4353cf3
+gas1000_s0.025.csv,200,800,s=0.025 H=5e-07 L=0.0004 a=4.9e-05 R=2e-06 W=9e-05 M=150000 N=200 seed=1 n_cos=1 f_spec=0 f_retro=0 lambda=0 p=1000 T=573.15 m1=72.09 m2=28.0134 d12=4.825,da6423c78d12b191
+gas1000_s0.04.csv,200,800,s=0.04 H=5e-07 L=0.0004 a=4.9e-05 R=2e-06 W=9e-05 M=150000 N=200 seed=1 n_cos=1 f_spec=0 f_retro=0 lambda=0 p=1000 T=573.15 m1=72.09 m2=28.0134 d12=4.825,afb74ceee1a5ba84
+gas100_s0.004.csv,200,800,s=0.004 H=5e-07 L=0.0004 a=4.9e-05 R=2e-06 W=9e-05 M=150000 N=200 seed=1 n_cos=1 f_spec=0 f_retro=0 lambda=0 p=100 T=573.15 m1=72.09 m2=28.0134 d12=4.825,a52d60c3c5ff69e3
+gas100_s0.0063.csv,200,800,s=0.0063 H=5e-07 L=0.0004 a=4.9e-05 R=2e-06 W=9e-05 M=150000 N=200 seed=1 n_cos=1 f_spec=0 f_retro=0 lambda=0 p=100 T=573.15 m1=72.09 m2=28.0134 d12=4.825,ea77cf9794d7fd38
+gas100_s0.01.csv,200,800,s=0.01 H=5e-07 L=0.0004 a=4.9e-05 R=2e-06 W=9e-05 M=150000 N=200 seed=1 n_cos=1 f_spec=0 f_retro=0 lambda=0 p=100 T=573.15 m1=72.09 m2=28.0134 d12=4.825,4b582895e383d142
+gas100_s0.0158.csv,200,800,s=0.0158 H=5e-07 L=0.0004 a=4.9e-05 R=2e-06 W=9e-05 M=150000 N=200 seed=1 n_cos=1 f_spec=0 f_retro=0 lambda=0 p=100 T=573.15 m1=72.09 m2=28.0134 d12=4.825,367fcc4a43b7bd84
+gas100_s0.025.csv,200,800,s=0.025 H=5e-07 L=0.0004 a=4.9e-05 R=2e-06 W=9e-05 M=150000 N=200 seed=1 n_cos=1 f_spec=0 f_retro=0 lambda=0 p=100 T=573.15 m1=72.09 m2=28.0134 d12=4.825,3d411646a0bcad3f
+gas100_s0.04.csv,200,800,s=0.04 H=5e-07 L=0.0004 a=4.9e-05 R=2e-06 W=9e-05 M=150000 N=200 seed=1 n_cos=1 f_spec=0 f_retro=0 lambda=0 p=100 T=573.15 m1=72.09 m2=28.0134 d12=4.825,154512a15f3113b3
+gas300_s0.004.csv,300,800,s=0.004 H=5e-07 L=0.0004 a=4.9e-05 R=2e-06 W=9e-05 M=400000 N=300 seed=1 n_cos=1 f_spec=0 f_retro=0 lambda=0 p=300 T=573.15 m1=72.09 m2=28.0134 d12=4.825,7f290e07edbafc37
+gas300_s0.005.csv,200,800,s=0.005 H=5e-07 L=0.0004 a=4.9e-05 R=2e-06 W=9e-05 M=150000 N=200 seed=1 n_cos=1 f_spec=0 f_retro=0 lambda=0 p=300 T=573.15 m1=72.09 m2=28.0134 d12=4.825,90caf7da65417f01
+gas300_s0.0063.csv,300,800,s=0.0063 H=5e-07 L=0.0004 a=4.9e-05 R=2e-06 W=9e-05 M=400000 N=300 seed=1 n_cos=1 f_spec=0 f_retro=0 lambda=0 p=300 T=573.15 m1=72.09 m2=28.0134 d12=4.825,32d797c74071fe68
+gas300_s0.008.csv,200,800,s=0.008 H=5e-07 L=0.0004 a=4.9e-05 R=2e-06 W=9e-05 M=150000 N=200 seed=1 n_cos=1 f_spec=0 f_retro=0 lambda=0 p=300 T=573.15 m1=72.09 m2=28.0134 d12=4.825,80d463b1bf08cf41
+gas300_s0.01.csv,300,800,s=0.01 H=5e-07 L=0.0004 a=4.9e-05 R=2e-06 W=9e-05 M=400000 N=300 seed=1 n_cos=1 f_spec=0 f_retro=0 lambda=0 p=300 T=573.15 m1=72.09 m2=28.0134 d12=4.825,38b1b9670b9dbc70
+gas300_s0.0125.csv,200,800,s=0.0125 H=5e-07 L=0.0004 a=4.9e-05 R=2e-06 W=9e-05 M=150000 N=200 seed=1 n_cos=1 f_spec=0 f_retro=0 lambda=0 p=300 T=573.15 m1=72.09 m2=28.0134 d12=4.825,3befdf99caad9396
+gas300_s0.0158.csv,300,800,s=0.0158 H=5e-07 L=0.0004 a=4.9e-05 R=2e-06 W=9e-05 M=400000 N=300 seed=1 n_cos=1 f_spec=0 f_retro=0 lambda=0 p=300 T=573.15 m1=72.09 m2=28.0134 d12=4.825,f3a9f0ec2556e1fe
+gas300_s0.02.csv,200,800,s=0.02 H=5e-07 L=0.0004 a=4.9e-05 R=2e-06 W=9e-05 M=150000 N=200 seed=1 n_cos=1 f_spec=0 f_retro=0 lambda=0 p=300 T=573.15 m1=72.09 m2=28.0134 d12=4.825,34bf2b673b170f56
+gas300_s0.025.csv,300,800,s=0.025 H=5e-07 L=0.0004 a=4.9e-05 R=2e-06 W=9e-05 M=400000 N=300 seed=1 n_cos=1 f_spec=0 f_retro=0 lambda=0 p=300 T=573.15 m1=72.09 m2=28.0134 d12=4.825,6c94439a9f5f2831
+gas300_s0.03.csv,200,800,s=0.03 H=5e-07 L=0.0004 a=4.9e-05 R=2e-06 W=9e-05 M=150000 N=200 seed=1 n_cos=1 f_spec=0 f_retro=0 lambda=0 p=300 T=573.15 m1=72.09 m2=28.0134 d12=4.825,013ca2aec3e197be
+gas300_s0.04.csv,300,800,s=0.04 H=5e-07 L=0.0004 a=4.9e-05 R=2e-06 W=9e-05 M=400000 N=300 seed=1 n_cos=1 f_spec=0 f_retro=0 lambda=0 p=300 T=573.15 m1=72.09 m2=28.0134 d12=4.825,caebf0645c7d5efe
+gas300_s0.06.csv,200,800,s=0.06 H=5e-07 L=0.0004 a=4.9e-05 R=2e-06 W=9e-05 M=150000 N=200 seed=1 n_cos=1 f_spec=0 f_retro=0 lambda=0 p=300 T=573.15 m1=72.09 m2=28.0134 d12=4.825,6c09790d1954862e
+h100_gas300_s0.005.csv,200,400,s=0.005 H=1e-07 L=4e-05 a=4.9e-05 R=2e-06 W=9e-05 M=150000 N=200 seed=1 n_cos=1 f_spec=0 f_retro=0 lambda=0 p=300 T=573.15 m1=72.09 m2=28.0134 d12=4.825,d34e2f538b8e1eed
+h100_gas300_s0.008.csv,200,400,s=0.008 H=1e-07 L=4e-05 a=4.9e-05 R=2e-06 W=9e-05 M=150000 N=200 seed=1 n_cos=1 f_spec=0 f_retro=0 lambda=0 p=300 T=573.15 m1=72.09 m2=28.0134 d12=4.825,068cf7facbb9b0e1
+h100_gas300_s0.0125.csv,200,400,s=0.0125 H=1e-07 L=4e-05 a=4.9e-05 R=2e-06 W=9e-05 M=150000 N=200 seed=1 n_cos=1 f_spec=0 f_retro=0 lambda=0 p=300 T=573.15 m1=72.09 m2=28.0134 d12=4.825,43d8cfafacab762e
+h100_gas300_s0.02.csv,200,400,s=0.02 H=1e-07 L=4e-05 a=4.9e-05 R=2e-06 W=9e-05 M=150000 N=200 seed=1 n_cos=1 f_spec=0 f_retro=0 lambda=0 p=300 T=573.15 m1=72.09 m2=28.0134 d12=4.825,7a17f6219f2746e3
+h100_gas300_s0.03.csv,200,400,s=0.03 H=1e-07 L=4e-05 a=4.9e-05 R=2e-06 W=9e-05 M=150000 N=200 seed=1 n_cos=1 f_spec=0 f_retro=0 lambda=0 p=300 T=573.15 m1=72.09 m2=28.0134 d12=4.825,6b9f0bcef12fad7c
+h2000_free_s0.0125.csv,200,400,s=0.0125 H=2e-06 L=0.0008 a=4.9e-05 R=2e-06 W=9e-05 M=150000 N=200 seed=1 n_cos=1 f_spec=0 f_retro=0 lambda=0 p=0 T=573.15 m1=72.09 m2=28.0134 d12=4.825,1fbf18b20ee461a1
+h2000_free_s0.02.csv,200,400,s=0.02 H=2e-06 L=0.0008 a=4.9e-05 R=2e-06 W=9e-05 M=150000 N=200 seed=1 n_cos=1 f_spec=0 f_retro=0 lambda=0 p=0 T=573.15 m1=72.09 m2=28.0134 d12=4.825,dca89afcba3e6d04
+h2000_free_s0.03.csv,200,400,s=0.03 H=2e-06 L=0.0008 a=4.9e-05 R=2e-06 W=9e-05 M=150000 N=200 seed=1 n_cos=1 f_spec=0 f_retro=0 lambda=0 p=0 T=573.15 m1=72.09 m2=28.0134 d12=4.825,2d94082428e470cf
+h2000_free_s0.04.csv,200,400,s=0.04 H=2e-06 L=0.0008 a=4.9e-05 R=2e-06 W=9e-05 M=150000 N=200 seed=1 n_cos=1 f_spec=0 f_retro=0 lambda=0 p=0 T=573.15 m1=72.09 m2=28.0134 d12=4.825,ee8714a05711b61c
+h2000_free_s0.06.csv,200,400,s=0.06 H=2e-06 L=0.0008 a=4.9e-05 R=2e-06 W=9e-05 M=150000 N=200 seed=1 n_cos=1 f_spec=0 f_retro=0 lambda=0 p=0 T=573.15 m1=72.09 m2=28.0134 d12=4.825,65bf30ecebacc06c
+h2000_gas300_s0.005.csv,200,400,s=0.005 H=2e-06 L=0.0008 a=4.9e-05 R=2e-06 W=9e-05 M=150000 N=200 seed=1 n_cos=1 f_spec=0 f_retro=0 lambda=0 p=300 T=573.15 m1=72.09 m2=28.0134 d12=4.825,a97b9cbe2c410a19
+h2000_gas300_s0.008.csv,200,400,s=0.008 H=2e-06 L=0.0008 a=4.9e-05 R=2e-06 W=9e-05 M=150000 N=200 seed=1 n_cos=1 f_spec=0 f_retro=0 lambda=0 p=300 T=573.15 m1=72.09 m2=28.0134 d12=4.825,14cf77266075d02c
+h2000_gas300_s0.0125.csv,200,400,s=0.0125 H=2e-06 L=0.0008 a=4.9e-05 R=2e-06 W=9e-05 M=150000 N=200 seed=1 n_cos=1 f_spec=0 f_retro=0 lambda=0 p=300 T=573.15 m1=72.09 m2=28.0134 d12=4.825,ea75fcb7619628f9
+h2000_gas300_s0.02.csv,200,400,s=0.02 H=2e-06 L=0.0008 a=4.9e-05 R=2e-06 W=9e-05 M=150000 N=200 seed=1 n_cos=1 f_spec=0 f_retro=0 lambda=0 p=300 T=573.15 m1=72.09 m2=28.0134 d12=4.825,171a8b854a51fa0e
+h2000_gas300_s0.03.csv,200,400,s=0.03 H=2e-06 L=0.0008 a=4.9e-05 R=2e-06 W=9e-05 M=150000 N=200 seed=1 n_cos=1 f_spec=0 f_retro=0 lambda=0 p=300 T=573.15 m1=72.09 m2=28.0134 d12=4.825,adbd30effb3b64c4
+h2000_gas300_s0.04.csv,200,400,s=0.04 H=2e-06 L=0.0008 a=4.9e-05 R=2e-06 W=9e-05 M=150000 N=200 seed=1 n_cos=1 f_spec=0 f_retro=0 lambda=0 p=300 T=573.15 m1=72.09 m2=28.0134 d12=4.825,208e31e38470aaec
+h2000_gas300_s0.06.csv,200,400,s=0.06 H=2e-06 L=0.0008 a=4.9e-05 R=2e-06 W=9e-05 M=150000 N=200 seed=1 n_cos=1 f_spec=0 f_retro=0 lambda=0 p=300 T=573.15 m1=72.09 m2=28.0134 d12=4.825,b719950a70d3c926
+ideal_s0.004.csv,300,800,s=0.004 H=5e-07 L=0.0004 a=0 R=2e-06 W=0 M=400000 N=300 seed=1,43e2f1088ac45aaa
+ideal_s0.0063.csv,300,800,s=0.0063 H=5e-07 L=0.0004 a=0 R=2e-06 W=0 M=400000 N=300 seed=1,fad4432babe182e8
+ideal_s0.01.csv,300,800,s=0.01 H=5e-07 L=0.0004 a=0 R=2e-06 W=0 M=400000 N=300 seed=1,50248122e4846a8f
+ideal_s0.0158.csv,300,800,s=0.0158 H=5e-07 L=0.0004 a=0 R=2e-06 W=0 M=400000 N=300 seed=1,34e25037d26aab1f
+ideal_s0.025.csv,300,800,s=0.025 H=5e-07 L=0.0004 a=0 R=2e-06 W=0 M=400000 N=300 seed=1,dd9ca6dcd92c1739
+ideal_s0.04.csv,300,800,s=0.04 H=5e-07 L=0.0004 a=0 R=2e-06 W=0 M=400000 N=300 seed=1,e9bea4bb80995b80
+pillars10_s0.004.csv,300,800,s=0.004 H=5e-07 L=0.0004 a=1e-05 R=2e-06 W=0 M=400000 N=300 seed=1,24dba65a79beca05
+pillars10_s0.0063.csv,300,800,s=0.0063 H=5e-07 L=0.0004 a=1e-05 R=2e-06 W=0 M=400000 N=300 seed=1,f43385f083a415ae
+pillars10_s0.01.csv,300,800,s=0.01 H=5e-07 L=0.0004 a=1e-05 R=2e-06 W=0 M=400000 N=300 seed=1,52c46177723c25f6
+pillars10_s0.0158.csv,300,800,s=0.0158 H=5e-07 L=0.0004 a=1e-05 R=2e-06 W=0 M=400000 N=300 seed=1,450897799252bacc
+pillars10_s0.025.csv,300,800,s=0.025 H=5e-07 L=0.0004 a=1e-05 R=2e-06 W=0 M=400000 N=300 seed=1,cc07bae6c4fbcb27
+pillars10_s0.04.csv,300,800,s=0.04 H=5e-07 L=0.0004 a=1e-05 R=2e-06 W=0 M=400000 N=300 seed=1,4a4280a2c0f54876
+pillars28_s0.004.csv,300,800,s=0.004 H=5e-07 L=0.0004 a=2.8e-05 R=2e-06 W=0 M=400000 N=300 seed=1,c1f6e072ed4d7758
+pillars28_s0.0063.csv,300,800,s=0.0063 H=5e-07 L=0.0004 a=2.8e-05 R=2e-06 W=0 M=400000 N=300 seed=1,4de70a9bcf29fd55
+pillars28_s0.01.csv,300,800,s=0.01 H=5e-07 L=0.0004 a=2.8e-05 R=2e-06 W=0 M=400000 N=300 seed=1,9ce422c0a947b961
+pillars28_s0.0158.csv,300,800,s=0.0158 H=5e-07 L=0.0004 a=2.8e-05 R=2e-06 W=0 M=400000 N=300 seed=1,2b9ffe4cb90bda8e
+pillars28_s0.025.csv,300,800,s=0.025 H=5e-07 L=0.0004 a=2.8e-05 R=2e-06 W=0 M=400000 N=300 seed=1,782758fb055eaac2
+pillars28_s0.04.csv,300,800,s=0.04 H=5e-07 L=0.0004 a=2.8e-05 R=2e-06 W=0 M=400000 N=300 seed=1,d62ad41428aac5fa
+pillars49_s0.004.csv,300,800,s=0.004 H=5e-07 L=0.0004 a=4.9e-05 R=2e-06 W=0 M=400000 N=300 seed=1,f1d1818869f91ef7
+pillars49_s0.0063.csv,300,800,s=0.0063 H=5e-07 L=0.0004 a=4.9e-05 R=2e-06 W=0 M=400000 N=300 seed=1,f85d051bd41fd6e1
+pillars49_s0.01.csv,300,800,s=0.01 H=5e-07 L=0.0004 a=4.9e-05 R=2e-06 W=0 M=400000 N=300 seed=1,d67612bfdf0c5674
+pillars49_s0.0158.csv,300,800,s=0.0158 H=5e-07 L=0.0004 a=4.9e-05 R=2e-06 W=0 M=400000 N=300 seed=1,65973a53a3b5ee3c
+pillars49_s0.025.csv,300,800,s=0.025 H=5e-07 L=0.0004 a=4.9e-05 R=2e-06 W=0 M=400000 N=300 seed=1,309cc68ace35adef
+pillars49_s0.04.csv,300,800,s=0.04 H=5e-07 L=0.0004 a=4.9e-05 R=2e-06 W=0 M=400000 N=300 seed=1,6bca17b499db4f84
+retro20_s0.0158.csv,150,800,s=0.0158 H=5e-07 L=0.0004 a=4.9e-05 R=2e-06 W=9e-05 M=80000 N=150 seed=1 n_cos=1 f_spec=0 f_retro=0.2 lambda=0 p=0 T=573.15 m1=72.09 m2=28.0134 d12=4.825,cc827a61c1f620cf
+retro50_s0.0158.csv,150,800,s=0.0158 H=5e-07 L=0.0004 a=4.9e-05 R=2e-06 W=9e-05 M=80000 N=150 seed=1 n_cos=1 f_spec=0 f_retro=0.5 lambda=0 p=0 T=573.15 m1=72.09 m2=28.0134 d12=4.825,cb5b8f019521d3b9
+spec20_s0.0158.csv,150,800,s=0.0158 H=5e-07 L=0.0004 a=4.9e-05 R=2e-06 W=9e-05 M=80000 N=150 seed=1 n_cos=1 f_spec=0.2 f_retro=0 lambda=0 p=0 T=573.15 m1=72.09 m2=28.0134 d12=4.825,f437c68feb88d124
+spec50_s0.0158.csv,150,800,s=0.0158 H=5e-07 L=0.0004 a=4.9e-05 R=2e-06 W=9e-05 M=80000 N=150 seed=1 n_cos=1 f_spec=0.5 f_retro=0 lambda=0 p=0 T=573.15 m1=72.09 m2=28.0134 d12=4.825,b7b74f1e025b4b78
+v1a_gas300_s0.005.csv,200,400,s=0.005 H=5e-07 L=0.0002 a=2.8e-05 R=2e-06 W=9e-05 M=150000 N=200 seed=1 n_cos=1 f_spec=0 f_retro=0 lambda=0 p=300 T=573.15 m1=72.09 m2=28.0134 d12=4.825,d7ffa226b752adc5
+v1a_gas300_s0.008.csv,200,400,s=0.008 H=5e-07 L=0.0002 a=2.8e-05 R=2e-06 W=9e-05 M=150000 N=200 seed=1 n_cos=1 f_spec=0 f_retro=0 lambda=0 p=300 T=573.15 m1=72.09 m2=28.0134 d12=4.825,27ff4c460bb90e5e
+v1a_gas300_s0.0125.csv,200,400,s=0.0125 H=5e-07 L=0.0002 a=2.8e-05 R=2e-06 W=9e-05 M=150000 N=200 seed=1 n_cos=1 f_spec=0 f_retro=0 lambda=0 p=300 T=573.15 m1=72.09 m2=28.0134 d12=4.825,c60dd281a9753a09
+v1a_gas300_s0.02.csv,200,400,s=0.02 H=5e-07 L=0.0002 a=2.8e-05 R=2e-06 W=9e-05 M=150000 N=200 seed=1 n_cos=1 f_spec=0 f_retro=0 lambda=0 p=300 T=573.15 m1=72.09 m2=28.0134 d12=4.825,0d90813d64ef6b9b
+v1a_gas300_s0.03.csv,200,400,s=0.03 H=5e-07 L=0.0002 a=2.8e-05 R=2e-06 W=9e-05 M=150000 N=200 seed=1 n_cos=1 f_spec=0 f_retro=0 lambda=0 p=300 T=573.15 m1=72.09 m2=28.0134 d12=4.825,1f70bc5ebd74fbf5
+v2a_gas300_s0.005.csv,200,400,s=0.005 H=5e-07 L=0.0002 a=9.8e-05 R=2e-06 W=9e-05 M=150000 N=200 seed=1 n_cos=1 f_spec=0 f_retro=0 lambda=0 p=300 T=573.15 m1=72.09 m2=28.0134 d12=4.825,6741efb1163c7638
+v2a_gas300_s0.008.csv,198,400,s=0.008 H=5e-07 L=0.0002 a=9.8e-05 R=2e-06 W=9e-05 M=150000 N=200 seed=1 n_cos=1 f_spec=0 f_retro=0 lambda=0 p=300 T=573.15 m1=72.09 m2=28.0134 d12=4.825,082d44bfc31d93bd
+v2a_gas300_s0.0125.csv,200,400,s=0.0125 H=5e-07 L=0.0002 a=9.8e-05 R=2e-06 W=9e-05 M=150000 N=200 seed=1 n_cos=1 f_spec=0 f_retro=0 lambda=0 p=300 T=573.15 m1=72.09 m2=28.0134 d12=4.825,84b954b9878bbb10
+v2a_gas300_s0.03.csv,200,400,s=0.03 H=5e-07 L=0.0002 a=9.8e-05 R=2e-06 W=9e-05 M=150000 N=200 seed=1 n_cos=1 f_spec=0 f_retro=0 lambda=0 p=300 T=573.15 m1=72.09 m2=28.0134 d12=4.825,e7e487693347d23d
+walls90_pillars49_s0.004.csv,300,800,s=0.004 H=5e-07 L=0.0004 a=4.9e-05 R=2e-06 W=9e-05 M=400000 N=300 seed=1,5123de9f0fe66e7a
+walls90_pillars49_s0.0063.csv,300,800,s=0.0063 H=5e-07 L=0.0004 a=4.9e-05 R=2e-06 W=9e-05 M=400000 N=300 seed=1,8f8dc2af9918133c
+walls90_pillars49_s0.01.csv,300,800,s=0.01 H=5e-07 L=0.0004 a=4.9e-05 R=2e-06 W=9e-05 M=400000 N=300 seed=1,f8c2ef4f19f94b22
+walls90_pillars49_s0.0158.csv,300,800,s=0.0158 H=5e-07 L=0.0004 a=4.9e-05 R=2e-06 W=9e-05 M=400000 N=300 seed=1,5b928e4f3c7b3627
+walls90_pillars49_s0.025.csv,300,800,s=0.025 H=5e-07 L=0.0004 a=4.9e-05 R=2e-06 W=9e-05 M=400000 N=300 seed=1,7b2495ca04c8282a
+walls90_pillars49_s0.04.csv,300,800,s=0.04 H=5e-07 L=0.0004 a=4.9e-05 R=2e-06 W=9e-05 M=400000 N=300 seed=1,01219a117f246f28
+walls90_pillars49_s0.06.csv,200,800,s=0.06 H=5e-07 L=0.0004 a=4.9e-05 R=2e-06 W=9e-05 M=150000 N=200 seed=1 n_cos=1 f_spec=0 f_retro=0 lambda=0 p=0 T=573.15 m1=72.09 m2=28.0134 d12=4.825,be74c50b70f2345f
+walls90_s0.004.csv,300,800,s=0.004 H=5e-07 L=0.0004 a=0 R=2e-06 W=9e-05 M=400000 N=300 seed=1,f44326eb6e420261
+walls90_s0.0063.csv,300,800,s=0.0063 H=5e-07 L=0.0004 a=0 R=2e-06 W=9e-05 M=400000 N=300 seed=1,c048bd19ce1c3061
+walls90_s0.01.csv,300,800,s=0.01 H=5e-07 L=0.0004 a=0 R=2e-06 W=9e-05 M=400000 N=300 seed=1,d7408a33dfa578ea
+walls90_s0.0158.csv,300,800,s=0.0158 H=5e-07 L=0.0004 a=0 R=2e-06 W=9e-05 M=400000 N=300 seed=1,54436564b5ffb363
+walls90_s0.025.csv,300,800,s=0.025 H=5e-07 L=0.0004 a=0 R=2e-06 W=9e-05 M=400000 N=300 seed=1,9b2d8b77a4d72bff
+walls90_s0.04.csv,300,800,s=0.04 H=5e-07 L=0.0004 a=0 R=2e-06 W=9e-05 M=400000 N=300 seed=1,aef4bd5e3f9cc924

@@ -10,6 +10,17 @@ Cases (gap 0.5 um, cavity 400 um deep, pillar diameter 4 um, Yim 2020 ESI Table 
   walls90_pillars49   both: the nominal real cavity
   pillars28           densest layout v1a
   pillars10           10 um inter-distance (first-generation structures of Gao 2015; pillar diameter assumed 4 um)
+Wall-scattering variants, all on the nominal real cavity (walls90_pillars49); the law applies to every wall:
+  cos2, cos4, cos8    re-emission lobe cos^n about the wall normal (phenomenological, not a reciprocal law)
+  spec20, spec50      20 % / 50 % of non-sticking collisions specular (Maxwell)
+  retro20, retro50    20 % / 50 % reflected straight back along the incoming direction (rough-wall back-scattering)
+Carrier-gas collisions on the nominal real cavity (hard-sphere TMA-N2 collisions at 300 C; lib/pillarmc p=<Pa>):
+  gas100, gas300, gas1000, gas3000    total pressure 100 / 300 / 1000 / 3000 Pa (the Picosun R-150 runs were at about 300 Pa)
+Other structures of the published series, with carrier gas at the stated reactor pressure (GEO below):
+  h2000_gas300, h100_gas300     gap 2000 nm and 100 nm, layout v1b (Yim 2020 series C)
+  v1a_gas300, v2a_gas300        gap 500 nm, pillar inter-distance 28 um and 98 um (series A)
+  gao_gas150                    gap 500 nm, pillar pitch 10 um, about 150 Pa (Gao 2015: 1-2 mbar)
+  run [case ...] [s=0.0158,...] restricts the run to the named cases and sticking values.
 Raw frames go to figures/pillar_mc/ (not tracked); the summary is figures/pillar_mc_summary.json and pillar_mc_fits.csv.
 """
 import sys, subprocess, json, csv
@@ -18,16 +29,37 @@ import numpy as np, pandas as pd
 ROOT = Path(__file__).resolve().parents[2]; sys.path.insert(0, str(ROOT / "src"))
 EXE = ROOT / "lib/pillarmc/pillarmc"; OUT = ROOT / "figures/pillar_mc"; OUT.mkdir(exist_ok=True)
 CASES = {"ideal": (0, 2, 0), "pillars49": (49, 2, 0), "walls90": (0, 2, 90), "walls90_pillars49": (49, 2, 90), "pillars28": (28, 2, 0), "pillars10": (10, 2, 0)}
+# name: (n_cos, f_spec, f_retro, end-exposure multiplier); geometry is walls90_pillars49
+SCATTER = {"cos2": (2, 0, 0, 1.6), "cos4": (4, 0, 0, 2.6), "cos8": (8, 0, 0, 4.5), "spec20": (1, 0.2, 0, 1.0), "spec50": (1, 0.5, 0, 1.0), "retro20": (1, 0, 0.2, 1.8), "retro50": (1, 0, 0.5, 4.0)}
+GAS = {"gas100": (100, 1.1), "gas300": (300, 1.3), "gas1000": (1000, 1.7), "gas3000": (3000, 2.4)}   # name: (pressure Pa, end-exposure multiplier)
+for _k in list(SCATTER) + list(GAS): CASES[_k] = CASES["walls90_pillars49"]
+# name: gap um, pillar inter-distance um, pillar radius um, width um, pressure Pa, end-exposure multiplier (cavity depth 400 gaps)
+GEO = {"h2000_gas300": (2.0, 49, 2, 90, 300, 2.6), "h100_gas300": (0.1, 49, 2, 90, 300, 1.1), "v1a_gas300": (0.5, 28, 2, 90, 300, 1.5),
+       "v2a_gas300": (0.5, 98, 2, 90, 300, 1.3), "gao_gas150": (0.5, 10, 2, 90, 150, 2.8),
+       "h2000_free": (2.0, 49, 2, 90, 0, 2.6), "h100_free": (0.1, 49, 2, 90, 0, 1.0),
+       "arts_free": (0.5, 49, 2, 90, 0, 3.6), "arts_gas27": (0.5, 49, 2, 90, 27, 3.8)}   # Arts 2019: deep front (z50 = 486), 220 C; 27 Pa = 200 mTorr of Ar as an upper-range guess
+GEO_X = {"arts_free": (1200, ["T=493.15"]), "arts_gas27": (1200, ["T=493.15", "m2=39.948", "d12=4.66"])}   # cavity depth in gaps, extra options          # the same structures without carrier gas
+for _k, _v in GEO.items(): CASES[_k] = (_v[1], _v[2], _v[3])
 S_GRID = (0.004, 0.0063, 0.01, 0.0158, 0.025, 0.04)
 E_END, NSTEP, M, H, L = 6.0, 300, 400000, 0.5, 400
 def run():
     if not EXE.exists(): subprocess.check_call(["clang++", "-O3", "-std=c++17", "-o", str(EXE), str(ROOT / "lib/pillarmc/pillarmc.cpp")])
+    only = [v for v in sys.argv[2:] if "=" not in v]; sv = [v for v in sys.argv[2:] if v.startswith("s=")]
+    sgrid = tuple(float(x) for x in sv[0][2:].split(",")) if sv else S_GRID
+    kv = dict(v.split("=") for v in sys.argv[2:] if "=" in v); m_run, n_run = int(kv.get("M", M)), int(kv.get("N", NSTEP))   # M=, N= override the budget
     for name, (a, R, W) in CASES.items():
-        for s in S_GRID:
+        if only and name not in only: continue
+        nc, fs, fr, mult = SCATTER.get(name, (1, 0, 0, 2.5 if a and a <= 28 else 1.0))
+        extra = [str(nc), str(fs), str(fr)]
+        if name in GAS: mult = GAS[name][1]; extra = [f"p={GAS[name][0]}"]
+        h, l = (GEO[name][0], 400 * GEO[name][0]) if name in GEO else (H, L)
+        if name in GEO: mult = GEO[name][5]; extra = [f"p={GEO[name][4]}"]
+        if name in GEO_X: l = GEO_X[name][0] * h; extra = extra + GEO_X[name][1]
+        for s in sgrid:
             f = OUT / f"{name}_s{s:g}.csv"
             if f.exists(): continue
             # the hydraulic-like cases need more exposure for the same depth: give every run the same generous end exposure scaled by 1/s^0
-            subprocess.check_call([str(EXE), f"{s:g}", f"{E_END * (2.5 if a and a <= 28 else 1.0):g}", str(NSTEP), str(M), str(H), str(L), str(a), str(R), str(W), "1", "8", str(f)], stderr=subprocess.DEVNULL)
+            subprocess.check_call([str(EXE), f"{s:g}", f"{E_END * mult:g}", str(n_run), str(m_run), str(h), str(l), str(a), str(R), str(W), "1", "8", str(f)] + extra, stderr=subprocess.DEVNULL)
             print("done", f.name, flush=True)
 def load(f):
     d = np.loadtxt(f, delimiter=",", comments="#"); return d[:, 0], d[:, 1:]
@@ -64,7 +96,7 @@ def fit():
             if ok.sum() < 5 or np.nanmax(z50) < 215: continue
             e215 = float(np.interp(215, z50[ok], E[ok])); fr = front(z, at(E, TH, e215)); th = at(E, TH, e215)
             diag[f"{s:g}"] = dict(exposure_for_z50_215=round(e215, 3), A=round(s / fr[1] ** 2, 1), tail_at_z50_plus_60=round(float(np.interp(275, z, th)), 4), tail_at_z50_plus_100=round(float(np.interp(315, z, th)), 4))
-        summary["cases"][name] = dict(geometry=dict(a_um=CASES[name][0], R_um=CASES[name][1], W_um=CASES[name][2]), diagnostics=diag, fits={})
+        summary["cases"][name] = dict(geometry=dict(a_um=CASES[name][0], R_um=CASES[name][1], W_um=CASES[name][2]), scattering=dict(zip(("n_cos", "f_spec", "f_retro"), SCATTER.get(name, (1, 0, 0))[:3])), pressure_Pa=GAS.get(name, (0,))[0], diagnostics=diag, fits={})
         for ds in ("zenodo", "ylilammi_al2o3"):
             xg, yy = measured(ds); tab = []
             for s, E, TH in runs:
