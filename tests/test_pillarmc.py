@@ -83,3 +83,21 @@ def test_equilibrium_flux_is_uniform_with_and_without_gas(exe, tmp_path):
         subprocess.check_call([str(exe), "1e-5", "10", "4", "60000", "0.5", "20", "0", "2", "0", "1", "2", str(f), *extra], stderr=subprocess.DEVNULL)
         th = np.loadtxt(f, delimiter=",", comments="#")[-1, 1:]
         assert abs(th.mean() / expect - 1) < 0.03 and th.std() / th.mean() < 0.05
+
+
+def test_film_on_the_plates(exe, tmp_path):
+    # (1) a uniform 50 nm film in a 500 nm gap is a 400 nm gap: same half-coverage depth in micrometres at the same exposure
+    # (2) over a tapered film the equilibrium flux stays uniform (tilted-normal cosine law and the profile intersection are consistent)
+    def x50(name, H, *extra):
+        f = tmp_path / f"{name}.csv"
+        subprocess.check_call([str(exe), "0.02", "3.0", "30", "40000", str(H), "200", "0", "2", "0", "1", "2", str(f), *extra], stderr=subprocess.DEVNULL)
+        th = np.loadtxt(f, delimiter=",", comments="#")[-1, 1:]; i = int(np.argmax(th < 0.5)); return ((i - 0.5) + (th[i - 1] - 0.5) / (th[i - 1] - th[i])) * H
+    t = tmp_path / "t05.txt"; np.savetxt(t, np.full(400, 0.05))
+    assert abs(x50("film", 0.5, f"tfile={t}") / x50("bare400", 0.4) - 1) < 0.03
+    tp = tmp_path / "taper.txt"; np.savetxt(tp, 0.12 * np.exp(-(np.arange(40) + 0.5) / 15)); f = tmp_path / "eq.csv"
+    subprocess.check_call([str(exe), "1e-5", "10", "4", "60000", "0.5", "20", "0", "2", "0", "1", "2", str(f), f"tfile={tp}"], stderr=subprocess.DEVNULL)
+    th = np.loadtxt(f, delimiter=",", comments="#")[-1, 1:]
+    kB, amu, T = 1.380649e-23, 1.66053906660e-27, 573.15; expect = 1 - np.exp(-1e-5 / np.sqrt(2 * np.pi * 72.09 * amu * kB * T) * 10.0 / 4e18)
+    assert abs(th.mean() / expect - 1) < 0.03 and th.std() / th.mean() < 0.05
+    bad = tmp_path / "bad.txt"; np.savetxt(bad, np.zeros(7))
+    assert subprocess.run([str(exe), "0.02", "1", "2", "100", "0.5", "50", "0", "2", "0", "1", "1", str(tmp_path / "x.csv"), f"tfile={bad}"], stderr=subprocess.DEVNULL).returncode != 0

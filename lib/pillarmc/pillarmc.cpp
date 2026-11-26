@@ -27,7 +27,11 @@
 //   molecule in a light gas is kept. Walls re-emit (and the mouth admits) with the flux-weighted Maxwell speed at T.
 //   Defaults: T=573.15 K, m1=72.09 (TMA monomer), m2=28.0134 (N2), d12=4.825 A (TMA 5.91 A, N2 3.74 A; Ylilammi 2018).
 // usage: pillarmc s E_end_Pa_s N_steps M_per_step H_um L_um  a_um(0 = no pillars) R_um  W_um(0 = unbounded)  seed threads out.csv [n_cos f_spec f_retro lambda_um] [key=value ...]
-//   keys: ncos fspec fretro lambda(um) p(Pa) T(K) m1(amu) m2(amu) d12(Angstrom)
+//   keys: ncos fspec fretro lambda(um) p(Pa) T(K) m1(amu) m2(amu) d12(Angstrom) tfile(path)
+// Film already on the plates (channel narrowing): tfile=<path> gives one film thickness in um per x-bin (bin = one initial gap
+//   height H); the lower plate surface is then z = t(x) and the upper z = H - t(x), linear between bin centres, with the cosine
+//   law about the local (slightly tilted) normal. The mouth admits molecules over its open height H - 2 t(0). Pillars keep
+//   their radius. Used by docs/paper/multicycle_mc.py to follow hundreds of cycles in groups.
 // output: one row per step: exposure_Pa_s, then the plate coverage per x-bin (bin width = H).
 #include <cmath>
 #include <cstdio>
@@ -49,6 +53,23 @@ static double NCOS = 1.0, FSPEC = 0.0, FRETRO = 0.0, LAMBDA = 0.0;
 static double PGAS = 0.0, TEMP = 573.15, M1 = 72.09, M2 = 28.0134, D12 = 4.825;       // Pa, K, amu, amu, Angstrom
 static double C1 = 0, C2 = 0, NSIGMA = 0;                                               // most probable speeds (m/s), n*sigma (1/m)
 static const double KB = 1.380649e-23, AMU = 1.66053906660e-27;
+static std::vector<double> TF;                                                        // film thickness per bin (m); empty = bare plates
+// first hit of the ray p + u t on the film-covered plates within tlim; top = which plate, slope = d t_film / dx there
+static inline double plate_hit(double H, const double p[3], const double u[3], double tlim, bool &top, double &slope) {
+  const int n = (int)TF.size(); const double dx = H; double tau0 = 0; int j = (int)std::floor(p[0] / dx - 0.5);
+  for (int it = 0; it < 6000; it++) {
+    if (j < -1) j = -1; if (j > n - 1) j = n - 1;
+    const bool flat = (j < 0 || j >= n - 1); const double xa = j < 0 ? -1e300 : (j + 0.5) * dx, xb = j >= n - 1 ? 1e300 : (j + 1.5) * dx;
+    const double Tj = TF[std::max(0, std::min(n - 1, j))], m = flat ? 0.0 : (TF[j + 1] - TF[j]) / dx, xr = flat ? p[0] : (j + 0.5) * dx;
+    double te = 1e300; if (u[0] > 1e-300) te = (xb - p[0]) / u[0]; else if (u[0] < -1e-300) te = (xa - p[0]) / u[0];
+    double best = 1e300; bool bt = false; const double dl = u[2] - m * u[0], du = u[2] + m * u[0];
+    if (dl < 0) { double t = (Tj + m * (p[0] - xr) - p[2]) / dl; if (t >= tau0 - 1e-14 && t <= te) { best = t; bt = false; } }
+    if (du > 0) { double t = (H - Tj - m * (p[0] - xr) - p[2]) / du; if (t >= tau0 - 1e-14 && t <= te && t < best) { best = t; bt = true; } }
+    if (best < 1e299) { top = bt; slope = m; return best > 0 ? best : 0.0; }
+    if (te >= tlim || te > 1e299) return 1e300;
+    tau0 = te; j += u[0] > 0 ? 1 : -1; }
+  return 1e300; }
+static inline double filmAt(double H, double x) { const int n = (int)TF.size(); double q = x / H - 0.5; if (q <= 0) return TF[0]; if (q >= n - 1) return TF[n - 1]; int j = (int)q; return TF[j] + (TF[j + 1] - TF[j]) * (q - j); }
 static inline double gauss(Rng &g) { double a = std::sqrt(-2 * std::log(1.0 - g.u())); return a * std::cos(2 * PI * g.u()); }
 // speed of a molecule leaving a wall or entering through the mouth: flux-weighted Maxwellian, pdf ~ v^3 exp(-v^2/c^2)
 static inline double fluxspeed(Rng &g, double c) { return c * std::sqrt(-std::log((1.0 - g.u()) * (1.0 - g.u()))); }
@@ -103,11 +124,12 @@ static void worker(const Geo &G, double s, long M, uint64_t seed, const std::vec
   Rng g(seed); int nb = (int)thP.size(); double dxb = G.H; thEnd_hits = 0;
   static const double nxp[3] = {1, 0, 0}, ey[3] = {0, 1, 0}, ez[3] = {0, 0, 1}, nxm[3] = {-1, 0, 0}, nzp[3] = {0, 0, 1}, nzm[3] = {0, 0, -1}, ex[3] = {1, 0, 0}, nyp[3] = {0, 1, 0}, nym[3] = {0, -1, 0};
   for (long m = 0; m < M; m++) {
-    double p[3] = {0, ymouth * g.u(), G.H * g.u()}, u[3]; cosdir(g, nxp, ey, ez, u); double v = PGAS > 0 ? fluxspeed(g, C1) : 0;
+    const bool film = !TF.empty(); double p[3] = {0, ymouth * g.u(), film ? TF[0] + (G.H - 2 * TF[0]) * g.u() : G.H * g.u()}, u[3]; cosdir(g, nxp, ey, ez, u); double v = PGAS > 0 ? fluxspeed(g, C1) : 0;
     for (long bounce = 0; bounce < 200000000L; bounce++) {
-      double tz = u[2] > 0 ? (G.H - p[2]) / u[2] : (u[2] < 0 ? -p[2] / u[2] : INF);
       double tx0 = u[0] < 0 ? -p[0] / u[0] : INF, txL = u[0] > 0 ? (G.L - p[0]) / u[0] : INF;
       double ty = INF; if (G.walls) ty = u[1] > 0 ? (G.W - p[1]) / u[1] : (u[1] < 0 ? -p[1] / u[1] : INF);
+      bool ptop = false; double pm = 0;
+      double tz = film ? plate_hit(G.H, p, u, std::min(std::min(tx0, txL), ty), ptop, pm) : (u[2] > 0 ? (G.H - p[2]) / u[2] : (u[2] < 0 ? -p[2] / u[2] : INF));
       double tmax = std::min(std::min(tz, tx0), std::min(txL, ty));
       double cx = 0, cy = 0; int row = -1; double tp = pillar_hit(G, p[0], p[1], u, tmax, cx, cy, row);
       int surf; double t;                                   // 0 plate, 1 mouth, 2 end wall, 3 side wall, 4 pillar
@@ -125,7 +147,10 @@ static void worker(const Geo &G, double s, long M, uint64_t seed, const std::vec
       else if (surf == 4) { theta = thPil[row]; T.pil[row] += 1; }
       else { theta = 1.0; thEnd_hits += 1; }                 // end wall: inert
       if (g.u() < s * (1 - theta)) break;                    // stuck
-      if (surf == 0) { if (p[2] > 0.5 * G.H) { p[2] = G.H; reemit(g, nzm, ex, ey, u, v); } else { p[2] = 0; reemit(g, nzp, ex, ey, u, v); } }
+      if (surf == 0 && film) { const double tf = filmAt(G.H, p[0]), nn = 1.0 / std::sqrt(1 + pm * pm);
+        if (ptop) { p[2] = G.H - tf - 1e-10 * G.H; const double n[3] = {-pm * nn, 0, -nn}, t2[3] = {nn, 0, -pm * nn}; reemit(g, n, ey, t2, u, v); }
+        else { p[2] = tf + 1e-10 * G.H; const double n[3] = {-pm * nn, 0, nn}, t2[3] = {nn, 0, pm * nn}; reemit(g, n, ey, t2, u, v); } }
+      else if (surf == 0) { if (p[2] > 0.5 * G.H) { p[2] = G.H; reemit(g, nzm, ex, ey, u, v); } else { p[2] = 0; reemit(g, nzp, ex, ey, u, v); } }
       else if (surf == 2) { p[0] = G.L; reemit(g, nxm, ey, ez, u, v); }
       else if (surf == 3) { if (p[1] > 0.5 * G.W) { p[1] = G.W; reemit(g, nym, ex, ez, u, v); } else { p[1] = 0; reemit(g, nyp, ex, ez, u, v); } }
       else { double n[3] = {(p[0] - cx) / G.R, (p[1] - cy) / G.R, 0}, t1[3] = {-n[1], n[0], 0}; p[0] = cx + n[0] * G.R * (1 + 1e-12); p[1] = cy + n[1] * G.R * (1 + 1e-12); reemit(g, n, t1, ez, u, v); }
@@ -153,12 +178,14 @@ int main(int argc, char **argv) {
   { double *pos[4] = {&NCOS, &FSPEC, &FRETRO, &LAMBDA}; const char *keys[9] = {"ncos", "fspec", "fretro", "lambda", "p", "T", "m1", "m2", "d12"}; double *val[9] = {&NCOS, &FSPEC, &FRETRO, &LAMBDA, &PGAS, &TEMP, &M1, &M2, &D12}; int np = 0;
     for (int i = 13; i < argc; i++) { std::string a(argv[i]); size_t e = a.find('=');
       if (e == std::string::npos) { if (np < 4) *pos[np++] = atof(argv[i]); continue; }
+      if (a.substr(0, e) == "tfile") { FILE *tf = std::fopen(a.c_str() + e + 1, "r"); if (!tf) { std::fprintf(stderr, "cannot read %s\n", a.c_str() + e + 1); return 2; } double x; while (std::fscanf(tf, "%lf", &x) == 1) TF.push_back(x * 1e-6); std::fclose(tf); continue; }
       bool ok = false; for (int k = 0; k < 9; k++) if (a.substr(0, e) == keys[k]) { *val[k] = atof(a.c_str() + e + 1); ok = true; }
       if (!ok) { std::fprintf(stderr, "unknown option %s\n", argv[i]); return 2; } }
     LAMBDA *= 1e-6; C1 = std::sqrt(2 * KB * TEMP / (M1 * AMU)); C2 = std::sqrt(2 * KB * TEMP / (M2 * AMU)); NSIGMA = PGAS / (KB * TEMP) * PI * D12 * D12 * 1e-20; }
   G.pillars = G.a > 0; G.walls = G.W > 0; G.rowdx = G.a * std::sqrt(3.0) / 2; G.x1 = G.rowdx; G.nrows = G.pillars ? (int)std::floor((G.L - G.x1) / G.rowdx) + 1 : 0;
   const double N0 = 4e18, J1 = 1.0 / std::sqrt(2 * PI * M1 * AMU * KB * TEMP);   // molecules / m2 / s / Pa
   int nb = (int)std::llround(G.L / G.H); std::vector<double> thP(nb, 0), thW(nb, 0), thPil(std::max(1, G.nrows), 0);
+  if (!TF.empty() && (int)TF.size() != nb) { std::fprintf(stderr, "tfile has %d values, the cavity has %d bins\n", (int)TF.size(), nb); return 2; }
   double Wy = G.walls ? G.W : (G.pillars ? G.a : G.H);        // mouth width represented by the launched particles
   double Aplate = 2 * G.H * Wy, Awall = 2 * G.H * G.H;         // per x-bin: both plates; both side walls
   double npil_per_row = G.pillars ? (G.walls ? std::floor(G.W / G.a) : 1.0) : 0, Apil = npil_per_row * 2 * PI * G.R * G.H;
@@ -167,7 +194,7 @@ int main(int argc, char **argv) {
   double Eprev = 0;
   for (int k = 1; k <= N; k++) {
     double E = Eend * (double(k) / N) * (double(k) / N), dE = E - Eprev; Eprev = E;
-    double w = J1 * dE * G.H * Wy / double(M);                // real molecules per test particle
+    double w = J1 * dE * (TF.empty() ? G.H : G.H - 2 * TF[0]) * Wy / double(M);                // real molecules per test particle
     std::vector<Tally> T(nt); std::vector<double> endh(nt, 0); std::vector<std::thread> th;
     for (int i = 0; i < nt; i++) { T[i].plate.assign(nb, 0); T[i].wall.assign(nb, 0); T[i].pil.assign(thPil.size(), 0);
       th.emplace_back(worker, std::cref(G), s, M / nt, seed * 1000003ULL + (uint64_t)k * 7919ULL + i, std::cref(thP), std::cref(thW), std::cref(thPil), std::ref(endh[i]), std::ref(T[i]), Wy); }

@@ -73,3 +73,4 @@ figures/ballistic_frames/
 figures/pillar_mc/
 lib/pillarmc/pillarmc
 figures/mechanism_hydraulic_kernel*.npz
+figures/pillar_mc_multicycle/
