@@ -1,0 +1,5 @@
+dataset,cycles,fill,klabbers_s0,klabbers_pm,this_work_hydraulic_no_narrowing,this_work_hydraulic_narrowing_spot,gas_narrowing_spot,measured_over_ceiling_hydraulic,method
+Ylilammi 2018 Fig. 6,500,0.208,0.0036,0.0006,0.00384,0.00845,0.0152,,full-profile fit
+Zenodo 3974438 (Yim 2020 sample 8),500,0.204,0.0054,0.0008,0.0053,0.00915,0.0175,,full-profile fit
+Haimi 2021 specimen A (EDS),1080,0.432,0.0022,0.0002,< 0.0025,none: measured slope above the model ceiling,none: above ceiling,1.22,front slope at the measured depth
+Arts 2019 TMA-limited,400,0.184,0.0012,0.0002,< 0.0025,< 0.0025,0.00263,0.79,front slope at the measured depth
