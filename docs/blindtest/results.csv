@@ -1,0 +1,41 @@
+id,kind,n_points,n_in_band,z50_measured,z50_input,slope_measured,slope_pred,pass_lo,pass_hi,result,measured_over_pred,measured_over_narrowing_limit,r80_measured,r80_pred,r20_measured,r20_pred
+gao2015_fig5b_TiO2_110C_gap200nm,ceiling,23.0,2.0,84.0,89.0,0.00839,0.00606,0.0051,0.00719,fail,1.384,1.37,0.578,0.444,1.35,1.556
+gao2015_fig5b_TiO2_110C_gap500nm,ceiling,49.0,4.0,139.4,140.8,0.01747,0.01316,0.00958,0.01562,fail,1.328,1.264,0.789,0.838,1.124,1.162
+gao2015_fig5b_TiO2_110C_gap1000nm,range,78.0,4.0,112.5,118.1,0.04244,0.03604,0.01182,0.04276,pass,1.178,1.085,0.816,0.927,1.105,1.075
+elam2003_fig6a_ZnO_d19nm_5s,ceiling,26.0,1.0,214.0,209.5,,0.00476,0.00377,0.00591,no slope,,,0.424,0.694,1.408,1.306
+elam2003_fig6a_ZnO_d46nm_5s,ceiling,25.0,2.0,221.1,217.6,0.0102,0.00883,0.0063,0.01098,pass,1.155,1.095,0.793,0.829,1.231,1.172
+elam2003_fig6a_ZnO_d65nm_5s,ceiling,26.0,5.0,261.1,256.2,0.00367,0.00751,0.00582,0.00933,fail,0.489,0.466,0.655,0.843,1.427,1.158
+elam2003_fig5a_ZnO_d65nm_exposure1s,ceiling,25.0,3.0,88.3,89.7,0.0066,0.01594,0.00949,0.01982,fail,0.414,0.293,0.411,0.77,1.572,1.229
+elam2003_fig5a_ZnO_d65nm_exposure3s,ceiling,26.0,3.0,149.7,149.5,0.00627,0.01268,0.00817,0.01576,fail,0.494,0.464,0.191,0.826,1.407,1.176
+elam2003_fig5a_ZnO_d65nm_exposure10s,ceiling,24.0,6.0,290.6,283.7,0.00344,0.00678,0.00534,0.00843,fail,0.508,0.483,0.718,0.844,,1.157
+arts2019_fig3a_Al2O3_H2Olim_Tset150C,bound,633.0,108.0,1067.4,1067.6,0.00116,,0.0,0.00575,pass,,0.25,0.606,,1.176,
+arts2019_fig3a_Al2O3_H2Olim_Tset275C,bound,620.0,52.0,1092.5,1092.2,0.0027,,0.0,0.00562,pass,,0.597,0.855,,1.098,
+arts2019_fig3a_Al2O3_H2Olim_Tset400C,bound,660.0,45.0,1198.0,1198.6,0.0032,,0.0,0.00512,pass,,0.777,0.893,,1.072,
+gonsalves2026_fig2_ZnO_DEZ_H2O_200C_left,transfer,419.0,4.0,290.7,290.4,0.03832,0.01318,0.01111,0.02259,fail,2.907,1.191,0.956,0.92,1.031,1.096
+gonsalves2026_fig2_ZnO_DEZ_H2O_200C_right,transfer,414.0,5.0,288.4,288.4,0.03477,0.01315,0.01108,0.02269,fail,2.644,1.073,0.957,0.919,1.032,1.097
+gonsalves2026_fig2_ZnO_DEZ_H2O_175C_left,transfer,422.0,6.0,300.3,300.2,0.02147,0.01295,0.01091,0.02176,pass,1.658,0.776,0.945,0.921,1.054,1.094
+gonsalves2026_fig2_ZnO_DEZ_H2O_175C_right,transfer,422.0,7.0,295.8,295.8,0.02107,0.013,0.01096,0.02197,pass,1.621,0.751,0.942,0.921,1.052,1.095
+gonsalves2026_fig2_ZnO_DEZ_H2O_150C_left,transfer,428.0,17.0,338.1,337.8,0.00802,0.01262,0.01063,0.02057,fail,0.636,0.342,0.746,0.928,1.108,1.085
+gonsalves2026_fig2_ZnO_DEZ_H2O_150C_right,transfer,411.0,18.0,257.9,258.2,0.00897,0.01319,0.01112,0.02272,fail,0.68,0.293,0.689,0.911,1.156,1.107
+haimi2026_fig5_ZnO_sampleA_125C_125cyc,transfer,376.0,42.0,736.2,738.0,0.00195,0.01029,0.00828,0.01279,fail,0.19,0.15,0.621,0.958,1.113,1.045
+haimi2026_fig5_ZnO_sampleC_250C_125cyc,transfer,379.0,5.0,722.2,722.0,0.02137,0.01176,0.00946,0.01691,fail,1.817,1.172,0.977,0.963,1.025,1.042
+haimi2026_fig6_ZnO_sampleD_125C_56cyc_DEZ1s,transfer,389.0,104.0,737.9,742.0,0.00093,0.01312,0.01056,0.02012,fail,0.071,0.024,0.421,0.969,1.265,1.038
+haimi2026_fig6_ZnO_sampleE_125C_56cyc_DEZ0.5s,transfer,372.0,53.0,566.1,566.0,0.00154,0.01325,0.01066,0.02548,fail,0.116,0.027,0.509,0.96,1.159,1.049
+gonsalves2026_fig2_ZnO_MeOH_DEZ_H2O_150C_left,range,446.0,24.0,441.5,440.8,0.0062,0.01315,0.01108,0.04545,fail,0.472,0.145,0.773,0.948,1.095,1.063
+gonsalves2026_fig2_ZnO_MeOH_DEZ_H2O_150C_right,range,447.0,28.0,429.8,428.8,0.00546,0.01319,0.01112,0.04639,fail,0.414,0.124,0.79,0.946,1.11,1.065
+gonsalves2026_fig2_ZnO_MeOH_DEZ_H2O_175C_left,range,439.0,18.0,429.3,429.2,0.00723,0.01325,0.01117,0.04771,fail,0.545,0.158,0.866,0.946,1.083,1.065
+gonsalves2026_fig2_ZnO_MeOH_DEZ_H2O_175C_right,range,438.0,18.0,429.1,429.8,0.00843,0.01323,0.01115,0.04762,fail,0.637,0.184,0.875,0.947,1.084,1.065
+gonsalves2026_fig2_ZnO_MeOH_DEZ_H2O_200C_left,range,449.0,19.0,437.1,438.4,0.0076,0.01325,0.01117,0.04841,fail,0.573,0.164,0.849,0.948,1.073,1.063
+gonsalves2026_fig2_ZnO_MeOH_DEZ_H2O_200C_right,range,449.0,20.0,480.3,479.4,0.00729,0.01318,0.01111,0.04509,fail,0.553,0.172,0.867,0.952,1.056,1.058
+dendooven2009_fig5_Al2O3_200C_AR100,excluded in advance,,,,,,,,,not scored,,,,,,
+dendooven2009_fig5_Al2O3_200C_AR50,excluded in advance,,,,,,,,,not scored,,,,,,
+dendooven2009_fig5_Al2O3_200C_AR33,excluded in advance,,,,,,,,,not scored,,,,,,
+dendooven2010_fig2a_Al2O3_thermal_200C_AR22,excluded in advance,,,,,,,,,not scored,,,,,,
+dendooven2010_fig2a_Al2O3_thermal_200C_AR50,excluded in advance,,,,,,,,,not scored,,,,,,
+haimi2026_fig5_ZnO_sampleB_200C_125cyc,excluded in advance,,,,,,,,,not scored,,,,,,
+rose2009_fig3_TiO2_TDMAT_O3_180C,excluded in advance,,,,,,,,,not scored,,,,,,
+rose2010_fig1a_HfO2_TEMAHf_O3_180C,excluded in advance,,,,,,,,,not scored,,,,,,
+rose2010_fig1b_HfO2_TEMAHf_O3_230C,excluded in advance,,,,,,,,,not scored,,,,,,
+rose2010_fig1c_HfO2_TEMAHf_O3_270C,excluded in advance,,,,,,,,,not scored,,,,,,
+rose2010_fig3_TiO2_CpTiOMe3_O3_270C,excluded in advance,,,,,,,,,not scored,,,,,,
+elam2003_fig5a_ZnO_d65nm_exposure30s,excluded in advance,,,,,,,,,not scored,,,,,,
