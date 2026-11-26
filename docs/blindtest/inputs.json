@@ -1,0 +1,3281 @@
+{
+ "description": "Blind-test inputs released by the custodian. Inputs only (protocol docs/blindtest/PROTOCOL.md): no slopes, front widths, profile points or shapes. Curves are sealed outside this repository.",
+ "generated": "2026-11-26",
+ "n_curves": 40,
+ "sources": [
+  {
+   "source_no": 1,
+   "source": "F. Gao, S. Arpiainen, R. L. Puurunen, J. Vac. Sci. Technol. A 33, 010601 (2015), doi:10.1116/1.4903941",
+   "predictor_prior_knowledge": "predictor has read that the 200 nm gap \"got almost fully closed\" and the film is about 100 nm after 2000 cycles",
+   "measured_profile_figures": [
+    "Fig. 5(a) Al2O3 300 C, 500 nm gap (NOT digitised here: already used)",
+    "Fig. 5(b) TiO2 110 C, gaps 200/500/1000 nm (digitised, 3 curves)"
+   ]
+  },
+  {
+   "source_no": 2,
+   "source": "K. Arts, V. Vandalon, R. L. Puurunen, M. Utriainen, F. Gao, W. M. M. Kessels, H. C. M. Knoops, J. Vac. Sci. Technol. A 37, 030908 (2019), doi:10.1116/1.5093620",
+   "predictor_prior_knowledge": "predictor knows the doses in mTorr s and that the paper says narrowing is negligible, and has digitised Fig. 2",
+   "measured_profile_figures": [
+    "Fig. 2 (NOT used here: already used)",
+    "Fig. 3(a) H2O-limited Al2O3 at set temperatures 150, 275, 400 C (digitised, 3 curves)"
+   ]
+  },
+  {
+   "source_no": 3,
+   "source": "C. Gonsalves, J. A. Velasco, A. Othman, V. Miikkulainen, R. L. Puurunen, \"Enhancing Conformality in Atomic Layer Deposition through Low Growth Per Cycle\", arXiv:2609.12460v1 (11 Sep 2026), doi:10.48550/arXiv.2609.12460",
+   "predictor_prior_knowledge": "predictor has seen two tabulated PD50/H values (288 and 454 at 200 C) and filled fractions about 0.11 and 0.05",
+   "measured_profile_figures": [
+    "Fig. 2(d),(e),(f): as-measured SEM-EDS Zn line scans at 150, 175, 200 C, with and without methanol inhibitor; each scan covers both mirrored channels (digitised, 12 half-profiles)",
+    "Fig. S10 (Type-I normalised profiles) and Tables S11, S13, S14 are in the ESI, which is not part of the arXiv PDF: not digitised"
+   ],
+   "tabulated_conditions_table1": {
+    "150C": {
+     "chamber_pressure_Pa": 92,
+     "ellipsometry_thickness_nm": {
+      "DEZ_H2O": 29.7,
+      "MeOH_DEZ_H2O": 12.9
+     },
+     "GPC_nm_per_cycle": {
+      "DEZ_H2O": 0.165,
+      "MeOH_DEZ_H2O": 0.072
+     },
+     "XRR_density_g_cm3": {
+      "DEZ_H2O": 5.3,
+      "MeOH_DEZ_H2O": 5.3
+     },
+     "PD50_x_over_H_authors_mean_of_six_scans": {
+      "DEZ_H2O": "297 +/- 4",
+      "MeOH_DEZ_H2O": "430 +/- 3"
+     },
+     "q0_zone_IIb_per_nm2": {
+      "DEZ_H2O": 6.6,
+      "MeOH_DEZ_H2O": 3.3
+     },
+     "Kn_authors": 36.0
+    },
+    "175C": {
+     "chamber_pressure_Pa": 90,
+     "ellipsometry_thickness_nm": {
+      "DEZ_H2O": 28.4,
+      "MeOH_DEZ_H2O": 12.4
+     },
+     "GPC_nm_per_cycle": {
+      "DEZ_H2O": 0.158,
+      "MeOH_DEZ_H2O": 0.069
+     },
+     "XRR_density_g_cm3": {
+      "DEZ_H2O": 5.2,
+      "MeOH_DEZ_H2O": 5.3
+     },
+     "PD50_x_over_H_authors_mean_of_six_scans": {
+      "DEZ_H2O": "298 +/- 2",
+      "MeOH_DEZ_H2O": "428 +/- 2"
+     },
+     "q0_zone_IIb_per_nm2": {
+      "DEZ_H2O": 6.2,
+      "MeOH_DEZ_H2O": 3.3
+     },
+     "Kn_authors": 36.4
+    },
+    "200C": {
+     "chamber_pressure_Pa": 86,
+     "ellipsometry_thickness_nm": {
+      "DEZ_H2O": 25.4,
+      "MeOH_DEZ_H2O": 12.0
+     },
+     "GPC_nm_per_cycle": {
+      "DEZ_H2O": 0.141,
+      "MeOH_DEZ_H2O": 0.067
+     },
+     "XRR_density_g_cm3": {
+      "DEZ_H2O": 5.0,
+      "MeOH_DEZ_H2O": 5.4
+     },
+     "PD50_x_over_H_authors_mean_of_six_scans": {
+      "DEZ_H2O": "288 +/- 1",
+      "MeOH_DEZ_H2O": "454 +/- 5"
+     },
+     "q0_zone_IIb_per_nm2": {
+      "DEZ_H2O": 5.5,
+      "MeOH_DEZ_H2O": 3.1
+     },
+     "Kn_authors": 37.2
+    }
+   }
+  },
+  {
+   "source_no": 4,
+   "source": "J. Dendooven, D. Deduytsche, J. Musschoot, R. L. Vanmeirhaeghe, C. Detavernier, J. Electrochem. Soc. 156, P63 (2009), doi:10.1149/1.3072694",
+   "predictor_prior_knowledge": "predictor knows the stated conditions and that the authors used s = 0.1",
+   "measured_profile_figures": [
+    "Fig. 5: relative thickness vs depth, AR 33, 50, 100 (digitised, 3 curves); all other profile figures in the paper (Figs. 3, 6) are simulations"
+   ]
+  },
+  {
+   "source_no": 4,
+   "source": "J. Dendooven, D. Deduytsche, J. Musschoot, R. L. Vanmeirhaeghe, C. Detavernier, J. Electrochem. Soc. 157, G111 (2010), doi:10.1149/1.3301664",
+   "predictor_prior_knowledge": "predictor knows the stated conditions and that the authors used s = 0.1",
+   "measured_profile_figures": [
+    "Fig. 2(a) thermal TMA/H2O, AR ~22 and ~50 (digitised, 2 curves)",
+    "Fig. 2(b), 3, 4(b), 5, 6(a), 9(a), 10: plasma-enhanced ALD profiles (Al2O3, AlN), outside the request, not digitised"
+   ]
+  },
+  {
+   "source_no": 5,
+   "source": "E. Haimi, A. Philip, J. A. Velasco, F. Gao, M. Karppinen, R. L. Puurunen, J. Vac. Sci. Technol. A 44, 022410 (2026), doi:10.1116/6.0004982 (accepted manuscript)",
+   "predictor_prior_knowledge": "predictor has read the text and one sample's depth and fitted c; predictor has read this paper's text",
+   "measured_profile_figures": [
+    "Fig. 3: Zn, O, Si X-ray line intensity profiles, sample B (200 C) (listed, not digitised: same scan as Fig. 5 before conversion to thickness)",
+    "Fig. 5: thickness profiles, samples A (125 C), B (200 C), C (250 C), 125 cycles (digitised, 3 curves)",
+    "Fig. 6: thickness profiles, samples D and E (125 C, 56 cycles, DEZ pulse 1 s and 0.5 s) (digitised, 2 curves)",
+    "Fig. 8(a),(b): samples A and B again, overlaid with simulations (listed, not digitised: duplicates of Fig. 5)",
+    "Figs. 2 and 7: Zn X-ray maps of samples B and C (not line profiles)"
+   ]
+  },
+  {
+   "source_no": 6,
+   "source": "M. Rose, J. W. Bartha, Appl. Surf. Sci. 255, 6620 (2009), doi:10.1016/j.apsusc.2009.02.055",
+   "predictor_prior_knowledge": "predictor has summaries of the text only",
+   "measured_profile_figures": [
+    "Fig. 3: TiO2 (TDMAT/O3, 180 C) wall thickness vs depth in a cylindrical hole, 4 TEM points (digitised, 1 curve)",
+    "Fig. 2: SEM/TEM micrographs (no profile)"
+   ]
+  },
+  {
+   "source_no": 6,
+   "source": "M. Rose, J. W. Bartha, I. Endler, Appl. Surf. Sci. 256, 3778 (2010), doi:10.1016/j.apsusc.2010.01.025",
+   "predictor_prior_knowledge": "predictor has summaries of the text only",
+   "measured_profile_figures": [
+    "Fig. 1(a),(b),(c): HfO2 (TEMAHf/O3) at 180, 230, 270 C, 4 TEM points each (digitised, 3 curves)",
+    "Fig. 3: TiO2 (Cp*Ti(OMe)3/O3) at 270 C, 4 TEM points (digitised, 1 curve)"
+   ]
+  },
+  {
+   "source_no": 7,
+   "source": "J. W. Elam, D. Routkevitch, P. P. Mardilovich, S. M. George, Chem. Mater. 15, 3507 (2003), doi:10.1021/cm0303080",
+   "predictor_prior_knowledge": "predictor has summaries of the text only",
+   "measured_profile_figures": [
+    "Fig. 5(a): relative ZnO coverage (EPMA line scans) vs distance, d = 65 nm, exposure times 1, 3, 10, 30 s, 64 cycles (digitised, 4 curves)",
+    "Fig. 6(a): relative ZnO coverage vs distance, pore diameters 19, 46, 65 nm with 19, 45, 64 cycles, 5 s exposures (digitised, 3 curves)",
+    "Al2O3: no measured thickness-vs-depth profile (Fig. 3 is SEM images at top/middle/bottom only); Fig. 7 is a Zn EPMA map for the L/d ~5000 membrane; Figs. 9-11 are simulations",
+    "Fig. 8: FTIR hydroxyl loss vs exposure time (not a depth profile)"
+   ]
+  }
+ ],
+ "curves": [
+  {
+   "id": "gao2015_fig5b_TiO2_110C_gap200nm",
+   "source": "F. Gao, S. Arpiainen, R. L. Puurunen, J. Vac. Sci. Technol. A 33, 010601 (2015), doi:10.1116/1.4903941",
+   "figure_label": "Fig. 5(b)",
+   "material": "TiO2",
+   "precursors": "TiCl4 / H2O",
+   "limiting_reactant": "not stated",
+   "temperature_C": 110,
+   "reactor": "Picosun R-150",
+   "pressure_Pa": {
+    "value": [
+     100,
+     200
+    ],
+    "note": "\"typical pressure range in the reactor was 1-2 mbar\" (Sec. II, p. 010601-2)"
+   },
+   "carrier_gas": {
+    "value": "N2",
+    "note": "Sec. II, p. 010601-2"
+   },
+   "gap_nm": {
+    "nominal": 200,
+    "measured": null,
+    "note": "gap set by thermal-oxide thickness (Sec. II); no measured value given"
+   },
+   "channel_length_um": {
+    "value": null,
+    "note": "not stated for Fig. 5(b); chip offers cavity lengths 20-5000 um (abstract, Fig. 1)"
+   },
+   "cycles": 2000,
+   "plateau_thickness_nm": {
+    "value": 95.7,
+    "error": 1.8,
+    "definition": "custodian reading: mean of the reflectometer scan points at 0-4 um from the cavity opening",
+    "paper_target_nm": 100
+   },
+   "growth_per_cycle_nm": {
+    "value": null,
+    "note": "not stated; target 100 nm in 2000 cycles (Fig. 5 caption)"
+   },
+   "pulse_purge_s": {
+    "value": "0.1 TiCl4 / 4 purge / 0.1 H2O / 4 purge",
+    "note": "\"typical pulsing sequence\" (Sec. II); not stated specifically for this run"
+   },
+   "measurement": {
+    "method": "small-spot reflectometer (FilmTek 2000M) line scan on the cavity floor after membrane removal",
+    "spot_um": 5,
+    "scan_step_um": 2.0,
+    "note": "spot about 5 x 5 um2 (Sec. II, p. 010601-3); scan step read from the figure"
+   },
+   "x50_um": {
+    "value": 17.8,
+    "error": 1.0,
+    "definition": "depth where thickness = 0.5 x plateau_thickness_nm, linear interpolation between scan points; x axis of the figure is aspect ratio, converted with the nominal gap"
+   },
+   "digitisation_error": {
+    "x_um": 0.02,
+    "y_fraction_of_plateau": 0.002,
+    "method": "vector marker centres from the PDF"
+   },
+   "series": {
+    "name": "gao2015_fig5b_gap_series",
+    "members": [
+     "gao2015_fig5b_TiO2_110C_gap200nm",
+     "gao2015_fig5b_TiO2_110C_gap500nm",
+     "gao2015_fig5b_TiO2_110C_gap1000nm"
+    ],
+    "varied": "gap height (200, 500, 1000 nm) at fixed TiO2 process"
+   },
+   "same_run": {
+    "value": "not stated",
+    "note": "Sec. III.B (p. 010601-4) describes the three gap heights for one TiO2 process at 110 C but does not say whether the chips were coated in one run"
+   },
+   "predictor_prior_knowledge": "predictor has read that the 200 nm gap \"got almost fully closed\" and the film is about 100 nm after 2000 cycles",
+   "notes": "Thickness scale is the reflectometer thickness in nm as plotted. Scan points plotted at exactly zero (no reflectometer reading) were ignored when locating x50."
+  },
+  {
+   "id": "gao2015_fig5b_TiO2_110C_gap500nm",
+   "source": "F. Gao, S. Arpiainen, R. L. Puurunen, J. Vac. Sci. Technol. A 33, 010601 (2015), doi:10.1116/1.4903941",
+   "figure_label": "Fig. 5(b)",
+   "material": "TiO2",
+   "precursors": "TiCl4 / H2O",
+   "limiting_reactant": "not stated",
+   "temperature_C": 110,
+   "reactor": "Picosun R-150",
+   "pressure_Pa": {
+    "value": [
+     100,
+     200
+    ],
+    "note": "\"typical pressure range in the reactor was 1-2 mbar\" (Sec. II, p. 010601-2)"
+   },
+   "carrier_gas": {
+    "value": "N2",
+    "note": "Sec. II, p. 010601-2"
+   },
+   "gap_nm": {
+    "nominal": 500,
+    "measured": null,
+    "note": "gap set by thermal-oxide thickness (Sec. II); no measured value given"
+   },
+   "channel_length_um": {
+    "value": null,
+    "note": "not stated for Fig. 5(b); chip offers cavity lengths 20-5000 um (abstract, Fig. 1)"
+   },
+   "cycles": 2000,
+   "plateau_thickness_nm": {
+    "value": 102.2,
+    "error": 1.0,
+    "definition": "custodian reading: mean of the reflectometer scan points at 0-4 um from the cavity opening",
+    "paper_target_nm": 100
+   },
+   "growth_per_cycle_nm": {
+    "value": null,
+    "note": "not stated; target 100 nm in 2000 cycles (Fig. 5 caption)"
+   },
+   "pulse_purge_s": {
+    "value": "0.1 TiCl4 / 4 purge / 0.1 H2O / 4 purge",
+    "note": "\"typical pulsing sequence\" (Sec. II); not stated specifically for this run"
+   },
+   "measurement": {
+    "method": "small-spot reflectometer (FilmTek 2000M) line scan on the cavity floor after membrane removal",
+    "spot_um": 5,
+    "scan_step_um": 2.0,
+    "note": "spot about 5 x 5 um2 (Sec. II, p. 010601-3); scan step read from the figure"
+   },
+   "x50_um": {
+    "value": 70.4,
+    "error": 1.0,
+    "definition": "depth where thickness = 0.5 x plateau_thickness_nm, linear interpolation between scan points; x axis of the figure is aspect ratio, converted with the nominal gap"
+   },
+   "digitisation_error": {
+    "x_um": 0.05,
+    "y_fraction_of_plateau": 0.002,
+    "method": "vector marker centres from the PDF"
+   },
+   "series": {
+    "name": "gao2015_fig5b_gap_series",
+    "members": [
+     "gao2015_fig5b_TiO2_110C_gap200nm",
+     "gao2015_fig5b_TiO2_110C_gap500nm",
+     "gao2015_fig5b_TiO2_110C_gap1000nm"
+    ],
+    "varied": "gap height (200, 500, 1000 nm) at fixed TiO2 process"
+   },
+   "same_run": {
+    "value": "not stated",
+    "note": "Sec. III.B (p. 010601-4) describes the three gap heights for one TiO2 process at 110 C but does not say whether the chips were coated in one run"
+   },
+   "predictor_prior_knowledge": "predictor has read that the 200 nm gap \"got almost fully closed\" and the film is about 100 nm after 2000 cycles",
+   "notes": "Thickness scale is the reflectometer thickness in nm as plotted. Scan points plotted at exactly zero (no reflectometer reading) were ignored when locating x50."
+  },
+  {
+   "id": "gao2015_fig5b_TiO2_110C_gap1000nm",
+   "source": "F. Gao, S. Arpiainen, R. L. Puurunen, J. Vac. Sci. Technol. A 33, 010601 (2015), doi:10.1116/1.4903941",
+   "figure_label": "Fig. 5(b)",
+   "material": "TiO2",
+   "precursors": "TiCl4 / H2O",
+   "limiting_reactant": "not stated",
+   "temperature_C": 110,
+   "reactor": "Picosun R-150",
+   "pressure_Pa": {
+    "value": [
+     100,
+     200
+    ],
+    "note": "\"typical pressure range in the reactor was 1-2 mbar\" (Sec. II, p. 010601-2)"
+   },
+   "carrier_gas": {
+    "value": "N2",
+    "note": "Sec. II, p. 010601-2"
+   },
+   "gap_nm": {
+    "nominal": 1000,
+    "measured": null,
+    "note": "gap set by thermal-oxide thickness (Sec. II); no measured value given"
+   },
+   "channel_length_um": {
+    "value": null,
+    "note": "not stated for Fig. 5(b); chip offers cavity lengths 20-5000 um (abstract, Fig. 1)"
+   },
+   "cycles": 2000,
+   "plateau_thickness_nm": {
+    "value": 97.7,
+    "error": 1.0,
+    "definition": "custodian reading: mean of the reflectometer scan points at 0-4 um from the cavity opening",
+    "paper_target_nm": 100
+   },
+   "growth_per_cycle_nm": {
+    "value": null,
+    "note": "not stated; target 100 nm in 2000 cycles (Fig. 5 caption)"
+   },
+   "pulse_purge_s": {
+    "value": "0.1 TiCl4 / 4 purge / 0.1 H2O / 4 purge",
+    "note": "\"typical pulsing sequence\" (Sec. II); not stated specifically for this run"
+   },
+   "measurement": {
+    "method": "small-spot reflectometer (FilmTek 2000M) line scan on the cavity floor after membrane removal",
+    "spot_um": 5,
+    "scan_step_um": 2.0,
+    "note": "spot about 5 x 5 um2 (Sec. II, p. 010601-3); scan step read from the figure"
+   },
+   "x50_um": {
+    "value": 118.1,
+    "error": 2.0,
+    "definition": "depth where thickness = 0.5 x plateau_thickness_nm, linear interpolation between scan points; x axis of the figure is aspect ratio, converted with the nominal gap"
+   },
+   "digitisation_error": {
+    "x_um": 0.1,
+    "y_fraction_of_plateau": 0.002,
+    "method": "vector marker centres from the PDF"
+   },
+   "series": {
+    "name": "gao2015_fig5b_gap_series",
+    "members": [
+     "gao2015_fig5b_TiO2_110C_gap200nm",
+     "gao2015_fig5b_TiO2_110C_gap500nm",
+     "gao2015_fig5b_TiO2_110C_gap1000nm"
+    ],
+    "varied": "gap height (200, 500, 1000 nm) at fixed TiO2 process"
+   },
+   "same_run": {
+    "value": "not stated",
+    "note": "Sec. III.B (p. 010601-4) describes the three gap heights for one TiO2 process at 110 C but does not say whether the chips were coated in one run"
+   },
+   "predictor_prior_knowledge": "predictor has read that the 200 nm gap \"got almost fully closed\" and the film is about 100 nm after 2000 cycles",
+   "notes": "Thickness scale is the reflectometer thickness in nm as plotted. Scan points plotted at exactly zero (no reflectometer reading) were ignored when locating x50."
+  },
+  {
+   "id": "arts2019_fig3a_Al2O3_H2Olim_Tset150C",
+   "source": "K. Arts, V. Vandalon, R. L. Puurunen, M. Utriainen, F. Gao, W. M. M. Kessels, H. C. M. Knoops, J. Vac. Sci. Technol. A 37, 030908 (2019), doi:10.1116/1.5093620",
+   "figure_label": "Fig. 3(a)",
+   "material": "Al2O3",
+   "precursors": "Al(CH3)3 (TMA) / H2O",
+   "limiting_reactant": {
+    "value": "H2O",
+    "note": "stated: Fig. 3 caption and Sec. III, p. 030908-3/4"
+   },
+   "temperature_C": {
+    "set": 150,
+    "estimated_substrate": 150,
+    "note": "Fig. 3 caption: substrate temperatures ~150, ~220, ~310 C for set 150, 275, 400 C"
+   },
+   "reactor": "Oxford Instruments OpAL",
+   "pressure_Pa": {
+    "value": null,
+    "note": "reactor pressure not stated; Sec. II.B only gives 100 mTorr as an example of a typical process pressure; doses given for Fig. 2 only (Sec. III, p. 030908-3)"
+   },
+   "carrier_gas": {
+    "value": null,
+    "note": "not stated (Sec. II/III)"
+   },
+   "gap_nm": {
+    "nominal": 500,
+    "measured": null,
+    "note": "LHAR3 nominal 500 nm (Sec. II.A); authors assume ~10 nm uncertainty in cavity height (Sec. III)"
+   },
+   "channel_length_um": 5000,
+   "cycles": {
+    "value": 400,
+    "note": "\"400 cycles, ~46 nm Al2O3\" is stated for the profiles reported in the work (Sec. III, p. 030908-3); not repeated per temperature"
+   },
+   "plateau_thickness_nm": {
+    "value": 46,
+    "error": null,
+    "note": "paper value (~46 nm, see cycles); the figure is plotted as normalised thickness",
+    "normalised_plateau": 1.0,
+    "definition": "authors' normalisation (=1.0); custodian reading of the plotted curve over 0-10 um from the entrance: 0.990"
+   },
+   "growth_per_cycle_nm": {
+    "value": null,
+    "note": "not stated; ~46 nm / 400 cycles implies ~0.115 nm"
+   },
+   "pulse_purge_s": {
+    "value": null,
+    "note": "not stated"
+   },
+   "measurement": {
+    "method": "reflectometry line scan after membrane removal (Filmetrics F40 with XY10 stage)",
+    "spot_um": 10,
+    "note": "Sec. III, p. 030908-3"
+   },
+   "x50_um": {
+    "value": 533.8,
+    "error": 2.0,
+    "definition": "depth where plotted normalised thickness = 0.5 (plateau = 1.0); bottom axis is distance/cavity height, converted with H = 500 nm"
+   },
+   "digitisation_error": {
+    "x_um": 1.5,
+    "y_fraction_of_plateau": 0.01,
+    "y_fraction_where_curves_overlap": 0.02,
+    "method": "raster colour selection on the embedded image (1000 px wide), column medians"
+   },
+   "series": {
+    "name": "arts2019_fig3a_temperature_series",
+    "members": [
+     "arts2019_fig3a_Al2O3_H2Olim_Tset150C",
+     "arts2019_fig3a_Al2O3_H2Olim_Tset275C",
+     "arts2019_fig3a_Al2O3_H2Olim_Tset400C"
+    ],
+    "varied": "set temperature (150, 275, 400 C); H2O-limited conditions"
+   },
+   "same_run": {
+    "value": false,
+    "note": "different set temperatures, hence separate depositions (Fig. 3 caption); not stated in words"
+   },
+   "predictor_prior_knowledge": "predictor knows the doses in mTorr s and that the paper says narrowing is negligible, and has digitised Fig. 2",
+   "notes": "Doses for the Fig. 3 runs are not given; the text states only that TMA penetrates deeper than H2O in these runs. Negative-x points (open area outside the cavity) are in the sealed curve."
+  },
+  {
+   "id": "arts2019_fig3a_Al2O3_H2Olim_Tset275C",
+   "source": "K. Arts, V. Vandalon, R. L. Puurunen, M. Utriainen, F. Gao, W. M. M. Kessels, H. C. M. Knoops, J. Vac. Sci. Technol. A 37, 030908 (2019), doi:10.1116/1.5093620",
+   "figure_label": "Fig. 3(a)",
+   "material": "Al2O3",
+   "precursors": "Al(CH3)3 (TMA) / H2O",
+   "limiting_reactant": {
+    "value": "H2O",
+    "note": "stated: Fig. 3 caption and Sec. III, p. 030908-3/4"
+   },
+   "temperature_C": {
+    "set": 275,
+    "estimated_substrate": 220,
+    "note": "Fig. 3 caption: substrate temperatures ~150, ~220, ~310 C for set 150, 275, 400 C"
+   },
+   "reactor": "Oxford Instruments OpAL",
+   "pressure_Pa": {
+    "value": null,
+    "note": "reactor pressure not stated; Sec. II.B only gives 100 mTorr as an example of a typical process pressure; doses given for Fig. 2 only (Sec. III, p. 030908-3)"
+   },
+   "carrier_gas": {
+    "value": null,
+    "note": "not stated (Sec. II/III)"
+   },
+   "gap_nm": {
+    "nominal": 500,
+    "measured": null,
+    "note": "LHAR3 nominal 500 nm (Sec. II.A); authors assume ~10 nm uncertainty in cavity height (Sec. III)"
+   },
+   "channel_length_um": 5000,
+   "cycles": {
+    "value": 400,
+    "note": "\"400 cycles, ~46 nm Al2O3\" is stated for the profiles reported in the work (Sec. III, p. 030908-3); not repeated per temperature"
+   },
+   "plateau_thickness_nm": {
+    "value": 46,
+    "error": null,
+    "note": "paper value (~46 nm, see cycles); the figure is plotted as normalised thickness",
+    "normalised_plateau": 1.0,
+    "definition": "authors' normalisation (=1.0); custodian reading of the plotted curve over 0-10 um from the entrance: 0.968"
+   },
+   "growth_per_cycle_nm": {
+    "value": null,
+    "note": "not stated; ~46 nm / 400 cycles implies ~0.115 nm"
+   },
+   "pulse_purge_s": {
+    "value": null,
+    "note": "not stated"
+   },
+   "measurement": {
+    "method": "reflectometry line scan after membrane removal (Filmetrics F40 with XY10 stage)",
+    "spot_um": 10,
+    "note": "Sec. III, p. 030908-3"
+   },
+   "x50_um": {
+    "value": 546.1,
+    "error": 2.0,
+    "definition": "depth where plotted normalised thickness = 0.5 (plateau = 1.0); bottom axis is distance/cavity height, converted with H = 500 nm"
+   },
+   "digitisation_error": {
+    "x_um": 1.5,
+    "y_fraction_of_plateau": 0.01,
+    "y_fraction_where_curves_overlap": 0.02,
+    "method": "raster colour selection on the embedded image (1000 px wide), column medians"
+   },
+   "series": {
+    "name": "arts2019_fig3a_temperature_series",
+    "members": [
+     "arts2019_fig3a_Al2O3_H2Olim_Tset150C",
+     "arts2019_fig3a_Al2O3_H2Olim_Tset275C",
+     "arts2019_fig3a_Al2O3_H2Olim_Tset400C"
+    ],
+    "varied": "set temperature (150, 275, 400 C); H2O-limited conditions"
+   },
+   "same_run": {
+    "value": false,
+    "note": "different set temperatures, hence separate depositions (Fig. 3 caption); not stated in words"
+   },
+   "predictor_prior_knowledge": "predictor knows the doses in mTorr s and that the paper says narrowing is negligible, and has digitised Fig. 2",
+   "notes": "Doses for the Fig. 3 runs are not given; the text states only that TMA penetrates deeper than H2O in these runs. Negative-x points (open area outside the cavity) are in the sealed curve."
+  },
+  {
+   "id": "arts2019_fig3a_Al2O3_H2Olim_Tset400C",
+   "source": "K. Arts, V. Vandalon, R. L. Puurunen, M. Utriainen, F. Gao, W. M. M. Kessels, H. C. M. Knoops, J. Vac. Sci. Technol. A 37, 030908 (2019), doi:10.1116/1.5093620",
+   "figure_label": "Fig. 3(a)",
+   "material": "Al2O3",
+   "precursors": "Al(CH3)3 (TMA) / H2O",
+   "limiting_reactant": {
+    "value": "H2O",
+    "note": "stated: Fig. 3 caption and Sec. III, p. 030908-3/4"
+   },
+   "temperature_C": {
+    "set": 400,
+    "estimated_substrate": 310,
+    "note": "Fig. 3 caption: substrate temperatures ~150, ~220, ~310 C for set 150, 275, 400 C"
+   },
+   "reactor": "Oxford Instruments OpAL",
+   "pressure_Pa": {
+    "value": null,
+    "note": "reactor pressure not stated; Sec. II.B only gives 100 mTorr as an example of a typical process pressure; doses given for Fig. 2 only (Sec. III, p. 030908-3)"
+   },
+   "carrier_gas": {
+    "value": null,
+    "note": "not stated (Sec. II/III)"
+   },
+   "gap_nm": {
+    "nominal": 500,
+    "measured": null,
+    "note": "LHAR3 nominal 500 nm (Sec. II.A); authors assume ~10 nm uncertainty in cavity height (Sec. III)"
+   },
+   "channel_length_um": 5000,
+   "cycles": {
+    "value": 400,
+    "note": "\"400 cycles, ~46 nm Al2O3\" is stated for the profiles reported in the work (Sec. III, p. 030908-3); not repeated per temperature"
+   },
+   "plateau_thickness_nm": {
+    "value": 46,
+    "error": null,
+    "note": "paper value (~46 nm, see cycles); the figure is plotted as normalised thickness",
+    "normalised_plateau": 1.0,
+    "definition": "authors' normalisation (=1.0); custodian reading of the plotted curve over 0-10 um from the entrance: 0.996"
+   },
+   "growth_per_cycle_nm": {
+    "value": null,
+    "note": "not stated; ~46 nm / 400 cycles implies ~0.115 nm"
+   },
+   "pulse_purge_s": {
+    "value": null,
+    "note": "not stated"
+   },
+   "measurement": {
+    "method": "reflectometry line scan after membrane removal (Filmetrics F40 with XY10 stage)",
+    "spot_um": 10,
+    "note": "Sec. III, p. 030908-3"
+   },
+   "x50_um": {
+    "value": 599.3,
+    "error": 2.0,
+    "definition": "depth where plotted normalised thickness = 0.5 (plateau = 1.0); bottom axis is distance/cavity height, converted with H = 500 nm"
+   },
+   "digitisation_error": {
+    "x_um": 1.5,
+    "y_fraction_of_plateau": 0.01,
+    "y_fraction_where_curves_overlap": 0.02,
+    "method": "raster colour selection on the embedded image (1000 px wide), column medians"
+   },
+   "series": {
+    "name": "arts2019_fig3a_temperature_series",
+    "members": [
+     "arts2019_fig3a_Al2O3_H2Olim_Tset150C",
+     "arts2019_fig3a_Al2O3_H2Olim_Tset275C",
+     "arts2019_fig3a_Al2O3_H2Olim_Tset400C"
+    ],
+    "varied": "set temperature (150, 275, 400 C); H2O-limited conditions"
+   },
+   "same_run": {
+    "value": false,
+    "note": "different set temperatures, hence separate depositions (Fig. 3 caption); not stated in words"
+   },
+   "predictor_prior_knowledge": "predictor knows the doses in mTorr s and that the paper says narrowing is negligible, and has digitised Fig. 2",
+   "notes": "Doses for the Fig. 3 runs are not given; the text states only that TMA penetrates deeper than H2O in these runs. Negative-x points (open area outside the cavity) are in the sealed curve."
+  },
+  {
+   "id": "gonsalves2026_fig2_ZnO_DEZ_H2O_150C_left",
+   "source": "C. Gonsalves, J. A. Velasco, A. Othman, V. Miikkulainen, R. L. Puurunen, \"Enhancing Conformality in Atomic Layer Deposition through Low Growth Per Cycle\", arXiv:2609.12460v1 (11 Sep 2026), doi:10.48550/arXiv.2609.12460",
+   "figure_label": "Fig. 2(d), left channel of the mirrored structure",
+   "material": "ZnO",
+   "precursors": "Zn(C2H5)2 (DEZ) / H2O",
+   "limiting_reactant": {
+    "value": "DEZ (assumed)",
+    "note": "not stated for the experiments; simulations assume one limiting reactant pulse (Sec. 9.2) and Kn is computed for DEZ (Sec. 9.4)"
+   },
+   "temperature_C": 150,
+   "reactor": "Picosun R-200",
+   "pressure_Pa": {
+    "value": 92,
+    "note": "reaction-chamber pressure 0.92/0.90/0.86 hPa at 150/175/200 C; intermediate space 14 hPa (Sec. 9.3). For Kn the authors set pA0 equal to the chamber pressure and assumed inert pressure 1 hPa (Sec. 9.4)"
+   },
+   "carrier_gas": {
+    "value": "N2",
+    "note": "Sec. 9.3; precursors delivered at 22 C; methanol cylinder at about -20 C"
+   },
+   "gap_nm": {
+    "nominal": 500,
+    "measured": null,
+    "note": "PillarHall LHAR5b, channel height 500 nm (Sec. 9.4)"
+   },
+   "channel_length_um": 1000,
+   "cycles": 180,
+   "plateau_thickness_nm": {
+    "value": 29.7,
+    "error": null,
+    "note": "planar-wafer ellipsometry thickness from the same run (Table 1); the figure is plotted in X-ray counts",
+    "plateau_counts": 1482,
+    "plateau_counts_sem": 11.4,
+    "background_counts": 91,
+    "open_area_zone_I_counts": 1465,
+    "definition": "custodian reading: mean counts over the authors' normalisation window inside the channel (Sec. 9.5.3); background = mean counts over 350-450 um"
+   },
+   "growth_per_cycle_nm": {
+    "value": 0.165,
+    "note": "ellipsometry, planar wafer (Table 1)"
+   },
+   "pulse_purge_s": {
+    "value": "DEZ 0.2 / purge 26 / H2O 0.2 / purge 15",
+    "note": "Sec. 9.3"
+   },
+   "measurement": {
+    "method": "SEM-EDS Zn X-ray line scan (Jeol JSM-IT800HL, Oxford EDS) at 5 keV after membrane removal",
+    "spot_um": null,
+    "point_spacing_um": 1,
+    "note": "spot/interaction size not stated; point spacing ~1 um, scans repeated three times (Sec. 9.5.3)",
+    "point_scatter_fraction_of_plateau": 0.026
+   },
+   "x50_um": {
+    "value": 168.9,
+    "error": 1.5,
+    "definition": "depth where background-subtracted counts = 0.5 x (plateau - background), on a 9-point running mean",
+    "authors_PD50_x_over_H_table1": "297 +/- 4"
+   },
+   "digitisation_error": {
+    "x_um": 0.5,
+    "y_fraction_of_plateau": 0.003,
+    "method": "vector marker rectangles from the PDF (coordinates quantised to 0.11 pt = 0.9 um, 3.3 counts)"
+   },
+   "series": {
+    "name": "gonsalves2026_fig2_150C",
+    "members": [
+     "gonsalves2026_fig2_ZnO_DEZ_H2O_150C_left",
+     "gonsalves2026_fig2_ZnO_DEZ_H2O_150C_right",
+     "gonsalves2026_fig2_ZnO_MeOH_DEZ_H2O_150C_left",
+     "gonsalves2026_fig2_ZnO_MeOH_DEZ_H2O_150C_right"
+    ],
+    "varied": "with / without methanol inhibitor at fixed temperature; left and right are the two mirrored channels of one line scan. Across panels: temperature (150, 175, 200 C)"
+   },
+   "same_run": {
+    "value": "left/right channels of one process and temperature: true; inhibited vs uninhibited and different temperatures: false",
+    "note": "mirrored structure on one chip (Sec. 9.4); \"both the ALD runs, with and without the inhibitor\" (Sec. 9.3); LHAR chip and reference wafer in the same run (Sec. 9.4)"
+   },
+   "predictor_prior_knowledge": "predictor has seen two tabulated PD50/H values (288 and 454 at 200 C) and filled fractions about 0.11 and 0.05",
+   "notes": "Y axis is raw X-ray counts with a non-zero background, so thickness_over_plateau in the sealed curve is background-subtracted. Table 1 values are reproduced in sources[].tabulated_conditions_table1. Film density from XRR: 5.3 g/cm3. Channel width 3300 um."
+  },
+  {
+   "id": "gonsalves2026_fig2_ZnO_DEZ_H2O_150C_right",
+   "source": "C. Gonsalves, J. A. Velasco, A. Othman, V. Miikkulainen, R. L. Puurunen, \"Enhancing Conformality in Atomic Layer Deposition through Low Growth Per Cycle\", arXiv:2609.12460v1 (11 Sep 2026), doi:10.48550/arXiv.2609.12460",
+   "figure_label": "Fig. 2(d), right channel of the mirrored structure",
+   "material": "ZnO",
+   "precursors": "Zn(C2H5)2 (DEZ) / H2O",
+   "limiting_reactant": {
+    "value": "DEZ (assumed)",
+    "note": "not stated for the experiments; simulations assume one limiting reactant pulse (Sec. 9.2) and Kn is computed for DEZ (Sec. 9.4)"
+   },
+   "temperature_C": 150,
+   "reactor": "Picosun R-200",
+   "pressure_Pa": {
+    "value": 92,
+    "note": "reaction-chamber pressure 0.92/0.90/0.86 hPa at 150/175/200 C; intermediate space 14 hPa (Sec. 9.3). For Kn the authors set pA0 equal to the chamber pressure and assumed inert pressure 1 hPa (Sec. 9.4)"
+   },
+   "carrier_gas": {
+    "value": "N2",
+    "note": "Sec. 9.3; precursors delivered at 22 C; methanol cylinder at about -20 C"
+   },
+   "gap_nm": {
+    "nominal": 500,
+    "measured": null,
+    "note": "PillarHall LHAR5b, channel height 500 nm (Sec. 9.4)"
+   },
+   "channel_length_um": 1000,
+   "cycles": 180,
+   "plateau_thickness_nm": {
+    "value": 29.7,
+    "error": null,
+    "note": "planar-wafer ellipsometry thickness from the same run (Table 1); the figure is plotted in X-ray counts",
+    "plateau_counts": 1463,
+    "plateau_counts_sem": 12.0,
+    "background_counts": 93,
+    "open_area_zone_I_counts": 1465,
+    "definition": "custodian reading: mean counts over the authors' normalisation window inside the channel (Sec. 9.5.3); background = mean counts over 350-450 um"
+   },
+   "growth_per_cycle_nm": {
+    "value": 0.165,
+    "note": "ellipsometry, planar wafer (Table 1)"
+   },
+   "pulse_purge_s": {
+    "value": "DEZ 0.2 / purge 26 / H2O 0.2 / purge 15",
+    "note": "Sec. 9.3"
+   },
+   "measurement": {
+    "method": "SEM-EDS Zn X-ray line scan (Jeol JSM-IT800HL, Oxford EDS) at 5 keV after membrane removal",
+    "spot_um": null,
+    "point_spacing_um": 1,
+    "note": "spot/interaction size not stated; point spacing ~1 um, scans repeated three times (Sec. 9.5.3)",
+    "point_scatter_fraction_of_plateau": 0.028
+   },
+   "x50_um": {
+    "value": 129.1,
+    "error": 1.5,
+    "definition": "depth where background-subtracted counts = 0.5 x (plateau - background), on a 9-point running mean",
+    "authors_PD50_x_over_H_table1": "297 +/- 4"
+   },
+   "digitisation_error": {
+    "x_um": 0.5,
+    "y_fraction_of_plateau": 0.003,
+    "method": "vector marker rectangles from the PDF (coordinates quantised to 0.11 pt = 0.9 um, 3.3 counts)"
+   },
+   "series": {
+    "name": "gonsalves2026_fig2_150C",
+    "members": [
+     "gonsalves2026_fig2_ZnO_DEZ_H2O_150C_left",
+     "gonsalves2026_fig2_ZnO_DEZ_H2O_150C_right",
+     "gonsalves2026_fig2_ZnO_MeOH_DEZ_H2O_150C_left",
+     "gonsalves2026_fig2_ZnO_MeOH_DEZ_H2O_150C_right"
+    ],
+    "varied": "with / without methanol inhibitor at fixed temperature; left and right are the two mirrored channels of one line scan. Across panels: temperature (150, 175, 200 C)"
+   },
+   "same_run": {
+    "value": "left/right channels of one process and temperature: true; inhibited vs uninhibited and different temperatures: false",
+    "note": "mirrored structure on one chip (Sec. 9.4); \"both the ALD runs, with and without the inhibitor\" (Sec. 9.3); LHAR chip and reference wafer in the same run (Sec. 9.4)"
+   },
+   "predictor_prior_knowledge": "predictor has seen two tabulated PD50/H values (288 and 454 at 200 C) and filled fractions about 0.11 and 0.05",
+   "notes": "Y axis is raw X-ray counts with a non-zero background, so thickness_over_plateau in the sealed curve is background-subtracted. Table 1 values are reproduced in sources[].tabulated_conditions_table1. Film density from XRR: 5.3 g/cm3. Channel width 3300 um."
+  },
+  {
+   "id": "gonsalves2026_fig2_ZnO_MeOH_DEZ_H2O_150C_left",
+   "source": "C. Gonsalves, J. A. Velasco, A. Othman, V. Miikkulainen, R. L. Puurunen, \"Enhancing Conformality in Atomic Layer Deposition through Low Growth Per Cycle\", arXiv:2609.12460v1 (11 Sep 2026), doi:10.48550/arXiv.2609.12460",
+   "figure_label": "Fig. 2(d), left channel of the mirrored structure",
+   "material": "ZnO",
+   "precursors": "Zn(C2H5)2 (DEZ) / H2O; CH3OH inhibitor dosed before DEZ",
+   "limiting_reactant": {
+    "value": "DEZ (assumed)",
+    "note": "not stated for the experiments; simulations assume one limiting reactant pulse (Sec. 9.2) and Kn is computed for DEZ (Sec. 9.4)"
+   },
+   "temperature_C": 150,
+   "reactor": "Picosun R-200",
+   "pressure_Pa": {
+    "value": 92,
+    "note": "reaction-chamber pressure 0.92/0.90/0.86 hPa at 150/175/200 C; intermediate space 14 hPa (Sec. 9.3). For Kn the authors set pA0 equal to the chamber pressure and assumed inert pressure 1 hPa (Sec. 9.4)"
+   },
+   "carrier_gas": {
+    "value": "N2",
+    "note": "Sec. 9.3; precursors delivered at 22 C; methanol cylinder at about -20 C"
+   },
+   "gap_nm": {
+    "nominal": 500,
+    "measured": null,
+    "note": "PillarHall LHAR5b, channel height 500 nm (Sec. 9.4)"
+   },
+   "channel_length_um": 1000,
+   "cycles": 180,
+   "plateau_thickness_nm": {
+    "value": 12.9,
+    "error": null,
+    "note": "planar-wafer ellipsometry thickness from the same run (Table 1); the figure is plotted in X-ray counts",
+    "plateau_counts": 631,
+    "plateau_counts_sem": 4.0,
+    "background_counts": 96,
+    "open_area_zone_I_counts": 535,
+    "definition": "custodian reading: mean counts over the authors' normalisation window inside the channel (Sec. 9.5.3); background = mean counts over 350-450 um"
+   },
+   "growth_per_cycle_nm": {
+    "value": 0.072,
+    "note": "ellipsometry, planar wafer (Table 1)"
+   },
+   "pulse_purge_s": {
+    "value": "MeOH 0.2 / purge 10.8 / DEZ 0.2 / purge 15 / H2O 0.2 / purge 15",
+    "note": "Sec. 9.3"
+   },
+   "measurement": {
+    "method": "SEM-EDS Zn X-ray line scan (Jeol JSM-IT800HL, Oxford EDS) at 5 keV after membrane removal",
+    "spot_um": null,
+    "point_spacing_um": 1,
+    "note": "spot/interaction size not stated; point spacing ~1 um, scans repeated three times (Sec. 9.5.3)",
+    "point_scatter_fraction_of_plateau": 0.046
+   },
+   "x50_um": {
+    "value": 220.4,
+    "error": 1.5,
+    "definition": "depth where background-subtracted counts = 0.5 x (plateau - background), on a 9-point running mean",
+    "authors_PD50_x_over_H_table1": "430 +/- 3"
+   },
+   "digitisation_error": {
+    "x_um": 0.5,
+    "y_fraction_of_plateau": 0.006,
+    "method": "vector marker rectangles from the PDF (coordinates quantised to 0.11 pt = 0.9 um, 3.3 counts)"
+   },
+   "series": {
+    "name": "gonsalves2026_fig2_150C",
+    "members": [
+     "gonsalves2026_fig2_ZnO_DEZ_H2O_150C_left",
+     "gonsalves2026_fig2_ZnO_DEZ_H2O_150C_right",
+     "gonsalves2026_fig2_ZnO_MeOH_DEZ_H2O_150C_left",
+     "gonsalves2026_fig2_ZnO_MeOH_DEZ_H2O_150C_right"
+    ],
+    "varied": "with / without methanol inhibitor at fixed temperature; left and right are the two mirrored channels of one line scan. Across panels: temperature (150, 175, 200 C)"
+   },
+   "same_run": {
+    "value": "left/right channels of one process and temperature: true; inhibited vs uninhibited and different temperatures: false",
+    "note": "mirrored structure on one chip (Sec. 9.4); \"both the ALD runs, with and without the inhibitor\" (Sec. 9.3); LHAR chip and reference wafer in the same run (Sec. 9.4)"
+   },
+   "predictor_prior_knowledge": "predictor has seen two tabulated PD50/H values (288 and 454 at 200 C) and filled fractions about 0.11 and 0.05",
+   "notes": "Y axis is raw X-ray counts with a non-zero background, so thickness_over_plateau in the sealed curve is background-subtracted. Table 1 values are reproduced in sources[].tabulated_conditions_table1. Film density from XRR: 5.3 g/cm3. Channel width 3300 um."
+  },
+  {
+   "id": "gonsalves2026_fig2_ZnO_MeOH_DEZ_H2O_150C_right",
+   "source": "C. Gonsalves, J. A. Velasco, A. Othman, V. Miikkulainen, R. L. Puurunen, \"Enhancing Conformality in Atomic Layer Deposition through Low Growth Per Cycle\", arXiv:2609.12460v1 (11 Sep 2026), doi:10.48550/arXiv.2609.12460",
+   "figure_label": "Fig. 2(d), right channel of the mirrored structure",
+   "material": "ZnO",
+   "precursors": "Zn(C2H5)2 (DEZ) / H2O; CH3OH inhibitor dosed before DEZ",
+   "limiting_reactant": {
+    "value": "DEZ (assumed)",
+    "note": "not stated for the experiments; simulations assume one limiting reactant pulse (Sec. 9.2) and Kn is computed for DEZ (Sec. 9.4)"
+   },
+   "temperature_C": 150,
+   "reactor": "Picosun R-200",
+   "pressure_Pa": {
+    "value": 92,
+    "note": "reaction-chamber pressure 0.92/0.90/0.86 hPa at 150/175/200 C; intermediate space 14 hPa (Sec. 9.3). For Kn the authors set pA0 equal to the chamber pressure and assumed inert pressure 1 hPa (Sec. 9.4)"
+   },
+   "carrier_gas": {
+    "value": "N2",
+    "note": "Sec. 9.3; precursors delivered at 22 C; methanol cylinder at about -20 C"
+   },
+   "gap_nm": {
+    "nominal": 500,
+    "measured": null,
+    "note": "PillarHall LHAR5b, channel height 500 nm (Sec. 9.4)"
+   },
+   "channel_length_um": 1000,
+   "cycles": 180,
+   "plateau_thickness_nm": {
+    "value": 12.9,
+    "error": null,
+    "note": "planar-wafer ellipsometry thickness from the same run (Table 1); the figure is plotted in X-ray counts",
+    "plateau_counts": 644,
+    "plateau_counts_sem": 3.8,
+    "background_counts": 98,
+    "open_area_zone_I_counts": 535,
+    "definition": "custodian reading: mean counts over the authors' normalisation window inside the channel (Sec. 9.5.3); background = mean counts over 350-450 um"
+   },
+   "growth_per_cycle_nm": {
+    "value": 0.072,
+    "note": "ellipsometry, planar wafer (Table 1)"
+   },
+   "pulse_purge_s": {
+    "value": "MeOH 0.2 / purge 10.8 / DEZ 0.2 / purge 15 / H2O 0.2 / purge 15",
+    "note": "Sec. 9.3"
+   },
+   "measurement": {
+    "method": "SEM-EDS Zn X-ray line scan (Jeol JSM-IT800HL, Oxford EDS) at 5 keV after membrane removal",
+    "spot_um": null,
+    "point_spacing_um": 1,
+    "note": "spot/interaction size not stated; point spacing ~1 um, scans repeated three times (Sec. 9.5.3)",
+    "point_scatter_fraction_of_plateau": 0.045
+   },
+   "x50_um": {
+    "value": 214.4,
+    "error": 1.5,
+    "definition": "depth where background-subtracted counts = 0.5 x (plateau - background), on a 9-point running mean",
+    "authors_PD50_x_over_H_table1": "430 +/- 3"
+   },
+   "digitisation_error": {
+    "x_um": 0.5,
+    "y_fraction_of_plateau": 0.006,
+    "method": "vector marker rectangles from the PDF (coordinates quantised to 0.11 pt = 0.9 um, 3.3 counts)"
+   },
+   "series": {
+    "name": "gonsalves2026_fig2_150C",
+    "members": [
+     "gonsalves2026_fig2_ZnO_DEZ_H2O_150C_left",
+     "gonsalves2026_fig2_ZnO_DEZ_H2O_150C_right",
+     "gonsalves2026_fig2_ZnO_MeOH_DEZ_H2O_150C_left",
+     "gonsalves2026_fig2_ZnO_MeOH_DEZ_H2O_150C_right"
+    ],
+    "varied": "with / without methanol inhibitor at fixed temperature; left and right are the two mirrored channels of one line scan. Across panels: temperature (150, 175, 200 C)"
+   },
+   "same_run": {
+    "value": "left/right channels of one process and temperature: true; inhibited vs uninhibited and different temperatures: false",
+    "note": "mirrored structure on one chip (Sec. 9.4); \"both the ALD runs, with and without the inhibitor\" (Sec. 9.3); LHAR chip and reference wafer in the same run (Sec. 9.4)"
+   },
+   "predictor_prior_knowledge": "predictor has seen two tabulated PD50/H values (288 and 454 at 200 C) and filled fractions about 0.11 and 0.05",
+   "notes": "Y axis is raw X-ray counts with a non-zero background, so thickness_over_plateau in the sealed curve is background-subtracted. Table 1 values are reproduced in sources[].tabulated_conditions_table1. Film density from XRR: 5.3 g/cm3. Channel width 3300 um."
+  },
+  {
+   "id": "gonsalves2026_fig2_ZnO_DEZ_H2O_175C_left",
+   "source": "C. Gonsalves, J. A. Velasco, A. Othman, V. Miikkulainen, R. L. Puurunen, \"Enhancing Conformality in Atomic Layer Deposition through Low Growth Per Cycle\", arXiv:2609.12460v1 (11 Sep 2026), doi:10.48550/arXiv.2609.12460",
+   "figure_label": "Fig. 2(e), left channel of the mirrored structure",
+   "material": "ZnO",
+   "precursors": "Zn(C2H5)2 (DEZ) / H2O",
+   "limiting_reactant": {
+    "value": "DEZ (assumed)",
+    "note": "not stated for the experiments; simulations assume one limiting reactant pulse (Sec. 9.2) and Kn is computed for DEZ (Sec. 9.4)"
+   },
+   "temperature_C": 175,
+   "reactor": "Picosun R-200",
+   "pressure_Pa": {
+    "value": 90,
+    "note": "reaction-chamber pressure 0.92/0.90/0.86 hPa at 150/175/200 C; intermediate space 14 hPa (Sec. 9.3). For Kn the authors set pA0 equal to the chamber pressure and assumed inert pressure 1 hPa (Sec. 9.4)"
+   },
+   "carrier_gas": {
+    "value": "N2",
+    "note": "Sec. 9.3; precursors delivered at 22 C; methanol cylinder at about -20 C"
+   },
+   "gap_nm": {
+    "nominal": 500,
+    "measured": null,
+    "note": "PillarHall LHAR5b, channel height 500 nm (Sec. 9.4)"
+   },
+   "channel_length_um": 1000,
+   "cycles": 180,
+   "plateau_thickness_nm": {
+    "value": 28.4,
+    "error": null,
+    "note": "planar-wafer ellipsometry thickness from the same run (Table 1); the figure is plotted in X-ray counts",
+    "plateau_counts": 1413,
+    "plateau_counts_sem": 6.6,
+    "background_counts": 92,
+    "open_area_zone_I_counts": 1380,
+    "definition": "custodian reading: mean counts over the authors' normalisation window inside the channel (Sec. 9.5.3); background = mean counts over 350-450 um"
+   },
+   "growth_per_cycle_nm": {
+    "value": 0.158,
+    "note": "ellipsometry, planar wafer (Table 1)"
+   },
+   "pulse_purge_s": {
+    "value": "DEZ 0.2 / purge 26 / H2O 0.2 / purge 15",
+    "note": "Sec. 9.3"
+   },
+   "measurement": {
+    "method": "SEM-EDS Zn X-ray line scan (Jeol JSM-IT800HL, Oxford EDS) at 5 keV after membrane removal",
+    "spot_um": null,
+    "point_spacing_um": 1,
+    "note": "spot/interaction size not stated; point spacing ~1 um, scans repeated three times (Sec. 9.5.3)",
+    "point_scatter_fraction_of_plateau": 0.031
+   },
+   "x50_um": {
+    "value": 150.1,
+    "error": 1.5,
+    "definition": "depth where background-subtracted counts = 0.5 x (plateau - background), on a 9-point running mean",
+    "authors_PD50_x_over_H_table1": "298 +/- 2"
+   },
+   "digitisation_error": {
+    "x_um": 0.5,
+    "y_fraction_of_plateau": 0.003,
+    "method": "vector marker rectangles from the PDF (coordinates quantised to 0.11 pt = 0.9 um, 3.3 counts)"
+   },
+   "series": {
+    "name": "gonsalves2026_fig2_175C",
+    "members": [
+     "gonsalves2026_fig2_ZnO_DEZ_H2O_175C_left",
+     "gonsalves2026_fig2_ZnO_DEZ_H2O_175C_right",
+     "gonsalves2026_fig2_ZnO_MeOH_DEZ_H2O_175C_left",
+     "gonsalves2026_fig2_ZnO_MeOH_DEZ_H2O_175C_right"
+    ],
+    "varied": "with / without methanol inhibitor at fixed temperature; left and right are the two mirrored channels of one line scan. Across panels: temperature (150, 175, 200 C)"
+   },
+   "same_run": {
+    "value": "left/right channels of one process and temperature: true; inhibited vs uninhibited and different temperatures: false",
+    "note": "mirrored structure on one chip (Sec. 9.4); \"both the ALD runs, with and without the inhibitor\" (Sec. 9.3); LHAR chip and reference wafer in the same run (Sec. 9.4)"
+   },
+   "predictor_prior_knowledge": "predictor has seen two tabulated PD50/H values (288 and 454 at 200 C) and filled fractions about 0.11 and 0.05",
+   "notes": "Y axis is raw X-ray counts with a non-zero background, so thickness_over_plateau in the sealed curve is background-subtracted. Table 1 values are reproduced in sources[].tabulated_conditions_table1. Film density from XRR: 5.2 g/cm3. Channel width 3300 um."
+  },
+  {
+   "id": "gonsalves2026_fig2_ZnO_DEZ_H2O_175C_right",
+   "source": "C. Gonsalves, J. A. Velasco, A. Othman, V. Miikkulainen, R. L. Puurunen, \"Enhancing Conformality in Atomic Layer Deposition through Low Growth Per Cycle\", arXiv:2609.12460v1 (11 Sep 2026), doi:10.48550/arXiv.2609.12460",
+   "figure_label": "Fig. 2(e), right channel of the mirrored structure",
+   "material": "ZnO",
+   "precursors": "Zn(C2H5)2 (DEZ) / H2O",
+   "limiting_reactant": {
+    "value": "DEZ (assumed)",
+    "note": "not stated for the experiments; simulations assume one limiting reactant pulse (Sec. 9.2) and Kn is computed for DEZ (Sec. 9.4)"
+   },
+   "temperature_C": 175,
+   "reactor": "Picosun R-200",
+   "pressure_Pa": {
+    "value": 90,
+    "note": "reaction-chamber pressure 0.92/0.90/0.86 hPa at 150/175/200 C; intermediate space 14 hPa (Sec. 9.3). For Kn the authors set pA0 equal to the chamber pressure and assumed inert pressure 1 hPa (Sec. 9.4)"
+   },
+   "carrier_gas": {
+    "value": "N2",
+    "note": "Sec. 9.3; precursors delivered at 22 C; methanol cylinder at about -20 C"
+   },
+   "gap_nm": {
+    "nominal": 500,
+    "measured": null,
+    "note": "PillarHall LHAR5b, channel height 500 nm (Sec. 9.4)"
+   },
+   "channel_length_um": 1000,
+   "cycles": 180,
+   "plateau_thickness_nm": {
+    "value": 28.4,
+    "error": null,
+    "note": "planar-wafer ellipsometry thickness from the same run (Table 1); the figure is plotted in X-ray counts",
+    "plateau_counts": 1428,
+    "plateau_counts_sem": 5.7,
+    "background_counts": 96,
+    "open_area_zone_I_counts": 1380,
+    "definition": "custodian reading: mean counts over the authors' normalisation window inside the channel (Sec. 9.5.3); background = mean counts over 350-450 um"
+   },
+   "growth_per_cycle_nm": {
+    "value": 0.158,
+    "note": "ellipsometry, planar wafer (Table 1)"
+   },
+   "pulse_purge_s": {
+    "value": "DEZ 0.2 / purge 26 / H2O 0.2 / purge 15",
+    "note": "Sec. 9.3"
+   },
+   "measurement": {
+    "method": "SEM-EDS Zn X-ray line scan (Jeol JSM-IT800HL, Oxford EDS) at 5 keV after membrane removal",
+    "spot_um": null,
+    "point_spacing_um": 1,
+    "note": "spot/interaction size not stated; point spacing ~1 um, scans repeated three times (Sec. 9.5.3)",
+    "point_scatter_fraction_of_plateau": 0.027
+   },
+   "x50_um": {
+    "value": 147.9,
+    "error": 1.5,
+    "definition": "depth where background-subtracted counts = 0.5 x (plateau - background), on a 9-point running mean",
+    "authors_PD50_x_over_H_table1": "298 +/- 2"
+   },
+   "digitisation_error": {
+    "x_um": 0.5,
+    "y_fraction_of_plateau": 0.003,
+    "method": "vector marker rectangles from the PDF (coordinates quantised to 0.11 pt = 0.9 um, 3.3 counts)"
+   },
+   "series": {
+    "name": "gonsalves2026_fig2_175C",
+    "members": [
+     "gonsalves2026_fig2_ZnO_DEZ_H2O_175C_left",
+     "gonsalves2026_fig2_ZnO_DEZ_H2O_175C_right",
+     "gonsalves2026_fig2_ZnO_MeOH_DEZ_H2O_175C_left",
+     "gonsalves2026_fig2_ZnO_MeOH_DEZ_H2O_175C_right"
+    ],
+    "varied": "with / without methanol inhibitor at fixed temperature; left and right are the two mirrored channels of one line scan. Across panels: temperature (150, 175, 200 C)"
+   },
+   "same_run": {
+    "value": "left/right channels of one process and temperature: true; inhibited vs uninhibited and different temperatures: false",
+    "note": "mirrored structure on one chip (Sec. 9.4); \"both the ALD runs, with and without the inhibitor\" (Sec. 9.3); LHAR chip and reference wafer in the same run (Sec. 9.4)"
+   },
+   "predictor_prior_knowledge": "predictor has seen two tabulated PD50/H values (288 and 454 at 200 C) and filled fractions about 0.11 and 0.05",
+   "notes": "Y axis is raw X-ray counts with a non-zero background, so thickness_over_plateau in the sealed curve is background-subtracted. Table 1 values are reproduced in sources[].tabulated_conditions_table1. Film density from XRR: 5.2 g/cm3. Channel width 3300 um."
+  },
+  {
+   "id": "gonsalves2026_fig2_ZnO_MeOH_DEZ_H2O_175C_left",
+   "source": "C. Gonsalves, J. A. Velasco, A. Othman, V. Miikkulainen, R. L. Puurunen, \"Enhancing Conformality in Atomic Layer Deposition through Low Growth Per Cycle\", arXiv:2609.12460v1 (11 Sep 2026), doi:10.48550/arXiv.2609.12460",
+   "figure_label": "Fig. 2(e), left channel of the mirrored structure",
+   "material": "ZnO",
+   "precursors": "Zn(C2H5)2 (DEZ) / H2O; CH3OH inhibitor dosed before DEZ",
+   "limiting_reactant": {
+    "value": "DEZ (assumed)",
+    "note": "not stated for the experiments; simulations assume one limiting reactant pulse (Sec. 9.2) and Kn is computed for DEZ (Sec. 9.4)"
+   },
+   "temperature_C": 175,
+   "reactor": "Picosun R-200",
+   "pressure_Pa": {
+    "value": 90,
+    "note": "reaction-chamber pressure 0.92/0.90/0.86 hPa at 150/175/200 C; intermediate space 14 hPa (Sec. 9.3). For Kn the authors set pA0 equal to the chamber pressure and assumed inert pressure 1 hPa (Sec. 9.4)"
+   },
+   "carrier_gas": {
+    "value": "N2",
+    "note": "Sec. 9.3; precursors delivered at 22 C; methanol cylinder at about -20 C"
+   },
+   "gap_nm": {
+    "nominal": 500,
+    "measured": null,
+    "note": "PillarHall LHAR5b, channel height 500 nm (Sec. 9.4)"
+   },
+   "channel_length_um": 1000,
+   "cycles": 180,
+   "plateau_thickness_nm": {
+    "value": 12.4,
+    "error": null,
+    "note": "planar-wafer ellipsometry thickness from the same run (Table 1); the figure is plotted in X-ray counts",
+    "plateau_counts": 696,
+    "plateau_counts_sem": 4.6,
+    "background_counts": 88,
+    "open_area_zone_I_counts": 568,
+    "definition": "custodian reading: mean counts over the authors' normalisation window inside the channel (Sec. 9.5.3); background = mean counts over 350-450 um"
+   },
+   "growth_per_cycle_nm": {
+    "value": 0.069,
+    "note": "ellipsometry, planar wafer (Table 1)"
+   },
+   "pulse_purge_s": {
+    "value": "MeOH 0.2 / purge 10.8 / DEZ 0.2 / purge 15 / H2O 0.2 / purge 15",
+    "note": "Sec. 9.3"
+   },
+   "measurement": {
+    "method": "SEM-EDS Zn X-ray line scan (Jeol JSM-IT800HL, Oxford EDS) at 5 keV after membrane removal",
+    "spot_um": null,
+    "point_spacing_um": 1,
+    "note": "spot/interaction size not stated; point spacing ~1 um, scans repeated three times (Sec. 9.5.3)",
+    "point_scatter_fraction_of_plateau": 0.048
+   },
+   "x50_um": {
+    "value": 214.6,
+    "error": 1.5,
+    "definition": "depth where background-subtracted counts = 0.5 x (plateau - background), on a 9-point running mean",
+    "authors_PD50_x_over_H_table1": "428 +/- 2"
+   },
+   "digitisation_error": {
+    "x_um": 0.5,
+    "y_fraction_of_plateau": 0.006,
+    "method": "vector marker rectangles from the PDF (coordinates quantised to 0.11 pt = 0.9 um, 3.3 counts)"
+   },
+   "series": {
+    "name": "gonsalves2026_fig2_175C",
+    "members": [
+     "gonsalves2026_fig2_ZnO_DEZ_H2O_175C_left",
+     "gonsalves2026_fig2_ZnO_DEZ_H2O_175C_right",
+     "gonsalves2026_fig2_ZnO_MeOH_DEZ_H2O_175C_left",
+     "gonsalves2026_fig2_ZnO_MeOH_DEZ_H2O_175C_right"
+    ],
+    "varied": "with / without methanol inhibitor at fixed temperature; left and right are the two mirrored channels of one line scan. Across panels: temperature (150, 175, 200 C)"
+   },
+   "same_run": {
+    "value": "left/right channels of one process and temperature: true; inhibited vs uninhibited and different temperatures: false",
+    "note": "mirrored structure on one chip (Sec. 9.4); \"both the ALD runs, with and without the inhibitor\" (Sec. 9.3); LHAR chip and reference wafer in the same run (Sec. 9.4)"
+   },
+   "predictor_prior_knowledge": "predictor has seen two tabulated PD50/H values (288 and 454 at 200 C) and filled fractions about 0.11 and 0.05",
+   "notes": "Y axis is raw X-ray counts with a non-zero background, so thickness_over_plateau in the sealed curve is background-subtracted. Table 1 values are reproduced in sources[].tabulated_conditions_table1. Film density from XRR: 5.3 g/cm3. Channel width 3300 um."
+  },
+  {
+   "id": "gonsalves2026_fig2_ZnO_MeOH_DEZ_H2O_175C_right",
+   "source": "C. Gonsalves, J. A. Velasco, A. Othman, V. Miikkulainen, R. L. Puurunen, \"Enhancing Conformality in Atomic Layer Deposition through Low Growth Per Cycle\", arXiv:2609.12460v1 (11 Sep 2026), doi:10.48550/arXiv.2609.12460",
+   "figure_label": "Fig. 2(e), right channel of the mirrored structure",
+   "material": "ZnO",
+   "precursors": "Zn(C2H5)2 (DEZ) / H2O; CH3OH inhibitor dosed before DEZ",
+   "limiting_reactant": {
+    "value": "DEZ (assumed)",
+    "note": "not stated for the experiments; simulations assume one limiting reactant pulse (Sec. 9.2) and Kn is computed for DEZ (Sec. 9.4)"
+   },
+   "temperature_C": 175,
+   "reactor": "Picosun R-200",
+   "pressure_Pa": {
+    "value": 90,
+    "note": "reaction-chamber pressure 0.92/0.90/0.86 hPa at 150/175/200 C; intermediate space 14 hPa (Sec. 9.3). For Kn the authors set pA0 equal to the chamber pressure and assumed inert pressure 1 hPa (Sec. 9.4)"
+   },
+   "carrier_gas": {
+    "value": "N2",
+    "note": "Sec. 9.3; precursors delivered at 22 C; methanol cylinder at about -20 C"
+   },
+   "gap_nm": {
+    "nominal": 500,
+    "measured": null,
+    "note": "PillarHall LHAR5b, channel height 500 nm (Sec. 9.4)"
+   },
+   "channel_length_um": 1000,
+   "cycles": 180,
+   "plateau_thickness_nm": {
+    "value": 12.4,
+    "error": null,
+    "note": "planar-wafer ellipsometry thickness from the same run (Table 1); the figure is plotted in X-ray counts",
+    "plateau_counts": 701,
+    "plateau_counts_sem": 4.0,
+    "background_counts": 92,
+    "open_area_zone_I_counts": 568,
+    "definition": "custodian reading: mean counts over the authors' normalisation window inside the channel (Sec. 9.5.3); background = mean counts over 350-450 um"
+   },
+   "growth_per_cycle_nm": {
+    "value": 0.069,
+    "note": "ellipsometry, planar wafer (Table 1)"
+   },
+   "pulse_purge_s": {
+    "value": "MeOH 0.2 / purge 10.8 / DEZ 0.2 / purge 15 / H2O 0.2 / purge 15",
+    "note": "Sec. 9.3"
+   },
+   "measurement": {
+    "method": "SEM-EDS Zn X-ray line scan (Jeol JSM-IT800HL, Oxford EDS) at 5 keV after membrane removal",
+    "spot_um": null,
+    "point_spacing_um": 1,
+    "note": "spot/interaction size not stated; point spacing ~1 um, scans repeated three times (Sec. 9.5.3)",
+    "point_scatter_fraction_of_plateau": 0.041
+   },
+   "x50_um": {
+    "value": 214.9,
+    "error": 1.5,
+    "definition": "depth where background-subtracted counts = 0.5 x (plateau - background), on a 9-point running mean",
+    "authors_PD50_x_over_H_table1": "428 +/- 2"
+   },
+   "digitisation_error": {
+    "x_um": 0.5,
+    "y_fraction_of_plateau": 0.006,
+    "method": "vector marker rectangles from the PDF (coordinates quantised to 0.11 pt = 0.9 um, 3.3 counts)"
+   },
+   "series": {
+    "name": "gonsalves2026_fig2_175C",
+    "members": [
+     "gonsalves2026_fig2_ZnO_DEZ_H2O_175C_left",
+     "gonsalves2026_fig2_ZnO_DEZ_H2O_175C_right",
+     "gonsalves2026_fig2_ZnO_MeOH_DEZ_H2O_175C_left",
+     "gonsalves2026_fig2_ZnO_MeOH_DEZ_H2O_175C_right"
+    ],
+    "varied": "with / without methanol inhibitor at fixed temperature; left and right are the two mirrored channels of one line scan. Across panels: temperature (150, 175, 200 C)"
+   },
+   "same_run": {
+    "value": "left/right channels of one process and temperature: true; inhibited vs uninhibited and different temperatures: false",
+    "note": "mirrored structure on one chip (Sec. 9.4); \"both the ALD runs, with and without the inhibitor\" (Sec. 9.3); LHAR chip and reference wafer in the same run (Sec. 9.4)"
+   },
+   "predictor_prior_knowledge": "predictor has seen two tabulated PD50/H values (288 and 454 at 200 C) and filled fractions about 0.11 and 0.05",
+   "notes": "Y axis is raw X-ray counts with a non-zero background, so thickness_over_plateau in the sealed curve is background-subtracted. Table 1 values are reproduced in sources[].tabulated_conditions_table1. Film density from XRR: 5.3 g/cm3. Channel width 3300 um."
+  },
+  {
+   "id": "gonsalves2026_fig2_ZnO_DEZ_H2O_200C_left",
+   "source": "C. Gonsalves, J. A. Velasco, A. Othman, V. Miikkulainen, R. L. Puurunen, \"Enhancing Conformality in Atomic Layer Deposition through Low Growth Per Cycle\", arXiv:2609.12460v1 (11 Sep 2026), doi:10.48550/arXiv.2609.12460",
+   "figure_label": "Fig. 2(f), left channel of the mirrored structure",
+   "material": "ZnO",
+   "precursors": "Zn(C2H5)2 (DEZ) / H2O",
+   "limiting_reactant": {
+    "value": "DEZ (assumed)",
+    "note": "not stated for the experiments; simulations assume one limiting reactant pulse (Sec. 9.2) and Kn is computed for DEZ (Sec. 9.4)"
+   },
+   "temperature_C": 200,
+   "reactor": "Picosun R-200",
+   "pressure_Pa": {
+    "value": 86,
+    "note": "reaction-chamber pressure 0.92/0.90/0.86 hPa at 150/175/200 C; intermediate space 14 hPa (Sec. 9.3). For Kn the authors set pA0 equal to the chamber pressure and assumed inert pressure 1 hPa (Sec. 9.4)"
+   },
+   "carrier_gas": {
+    "value": "N2",
+    "note": "Sec. 9.3; precursors delivered at 22 C; methanol cylinder at about -20 C"
+   },
+   "gap_nm": {
+    "nominal": 500,
+    "measured": null,
+    "note": "PillarHall LHAR5b, channel height 500 nm (Sec. 9.4)"
+   },
+   "channel_length_um": 1000,
+   "cycles": 180,
+   "plateau_thickness_nm": {
+    "value": 25.4,
+    "error": null,
+    "note": "planar-wafer ellipsometry thickness from the same run (Table 1); the figure is plotted in X-ray counts",
+    "plateau_counts": 1294,
+    "plateau_counts_sem": 6.5,
+    "background_counts": 86,
+    "open_area_zone_I_counts": 1248,
+    "definition": "custodian reading: mean counts over the authors' normalisation window inside the channel (Sec. 9.5.3); background = mean counts over 350-450 um"
+   },
+   "growth_per_cycle_nm": {
+    "value": 0.141,
+    "note": "ellipsometry, planar wafer (Table 1)"
+   },
+   "pulse_purge_s": {
+    "value": "DEZ 0.2 / purge 26 / H2O 0.2 / purge 15",
+    "note": "Sec. 9.3"
+   },
+   "measurement": {
+    "method": "SEM-EDS Zn X-ray line scan (Jeol JSM-IT800HL, Oxford EDS) at 5 keV after membrane removal",
+    "spot_um": null,
+    "point_spacing_um": 1,
+    "note": "spot/interaction size not stated; point spacing ~1 um, scans repeated three times (Sec. 9.5.3)",
+    "point_scatter_fraction_of_plateau": 0.034
+   },
+   "x50_um": {
+    "value": 145.2,
+    "error": 1.5,
+    "definition": "depth where background-subtracted counts = 0.5 x (plateau - background), on a 9-point running mean",
+    "authors_PD50_x_over_H_table1": "288 +/- 1"
+   },
+   "digitisation_error": {
+    "x_um": 0.5,
+    "y_fraction_of_plateau": 0.003,
+    "method": "vector marker rectangles from the PDF (coordinates quantised to 0.11 pt = 0.9 um, 3.3 counts)"
+   },
+   "series": {
+    "name": "gonsalves2026_fig2_200C",
+    "members": [
+     "gonsalves2026_fig2_ZnO_DEZ_H2O_200C_left",
+     "gonsalves2026_fig2_ZnO_DEZ_H2O_200C_right",
+     "gonsalves2026_fig2_ZnO_MeOH_DEZ_H2O_200C_left",
+     "gonsalves2026_fig2_ZnO_MeOH_DEZ_H2O_200C_right"
+    ],
+    "varied": "with / without methanol inhibitor at fixed temperature; left and right are the two mirrored channels of one line scan. Across panels: temperature (150, 175, 200 C)"
+   },
+   "same_run": {
+    "value": "left/right channels of one process and temperature: true; inhibited vs uninhibited and different temperatures: false",
+    "note": "mirrored structure on one chip (Sec. 9.4); \"both the ALD runs, with and without the inhibitor\" (Sec. 9.3); LHAR chip and reference wafer in the same run (Sec. 9.4)"
+   },
+   "predictor_prior_knowledge": "predictor has seen two tabulated PD50/H values (288 and 454 at 200 C) and filled fractions about 0.11 and 0.05",
+   "notes": "Y axis is raw X-ray counts with a non-zero background, so thickness_over_plateau in the sealed curve is background-subtracted. Table 1 values are reproduced in sources[].tabulated_conditions_table1. Film density from XRR: 5.0 g/cm3. Channel width 3300 um."
+  },
+  {
+   "id": "gonsalves2026_fig2_ZnO_DEZ_H2O_200C_right",
+   "source": "C. Gonsalves, J. A. Velasco, A. Othman, V. Miikkulainen, R. L. Puurunen, \"Enhancing Conformality in Atomic Layer Deposition through Low Growth Per Cycle\", arXiv:2609.12460v1 (11 Sep 2026), doi:10.48550/arXiv.2609.12460",
+   "figure_label": "Fig. 2(f), right channel of the mirrored structure",
+   "material": "ZnO",
+   "precursors": "Zn(C2H5)2 (DEZ) / H2O",
+   "limiting_reactant": {
+    "value": "DEZ (assumed)",
+    "note": "not stated for the experiments; simulations assume one limiting reactant pulse (Sec. 9.2) and Kn is computed for DEZ (Sec. 9.4)"
+   },
+   "temperature_C": 200,
+   "reactor": "Picosun R-200",
+   "pressure_Pa": {
+    "value": 86,
+    "note": "reaction-chamber pressure 0.92/0.90/0.86 hPa at 150/175/200 C; intermediate space 14 hPa (Sec. 9.3). For Kn the authors set pA0 equal to the chamber pressure and assumed inert pressure 1 hPa (Sec. 9.4)"
+   },
+   "carrier_gas": {
+    "value": "N2",
+    "note": "Sec. 9.3; precursors delivered at 22 C; methanol cylinder at about -20 C"
+   },
+   "gap_nm": {
+    "nominal": 500,
+    "measured": null,
+    "note": "PillarHall LHAR5b, channel height 500 nm (Sec. 9.4)"
+   },
+   "channel_length_um": 1000,
+   "cycles": 180,
+   "plateau_thickness_nm": {
+    "value": 25.4,
+    "error": null,
+    "note": "planar-wafer ellipsometry thickness from the same run (Table 1); the figure is plotted in X-ray counts",
+    "plateau_counts": 1301,
+    "plateau_counts_sem": 5.7,
+    "background_counts": 90,
+    "open_area_zone_I_counts": 1248,
+    "definition": "custodian reading: mean counts over the authors' normalisation window inside the channel (Sec. 9.5.3); background = mean counts over 350-450 um"
+   },
+   "growth_per_cycle_nm": {
+    "value": 0.141,
+    "note": "ellipsometry, planar wafer (Table 1)"
+   },
+   "pulse_purge_s": {
+    "value": "DEZ 0.2 / purge 26 / H2O 0.2 / purge 15",
+    "note": "Sec. 9.3"
+   },
+   "measurement": {
+    "method": "SEM-EDS Zn X-ray line scan (Jeol JSM-IT800HL, Oxford EDS) at 5 keV after membrane removal",
+    "spot_um": null,
+    "point_spacing_um": 1,
+    "note": "spot/interaction size not stated; point spacing ~1 um, scans repeated three times (Sec. 9.5.3)",
+    "point_scatter_fraction_of_plateau": 0.03
+   },
+   "x50_um": {
+    "value": 144.2,
+    "error": 1.5,
+    "definition": "depth where background-subtracted counts = 0.5 x (plateau - background), on a 9-point running mean",
+    "authors_PD50_x_over_H_table1": "288 +/- 1"
+   },
+   "digitisation_error": {
+    "x_um": 0.5,
+    "y_fraction_of_plateau": 0.003,
+    "method": "vector marker rectangles from the PDF (coordinates quantised to 0.11 pt = 0.9 um, 3.3 counts)"
+   },
+   "series": {
+    "name": "gonsalves2026_fig2_200C",
+    "members": [
+     "gonsalves2026_fig2_ZnO_DEZ_H2O_200C_left",
+     "gonsalves2026_fig2_ZnO_DEZ_H2O_200C_right",
+     "gonsalves2026_fig2_ZnO_MeOH_DEZ_H2O_200C_left",
+     "gonsalves2026_fig2_ZnO_MeOH_DEZ_H2O_200C_right"
+    ],
+    "varied": "with / without methanol inhibitor at fixed temperature; left and right are the two mirrored channels of one line scan. Across panels: temperature (150, 175, 200 C)"
+   },
+   "same_run": {
+    "value": "left/right channels of one process and temperature: true; inhibited vs uninhibited and different temperatures: false",
+    "note": "mirrored structure on one chip (Sec. 9.4); \"both the ALD runs, with and without the inhibitor\" (Sec. 9.3); LHAR chip and reference wafer in the same run (Sec. 9.4)"
+   },
+   "predictor_prior_knowledge": "predictor has seen two tabulated PD50/H values (288 and 454 at 200 C) and filled fractions about 0.11 and 0.05",
+   "notes": "Y axis is raw X-ray counts with a non-zero background, so thickness_over_plateau in the sealed curve is background-subtracted. Table 1 values are reproduced in sources[].tabulated_conditions_table1. Film density from XRR: 5.0 g/cm3. Channel width 3300 um."
+  },
+  {
+   "id": "gonsalves2026_fig2_ZnO_MeOH_DEZ_H2O_200C_left",
+   "source": "C. Gonsalves, J. A. Velasco, A. Othman, V. Miikkulainen, R. L. Puurunen, \"Enhancing Conformality in Atomic Layer Deposition through Low Growth Per Cycle\", arXiv:2609.12460v1 (11 Sep 2026), doi:10.48550/arXiv.2609.12460",
+   "figure_label": "Fig. 2(f), left channel of the mirrored structure",
+   "material": "ZnO",
+   "precursors": "Zn(C2H5)2 (DEZ) / H2O; CH3OH inhibitor dosed before DEZ",
+   "limiting_reactant": {
+    "value": "DEZ (assumed)",
+    "note": "not stated for the experiments; simulations assume one limiting reactant pulse (Sec. 9.2) and Kn is computed for DEZ (Sec. 9.4)"
+   },
+   "temperature_C": 200,
+   "reactor": "Picosun R-200",
+   "pressure_Pa": {
+    "value": 86,
+    "note": "reaction-chamber pressure 0.92/0.90/0.86 hPa at 150/175/200 C; intermediate space 14 hPa (Sec. 9.3). For Kn the authors set pA0 equal to the chamber pressure and assumed inert pressure 1 hPa (Sec. 9.4)"
+   },
+   "carrier_gas": {
+    "value": "N2",
+    "note": "Sec. 9.3; precursors delivered at 22 C; methanol cylinder at about -20 C"
+   },
+   "gap_nm": {
+    "nominal": 500,
+    "measured": null,
+    "note": "PillarHall LHAR5b, channel height 500 nm (Sec. 9.4)"
+   },
+   "channel_length_um": 1000,
+   "cycles": 180,
+   "plateau_thickness_nm": {
+    "value": 12.0,
+    "error": null,
+    "note": "planar-wafer ellipsometry thickness from the same run (Table 1); the figure is plotted in X-ray counts",
+    "plateau_counts": 662,
+    "plateau_counts_sem": 4.1,
+    "background_counts": 88,
+    "open_area_zone_I_counts": 578,
+    "definition": "custodian reading: mean counts over the authors' normalisation window inside the channel (Sec. 9.5.3); background = mean counts over 350-450 um"
+   },
+   "growth_per_cycle_nm": {
+    "value": 0.067,
+    "note": "ellipsometry, planar wafer (Table 1)"
+   },
+   "pulse_purge_s": {
+    "value": "MeOH 0.2 / purge 10.8 / DEZ 0.2 / purge 15 / H2O 0.2 / purge 15",
+    "note": "Sec. 9.3"
+   },
+   "measurement": {
+    "method": "SEM-EDS Zn X-ray line scan (Jeol JSM-IT800HL, Oxford EDS) at 5 keV after membrane removal",
+    "spot_um": null,
+    "point_spacing_um": 1,
+    "note": "spot/interaction size not stated; point spacing ~1 um, scans repeated three times (Sec. 9.5.3)",
+    "point_scatter_fraction_of_plateau": 0.045
+   },
+   "x50_um": {
+    "value": 219.2,
+    "error": 1.5,
+    "definition": "depth where background-subtracted counts = 0.5 x (plateau - background), on a 9-point running mean",
+    "authors_PD50_x_over_H_table1": "454 +/- 5"
+   },
+   "digitisation_error": {
+    "x_um": 0.5,
+    "y_fraction_of_plateau": 0.006,
+    "method": "vector marker rectangles from the PDF (coordinates quantised to 0.11 pt = 0.9 um, 3.3 counts)"
+   },
+   "series": {
+    "name": "gonsalves2026_fig2_200C",
+    "members": [
+     "gonsalves2026_fig2_ZnO_DEZ_H2O_200C_left",
+     "gonsalves2026_fig2_ZnO_DEZ_H2O_200C_right",
+     "gonsalves2026_fig2_ZnO_MeOH_DEZ_H2O_200C_left",
+     "gonsalves2026_fig2_ZnO_MeOH_DEZ_H2O_200C_right"
+    ],
+    "varied": "with / without methanol inhibitor at fixed temperature; left and right are the two mirrored channels of one line scan. Across panels: temperature (150, 175, 200 C)"
+   },
+   "same_run": {
+    "value": "left/right channels of one process and temperature: true; inhibited vs uninhibited and different temperatures: false",
+    "note": "mirrored structure on one chip (Sec. 9.4); \"both the ALD runs, with and without the inhibitor\" (Sec. 9.3); LHAR chip and reference wafer in the same run (Sec. 9.4)"
+   },
+   "predictor_prior_knowledge": "predictor has seen two tabulated PD50/H values (288 and 454 at 200 C) and filled fractions about 0.11 and 0.05",
+   "notes": "Y axis is raw X-ray counts with a non-zero background, so thickness_over_plateau in the sealed curve is background-subtracted. Table 1 values are reproduced in sources[].tabulated_conditions_table1. Film density from XRR: 5.4 g/cm3. Channel width 3300 um."
+  },
+  {
+   "id": "gonsalves2026_fig2_ZnO_MeOH_DEZ_H2O_200C_right",
+   "source": "C. Gonsalves, J. A. Velasco, A. Othman, V. Miikkulainen, R. L. Puurunen, \"Enhancing Conformality in Atomic Layer Deposition through Low Growth Per Cycle\", arXiv:2609.12460v1 (11 Sep 2026), doi:10.48550/arXiv.2609.12460",
+   "figure_label": "Fig. 2(f), right channel of the mirrored structure",
+   "material": "ZnO",
+   "precursors": "Zn(C2H5)2 (DEZ) / H2O; CH3OH inhibitor dosed before DEZ",
+   "limiting_reactant": {
+    "value": "DEZ (assumed)",
+    "note": "not stated for the experiments; simulations assume one limiting reactant pulse (Sec. 9.2) and Kn is computed for DEZ (Sec. 9.4)"
+   },
+   "temperature_C": 200,
+   "reactor": "Picosun R-200",
+   "pressure_Pa": {
+    "value": 86,
+    "note": "reaction-chamber pressure 0.92/0.90/0.86 hPa at 150/175/200 C; intermediate space 14 hPa (Sec. 9.3). For Kn the authors set pA0 equal to the chamber pressure and assumed inert pressure 1 hPa (Sec. 9.4)"
+   },
+   "carrier_gas": {
+    "value": "N2",
+    "note": "Sec. 9.3; precursors delivered at 22 C; methanol cylinder at about -20 C"
+   },
+   "gap_nm": {
+    "nominal": 500,
+    "measured": null,
+    "note": "PillarHall LHAR5b, channel height 500 nm (Sec. 9.4)"
+   },
+   "channel_length_um": 1000,
+   "cycles": 180,
+   "plateau_thickness_nm": {
+    "value": 12.0,
+    "error": null,
+    "note": "planar-wafer ellipsometry thickness from the same run (Table 1); the figure is plotted in X-ray counts",
+    "plateau_counts": 665,
+    "plateau_counts_sem": 3.7,
+    "background_counts": 89,
+    "open_area_zone_I_counts": 578,
+    "definition": "custodian reading: mean counts over the authors' normalisation window inside the channel (Sec. 9.5.3); background = mean counts over 350-450 um"
+   },
+   "growth_per_cycle_nm": {
+    "value": 0.067,
+    "note": "ellipsometry, planar wafer (Table 1)"
+   },
+   "pulse_purge_s": {
+    "value": "MeOH 0.2 / purge 10.8 / DEZ 0.2 / purge 15 / H2O 0.2 / purge 15",
+    "note": "Sec. 9.3"
+   },
+   "measurement": {
+    "method": "SEM-EDS Zn X-ray line scan (Jeol JSM-IT800HL, Oxford EDS) at 5 keV after membrane removal",
+    "spot_um": null,
+    "point_spacing_um": 1,
+    "note": "spot/interaction size not stated; point spacing ~1 um, scans repeated three times (Sec. 9.5.3)",
+    "point_scatter_fraction_of_plateau": 0.041
+   },
+   "x50_um": {
+    "value": 239.7,
+    "error": 1.5,
+    "definition": "depth where background-subtracted counts = 0.5 x (plateau - background), on a 9-point running mean",
+    "authors_PD50_x_over_H_table1": "454 +/- 5"
+   },
+   "digitisation_error": {
+    "x_um": 0.5,
+    "y_fraction_of_plateau": 0.006,
+    "method": "vector marker rectangles from the PDF (coordinates quantised to 0.11 pt = 0.9 um, 3.3 counts)"
+   },
+   "series": {
+    "name": "gonsalves2026_fig2_200C",
+    "members": [
+     "gonsalves2026_fig2_ZnO_DEZ_H2O_200C_left",
+     "gonsalves2026_fig2_ZnO_DEZ_H2O_200C_right",
+     "gonsalves2026_fig2_ZnO_MeOH_DEZ_H2O_200C_left",
+     "gonsalves2026_fig2_ZnO_MeOH_DEZ_H2O_200C_right"
+    ],
+    "varied": "with / without methanol inhibitor at fixed temperature; left and right are the two mirrored channels of one line scan. Across panels: temperature (150, 175, 200 C)"
+   },
+   "same_run": {
+    "value": "left/right channels of one process and temperature: true; inhibited vs uninhibited and different temperatures: false",
+    "note": "mirrored structure on one chip (Sec. 9.4); \"both the ALD runs, with and without the inhibitor\" (Sec. 9.3); LHAR chip and reference wafer in the same run (Sec. 9.4)"
+   },
+   "predictor_prior_knowledge": "predictor has seen two tabulated PD50/H values (288 and 454 at 200 C) and filled fractions about 0.11 and 0.05",
+   "notes": "Y axis is raw X-ray counts with a non-zero background, so thickness_over_plateau in the sealed curve is background-subtracted. Table 1 values are reproduced in sources[].tabulated_conditions_table1. Film density from XRR: 5.4 g/cm3. Channel width 3300 um."
+  },
+  {
+   "id": "dendooven2009_fig5_Al2O3_200C_AR100",
+   "source": "J. Dendooven, D. Deduytsche, J. Musschoot, R. L. Vanmeirhaeghe, C. Detavernier, J. Electrochem. Soc. 156, P63 (2009), doi:10.1149/1.3072694",
+   "figure_label": "Fig. 5",
+   "material": "Al2O3",
+   "precursors": "Al(CH3)3 (TMA) / H2O",
+   "limiting_reactant": {
+    "value": "TMA",
+    "note": "H2O pressure chosen ~2x TMA \"to ensure that the TMA half-reaction was the limiting factor\" (p. P66)"
+   },
+   "temperature_C": 200,
+   "reactor": "home-built pump-type ALD reactor, Ghent University (chamber walls 110 C)",
+   "pressure_Pa": {
+    "value": 0.3,
+    "note": "TMA pressure during exposure 0.3 Pa; H2O about 2x larger (p. P66). Simulations in the paper use 0.35 Pa"
+   },
+   "carrier_gas": {
+    "value": null,
+    "note": "no carrier gas mentioned; exposure/evacuation cycle (p. P65-P66)"
+   },
+   "gap_nm": {
+    "nominal": 100000,
+    "measured": null,
+    "note": "foil thickness not stated; inferred from the paper's aspect-ratio definition a = L p/(4A) (Eq. 21) with L = 20 mm, width 5 mm, a = 100"
+   },
+   "channel_length_um": 20000,
+   "cycles": 150,
+   "plateau_thickness_nm": {
+    "value": 15,
+    "error": null,
+    "note": "not measured value: 150 cycles x \"approximately 1 A per cycle on a flat surface\" (p. P65); the figure is plotted as relative thickness",
+    "normalised_plateau": 1.0,
+    "definition": "authors' relative scale (=1.0 at the first measured point, 0.5 mm depth)"
+   },
+   "growth_per_cycle_nm": {
+    "value": 0.1,
+    "note": "\"approximately 1 A per cycle\" (p. P65)"
+   },
+   "pulse_purge_s": {
+    "value": "TMA 4 / evacuation 15 / H2O 5 / evacuation 40",
+    "note": "p. P66 and Fig. 5 caption"
+   },
+   "measurement": {
+    "method": "spectroscopic ellipsometry (Woollam M-2000) along the opened slot",
+    "spot_um": null,
+    "point_spacing_um": 1000,
+    "note": "spot size not stated"
+   },
+   "x50_um": {
+    "value": 10680.0,
+    "error": 300,
+    "definition": "depth where relative thickness = 0.5, linear interpolation between measured points 1 mm apart"
+   },
+   "digitisation_error": {
+    "x_um": 20,
+    "y_fraction_of_plateau": 0.005,
+    "method": "vector marker centres from the PDF"
+   },
+   "series": {
+    "name": "dendooven2009_fig5_AR_series",
+    "members": [
+     "dendooven2009_fig5_Al2O3_200C_AR100",
+     "dendooven2009_fig5_Al2O3_200C_AR50",
+     "dendooven2009_fig5_Al2O3_200C_AR33"
+    ],
+    "varied": "aspect ratio (33, 50, 100) through the foil thickness"
+   },
+   "same_run": {
+    "value": "not stated",
+    "note": "p. P65-P66 give one recipe for all three aspect ratios; not said whether coated together"
+   },
+   "predictor_prior_knowledge": "predictor knows the stated conditions and that the authors used s = 0.1",
+   "notes": "Macroscopic slot between two SiO2-covered Si pieces; molecular flow at these pressures per the authors. Slot is 5 mm x 20 mm cut from aluminium foil. Channel width 5000 um."
+  },
+  {
+   "id": "dendooven2009_fig5_Al2O3_200C_AR50",
+   "source": "J. Dendooven, D. Deduytsche, J. Musschoot, R. L. Vanmeirhaeghe, C. Detavernier, J. Electrochem. Soc. 156, P63 (2009), doi:10.1149/1.3072694",
+   "figure_label": "Fig. 5",
+   "material": "Al2O3",
+   "precursors": "Al(CH3)3 (TMA) / H2O",
+   "limiting_reactant": {
+    "value": "TMA",
+    "note": "H2O pressure chosen ~2x TMA \"to ensure that the TMA half-reaction was the limiting factor\" (p. P66)"
+   },
+   "temperature_C": 200,
+   "reactor": "home-built pump-type ALD reactor, Ghent University (chamber walls 110 C)",
+   "pressure_Pa": {
+    "value": 0.3,
+    "note": "TMA pressure during exposure 0.3 Pa; H2O about 2x larger (p. P66). Simulations in the paper use 0.35 Pa"
+   },
+   "carrier_gas": {
+    "value": null,
+    "note": "no carrier gas mentioned; exposure/evacuation cycle (p. P65-P66)"
+   },
+   "gap_nm": {
+    "nominal": 200000,
+    "measured": null,
+    "note": "foil thickness not stated; inferred from the paper's aspect-ratio definition a = L p/(4A) (Eq. 21) with L = 20 mm, width 5 mm, a = 50"
+   },
+   "channel_length_um": 20000,
+   "cycles": 150,
+   "plateau_thickness_nm": {
+    "value": 15,
+    "error": null,
+    "note": "not measured value: 150 cycles x \"approximately 1 A per cycle on a flat surface\" (p. P65); the figure is plotted as relative thickness",
+    "normalised_plateau": 1.0,
+    "definition": "authors' relative scale (=1.0 at the first measured point, 0.5 mm depth)"
+   },
+   "growth_per_cycle_nm": {
+    "value": 0.1,
+    "note": "\"approximately 1 A per cycle\" (p. P65)"
+   },
+   "pulse_purge_s": {
+    "value": "TMA 4 / evacuation 15 / H2O 5 / evacuation 40",
+    "note": "p. P66 and Fig. 5 caption"
+   },
+   "measurement": {
+    "method": "spectroscopic ellipsometry (Woollam M-2000) along the opened slot",
+    "spot_um": null,
+    "point_spacing_um": 1000,
+    "note": "spot size not stated"
+   },
+   "x50_um": {
+    "value": 18780.0,
+    "error": 300,
+    "definition": "depth where relative thickness = 0.5, linear interpolation between measured points 1 mm apart"
+   },
+   "digitisation_error": {
+    "x_um": 20,
+    "y_fraction_of_plateau": 0.005,
+    "method": "vector marker centres from the PDF"
+   },
+   "series": {
+    "name": "dendooven2009_fig5_AR_series",
+    "members": [
+     "dendooven2009_fig5_Al2O3_200C_AR100",
+     "dendooven2009_fig5_Al2O3_200C_AR50",
+     "dendooven2009_fig5_Al2O3_200C_AR33"
+    ],
+    "varied": "aspect ratio (33, 50, 100) through the foil thickness"
+   },
+   "same_run": {
+    "value": "not stated",
+    "note": "p. P65-P66 give one recipe for all three aspect ratios; not said whether coated together"
+   },
+   "predictor_prior_knowledge": "predictor knows the stated conditions and that the authors used s = 0.1",
+   "notes": "Macroscopic slot between two SiO2-covered Si pieces; molecular flow at these pressures per the authors. Slot is 5 mm x 20 mm cut from aluminium foil. Channel width 5000 um."
+  },
+  {
+   "id": "dendooven2009_fig5_Al2O3_200C_AR33",
+   "source": "J. Dendooven, D. Deduytsche, J. Musschoot, R. L. Vanmeirhaeghe, C. Detavernier, J. Electrochem. Soc. 156, P63 (2009), doi:10.1149/1.3072694",
+   "figure_label": "Fig. 5",
+   "material": "Al2O3",
+   "precursors": "Al(CH3)3 (TMA) / H2O",
+   "limiting_reactant": {
+    "value": "TMA",
+    "note": "H2O pressure chosen ~2x TMA \"to ensure that the TMA half-reaction was the limiting factor\" (p. P66)"
+   },
+   "temperature_C": 200,
+   "reactor": "home-built pump-type ALD reactor, Ghent University (chamber walls 110 C)",
+   "pressure_Pa": {
+    "value": 0.3,
+    "note": "TMA pressure during exposure 0.3 Pa; H2O about 2x larger (p. P66). Simulations in the paper use 0.35 Pa"
+   },
+   "carrier_gas": {
+    "value": null,
+    "note": "no carrier gas mentioned; exposure/evacuation cycle (p. P65-P66)"
+   },
+   "gap_nm": {
+    "nominal": 300000,
+    "measured": null,
+    "note": "foil thickness not stated; inferred from the paper's aspect-ratio definition a = L p/(4A) (Eq. 21) with L = 20 mm, width 5 mm, a = 33"
+   },
+   "channel_length_um": 20000,
+   "cycles": 150,
+   "plateau_thickness_nm": {
+    "value": 15,
+    "error": null,
+    "note": "not measured value: 150 cycles x \"approximately 1 A per cycle on a flat surface\" (p. P65); the figure is plotted as relative thickness",
+    "normalised_plateau": 1.0,
+    "definition": "authors' relative scale (=1.0 at the first measured point, 0.5 mm depth)"
+   },
+   "growth_per_cycle_nm": {
+    "value": 0.1,
+    "note": "\"approximately 1 A per cycle\" (p. P65)"
+   },
+   "pulse_purge_s": {
+    "value": "TMA 4 / evacuation 15 / H2O 5 / evacuation 40",
+    "note": "p. P66 and Fig. 5 caption"
+   },
+   "measurement": {
+    "method": "spectroscopic ellipsometry (Woollam M-2000) along the opened slot",
+    "spot_um": null,
+    "point_spacing_um": 1000,
+    "note": "spot size not stated"
+   },
+   "x50_um": {
+    "value": null,
+    "error": null,
+    "definition": "depth where relative thickness = 0.5, linear interpolation between measured points 1 mm apart; the half level is not reached within the 20 mm slot"
+   },
+   "digitisation_error": {
+    "x_um": 20,
+    "y_fraction_of_plateau": 0.005,
+    "method": "vector marker centres from the PDF"
+   },
+   "series": {
+    "name": "dendooven2009_fig5_AR_series",
+    "members": [
+     "dendooven2009_fig5_Al2O3_200C_AR100",
+     "dendooven2009_fig5_Al2O3_200C_AR50",
+     "dendooven2009_fig5_Al2O3_200C_AR33"
+    ],
+    "varied": "aspect ratio (33, 50, 100) through the foil thickness"
+   },
+   "same_run": {
+    "value": "not stated",
+    "note": "p. P65-P66 give one recipe for all three aspect ratios; not said whether coated together"
+   },
+   "predictor_prior_knowledge": "predictor knows the stated conditions and that the authors used s = 0.1",
+   "notes": "Macroscopic slot between two SiO2-covered Si pieces; molecular flow at these pressures per the authors. Slot is 5 mm x 20 mm cut from aluminium foil. Channel width 5000 um."
+  },
+  {
+   "id": "dendooven2010_fig2a_Al2O3_thermal_200C_AR22",
+   "source": "J. Dendooven, D. Deduytsche, J. Musschoot, R. L. Vanmeirhaeghe, C. Detavernier, J. Electrochem. Soc. 157, G111 (2010), doi:10.1149/1.3301664",
+   "figure_label": "Fig. 2(a)",
+   "material": "Al2O3",
+   "precursors": "Al(CH3)3 (TMA) / H2O (thermal)",
+   "limiting_reactant": {
+    "value": "reactant (H2O) per the text",
+    "note": "p. G112: TMA pulse chosen to saturate holes up to AR ~22, \"consequently, the reactant exposure was the limiting factor\"; not stated separately for AR ~50"
+   },
+   "temperature_C": 200,
+   "reactor": "home-built pump-type ALD reactor with remote ICP source, Ghent University (walls 95 C, H2O line 50 C)",
+   "pressure_Pa": {
+    "value": {
+     "TMA": 0.2,
+     "H2O": 0.3
+    },
+    "note": "pressures during exposures, measured before deposition (p. G112); base pressure 1e-4 Pa"
+   },
+   "carrier_gas": {
+    "value": null,
+    "note": "no carrier gas mentioned"
+   },
+   "gap_nm": {
+    "nominal": 500000,
+    "measured": null,
+    "note": "AR ~22: PTFE film 0.5 mm (p. G111)"
+   },
+   "channel_length_um": 20000,
+   "cycles": 200,
+   "plateau_thickness_nm": {
+    "value": 17.9,
+    "error": 0.2,
+    "definition": "custodian reading: mean of the measured points at 1-3 mm depth"
+   },
+   "growth_per_cycle_nm": {
+    "value": null,
+    "note": "not stated in this paper"
+   },
+   "pulse_purge_s": {
+    "value": "TMA 4 / evacuation 10 / H2O 9 / evacuation 30",
+    "note": "p. G111-G112 (30 s pumping after H2O for the thermal process)"
+   },
+   "measurement": {
+    "method": "spectroscopic ellipsometry (Woollam M-2000), Cauchy model",
+    "spot_um": null,
+    "point_spacing_um": 1000,
+    "note": "spot size not stated"
+   },
+   "x50_um": {
+    "value": null,
+    "error": null,
+    "definition": "depth where thickness = 0.5 x plateau, linear interpolation between points 1 mm apart; the half level is not reached before the end of the 20 mm slot"
+   },
+   "digitisation_error": {
+    "x_um": 30,
+    "y_fraction_of_plateau": 0.011,
+    "method": "vector triangle markers from the PDF (centroid used; marker anchor ambiguity included in y)"
+   },
+   "series": {
+    "name": "dendooven2010_fig2a_thermal",
+    "members": [
+     "dendooven2010_fig2a_Al2O3_thermal_200C_AR22",
+     "dendooven2010_fig2a_Al2O3_thermal_200C_AR50"
+    ],
+    "varied": "aspect ratio (~22, ~50)"
+   },
+   "same_run": {
+    "value": "not stated",
+    "note": "p. G112: \"both sets of experiments were performed under the same conditions\"; not said whether the two aspect ratios were coated together"
+   },
+   "predictor_prior_knowledge": "predictor knows the stated conditions and that the authors used s = 0.1",
+   "notes": "Points at negative depth (outside the slot) and beyond 20 mm are in the sealed curve. Channel width 5000 um."
+  },
+  {
+   "id": "dendooven2010_fig2a_Al2O3_thermal_200C_AR50",
+   "source": "J. Dendooven, D. Deduytsche, J. Musschoot, R. L. Vanmeirhaeghe, C. Detavernier, J. Electrochem. Soc. 157, G111 (2010), doi:10.1149/1.3301664",
+   "figure_label": "Fig. 2(a)",
+   "material": "Al2O3",
+   "precursors": "Al(CH3)3 (TMA) / H2O (thermal)",
+   "limiting_reactant": {
+    "value": "reactant (H2O) per the text",
+    "note": "p. G112: TMA pulse chosen to saturate holes up to AR ~22, \"consequently, the reactant exposure was the limiting factor\"; not stated separately for AR ~50"
+   },
+   "temperature_C": 200,
+   "reactor": "home-built pump-type ALD reactor with remote ICP source, Ghent University (walls 95 C, H2O line 50 C)",
+   "pressure_Pa": {
+    "value": {
+     "TMA": 0.2,
+     "H2O": 0.3
+    },
+    "note": "pressures during exposures, measured before deposition (p. G112); base pressure 1e-4 Pa"
+   },
+   "carrier_gas": {
+    "value": null,
+    "note": "no carrier gas mentioned"
+   },
+   "gap_nm": {
+    "nominal": 200000,
+    "measured": null,
+    "note": "spacer thickness for AR ~50 not stated; ~0.2 mm inferred from a = L p/(4A) with L = 20 mm, width 5 mm"
+   },
+   "channel_length_um": 20000,
+   "cycles": 200,
+   "plateau_thickness_nm": {
+    "value": 18.0,
+    "error": 0.34,
+    "definition": "custodian reading: mean of the measured points at 1-3 mm depth"
+   },
+   "growth_per_cycle_nm": {
+    "value": null,
+    "note": "not stated in this paper"
+   },
+   "pulse_purge_s": {
+    "value": "TMA 4 / evacuation 10 / H2O 9 / evacuation 30",
+    "note": "p. G111-G112 (30 s pumping after H2O for the thermal process)"
+   },
+   "measurement": {
+    "method": "spectroscopic ellipsometry (Woollam M-2000), Cauchy model",
+    "spot_um": null,
+    "point_spacing_um": 1000,
+    "note": "spot size not stated"
+   },
+   "x50_um": {
+    "value": 13040.0,
+    "error": 300,
+    "definition": "depth where thickness = 0.5 x plateau, linear interpolation between points 1 mm apart"
+   },
+   "digitisation_error": {
+    "x_um": 30,
+    "y_fraction_of_plateau": 0.011,
+    "method": "vector triangle markers from the PDF (centroid used; marker anchor ambiguity included in y)"
+   },
+   "series": {
+    "name": "dendooven2010_fig2a_thermal",
+    "members": [
+     "dendooven2010_fig2a_Al2O3_thermal_200C_AR22",
+     "dendooven2010_fig2a_Al2O3_thermal_200C_AR50"
+    ],
+    "varied": "aspect ratio (~22, ~50)"
+   },
+   "same_run": {
+    "value": "not stated",
+    "note": "p. G112: \"both sets of experiments were performed under the same conditions\"; not said whether the two aspect ratios were coated together"
+   },
+   "predictor_prior_knowledge": "predictor knows the stated conditions and that the authors used s = 0.1",
+   "notes": "Points at negative depth (outside the slot) and beyond 20 mm are in the sealed curve. Channel width 5000 um."
+  },
+  {
+   "id": "haimi2026_fig5_ZnO_sampleA_125C_125cyc",
+   "source": "E. Haimi, A. Philip, J. A. Velasco, F. Gao, M. Karppinen, R. L. Puurunen, J. Vac. Sci. Technol. A 44, 022410 (2026), doi:10.1116/6.0004982 (accepted manuscript)",
+   "figure_label": "Fig. 5, sample A",
+   "material": "ZnO",
+   "precursors": "Zn(C2H5)2 (DEZ) / H2O",
+   "limiting_reactant": {
+    "value": "DEZ",
+    "note": "assumed in the simulations (Sec. II.C); Sec. IV states DEZ exposure is the limiting factor at 125 C"
+   },
+   "temperature_C": 125,
+   "reactor": "Picosun SUNALE R-100",
+   "pressure_Pa": {
+    "value": 1400,
+    "note": "\"pressure in the reactor was ca. 14 hPa\" (Sec. II.A). Table III (simulation inputs): pN2 1208 / 1237 Pa and initial DEZ partial pressure 192 / 163 Pa for samples A / B; DEZ exposure estimated ~160 Pa s"
+   },
+   "carrier_gas": {
+    "value": "N2",
+    "note": "150 sccm carrier flow for DEZ and water; precursors at 21 C (Sec. II.A)"
+   },
+   "gap_nm": {
+    "nominal": 500,
+    "measured": null,
+    "note": "PillarHall LHAR5 (Sec. II.A)"
+   },
+   "channel_length_um": 5000,
+   "cycles": 125,
+   "plateau_thickness_nm": {
+    "value": 24.7,
+    "error": 0.94,
+    "definition": "custodian reading: mean thickness over 20-60 um inside the cavity",
+    "open_area_thickness_nm": 28.9,
+    "open_area_definition": "mean over -80 to -10 um (open area in front of the cavity, planar-equivalent)"
+   },
+   "growth_per_cycle_nm": {
+    "value": 0.23,
+    "note": "gpcsat from open-area thickness / cycles, Table III (samples A and B only)"
+   },
+   "pulse_purge_s": {
+    "value": "DEZ 1 / purge 15 / H2O 1 / purge 15",
+    "note": "Table I"
+   },
+   "measurement": {
+    "method": "ED-EPMA Zn-L X-ray line scan (Tescan Mira3, 5 keV) converted to thickness with a linear XRR calibration (Fig. 4)",
+    "spot_um": null,
+    "point_spacing_um": 1,
+    "note": "spot/interaction size not stated; points at 1 um intervals; outliers from pillars rejected by the authors (Sec. II.B)"
+   },
+   "x50_um": {
+    "value": 369.0,
+    "error": 3.0,
+    "definition": "depth inside the cavity where thickness = 0.5 x plateau_thickness_nm (the 20-60 um mean), on a 5-column running median"
+   },
+   "digitisation_error": {
+    "x_um": 2.0,
+    "y_fraction_of_plateau": 0.006,
+    "method": "raster hue selection on the embedded image (668 px wide, 1.54 um and 0.095 nm per pixel), column medians"
+   },
+   "series": {
+    "name": "haimi2026_fig5_temperature_series",
+    "members": [
+     "haimi2026_fig5_ZnO_sampleA_125C_125cyc",
+     "haimi2026_fig5_ZnO_sampleB_200C_125cyc",
+     "haimi2026_fig5_ZnO_sampleC_250C_125cyc"
+    ],
+    "varied": "growth temperature (125, 200, 250 C), 125 cycles"
+   },
+   "same_run": {
+    "value": false,
+    "note": "Table I lists A-E as separate samples with different temperature or DEZ pulse; not stated in words"
+   },
+   "predictor_prior_knowledge": "predictor has read the text and one sample's depth and fitted c; predictor has read this paper's text",
+   "notes": "Predictor has read this paper's text. Film density used by the authors: 5400 (125 C) and 5600 (200 C) kg/m3 (Table III). Cavity width 1 cm in the authors' simulation."
+  },
+  {
+   "id": "haimi2026_fig5_ZnO_sampleB_200C_125cyc",
+   "source": "E. Haimi, A. Philip, J. A. Velasco, F. Gao, M. Karppinen, R. L. Puurunen, J. Vac. Sci. Technol. A 44, 022410 (2026), doi:10.1116/6.0004982 (accepted manuscript)",
+   "figure_label": "Fig. 5, sample B",
+   "material": "ZnO",
+   "precursors": "Zn(C2H5)2 (DEZ) / H2O",
+   "limiting_reactant": {
+    "value": "DEZ",
+    "note": "assumed in the simulations (Sec. II.C); Sec. IV states DEZ exposure is the limiting factor at 125 C"
+   },
+   "temperature_C": 200,
+   "reactor": "Picosun SUNALE R-100",
+   "pressure_Pa": {
+    "value": 1400,
+    "note": "\"pressure in the reactor was ca. 14 hPa\" (Sec. II.A). Table III (simulation inputs): pN2 1208 / 1237 Pa and initial DEZ partial pressure 192 / 163 Pa for samples A / B; DEZ exposure estimated ~160 Pa s"
+   },
+   "carrier_gas": {
+    "value": "N2",
+    "note": "150 sccm carrier flow for DEZ and water; precursors at 21 C (Sec. II.A)"
+   },
+   "gap_nm": {
+    "nominal": 500,
+    "measured": null,
+    "note": "PillarHall LHAR5 (Sec. II.A)"
+   },
+   "channel_length_um": 5000,
+   "cycles": 125,
+   "plateau_thickness_nm": {
+    "value": 22.1,
+    "error": 0.31,
+    "definition": "custodian reading: mean thickness over 20-60 um inside the cavity",
+    "open_area_thickness_nm": 22.1,
+    "open_area_definition": "mean over -80 to -10 um (open area in front of the cavity, planar-equivalent)"
+   },
+   "growth_per_cycle_nm": {
+    "value": 0.18,
+    "note": "gpcsat from open-area thickness / cycles, Table III (samples A and B only)"
+   },
+   "pulse_purge_s": {
+    "value": "DEZ 1 / purge 15 / H2O 1 / purge 15",
+    "note": "Table I"
+   },
+   "measurement": {
+    "method": "ED-EPMA Zn-L X-ray line scan (Tescan Mira3, 5 keV) converted to thickness with a linear XRR calibration (Fig. 4)",
+    "spot_um": null,
+    "point_spacing_um": 1,
+    "note": "spot/interaction size not stated; points at 1 um intervals; outliers from pillars rejected by the authors (Sec. II.B)"
+   },
+   "x50_um": {
+    "value": 343.0,
+    "error": 3.0,
+    "definition": "depth inside the cavity where thickness = 0.5 x plateau_thickness_nm (the 20-60 um mean), on a 5-column running median"
+   },
+   "digitisation_error": {
+    "x_um": 2.0,
+    "y_fraction_of_plateau": 0.007,
+    "method": "raster hue selection on the embedded image (668 px wide, 1.54 um and 0.095 nm per pixel), column medians"
+   },
+   "series": {
+    "name": "haimi2026_fig5_temperature_series",
+    "members": [
+     "haimi2026_fig5_ZnO_sampleA_125C_125cyc",
+     "haimi2026_fig5_ZnO_sampleB_200C_125cyc",
+     "haimi2026_fig5_ZnO_sampleC_250C_125cyc"
+    ],
+    "varied": "growth temperature (125, 200, 250 C), 125 cycles"
+   },
+   "same_run": {
+    "value": false,
+    "note": "Table I lists A-E as separate samples with different temperature or DEZ pulse; not stated in words"
+   },
+   "predictor_prior_knowledge": "predictor has read the text and one sample's depth and fitted c; predictor has read this paper's text",
+   "notes": "Predictor has read this paper's text. Film density used by the authors: 5400 (125 C) and 5600 (200 C) kg/m3 (Table III). Cavity width 1 cm in the authors' simulation."
+  },
+  {
+   "id": "haimi2026_fig5_ZnO_sampleC_250C_125cyc",
+   "source": "E. Haimi, A. Philip, J. A. Velasco, F. Gao, M. Karppinen, R. L. Puurunen, J. Vac. Sci. Technol. A 44, 022410 (2026), doi:10.1116/6.0004982 (accepted manuscript)",
+   "figure_label": "Fig. 5, sample C",
+   "material": "ZnO",
+   "precursors": "Zn(C2H5)2 (DEZ) / H2O",
+   "limiting_reactant": {
+    "value": "DEZ",
+    "note": "assumed in the simulations (Sec. II.C); Sec. IV states DEZ exposure is the limiting factor at 125 C"
+   },
+   "temperature_C": 250,
+   "reactor": "Picosun SUNALE R-100",
+   "pressure_Pa": {
+    "value": 1400,
+    "note": "\"pressure in the reactor was ca. 14 hPa\" (Sec. II.A). Table III (simulation inputs): pN2 1208 / 1237 Pa and initial DEZ partial pressure 192 / 163 Pa for samples A / B; DEZ exposure estimated ~160 Pa s"
+   },
+   "carrier_gas": {
+    "value": "N2",
+    "note": "150 sccm carrier flow for DEZ and water; precursors at 21 C (Sec. II.A)"
+   },
+   "gap_nm": {
+    "nominal": 500,
+    "measured": null,
+    "note": "PillarHall LHAR5 (Sec. II.A)"
+   },
+   "channel_length_um": 5000,
+   "cycles": 125,
+   "plateau_thickness_nm": {
+    "value": 18.3,
+    "error": 1.3,
+    "definition": "custodian reading: mean thickness over 20-60 um inside the cavity",
+    "open_area_thickness_nm": 13.2,
+    "open_area_definition": "mean over -80 to -10 um (open area in front of the cavity, planar-equivalent)"
+   },
+   "growth_per_cycle_nm": {
+    "value": null,
+    "note": "not tabulated for this sample; open-area thickness / cycles = 0.106"
+   },
+   "pulse_purge_s": {
+    "value": "DEZ 1 / purge 15 / H2O 1 / purge 15",
+    "note": "Table I"
+   },
+   "measurement": {
+    "method": "ED-EPMA Zn-L X-ray line scan (Tescan Mira3, 5 keV) converted to thickness with a linear XRR calibration (Fig. 4)",
+    "spot_um": null,
+    "point_spacing_um": 1,
+    "note": "spot/interaction size not stated; points at 1 um intervals; outliers from pillars rejected by the authors (Sec. II.B)"
+   },
+   "x50_um": {
+    "value": 361.0,
+    "error": 3.0,
+    "definition": "depth inside the cavity where thickness = 0.5 x plateau_thickness_nm (the 20-60 um mean), on a 5-column running median"
+   },
+   "digitisation_error": {
+    "x_um": 2.0,
+    "y_fraction_of_plateau": 0.008,
+    "method": "raster hue selection on the embedded image (668 px wide, 1.54 um and 0.095 nm per pixel), column medians"
+   },
+   "series": {
+    "name": "haimi2026_fig5_temperature_series",
+    "members": [
+     "haimi2026_fig5_ZnO_sampleA_125C_125cyc",
+     "haimi2026_fig5_ZnO_sampleB_200C_125cyc",
+     "haimi2026_fig5_ZnO_sampleC_250C_125cyc"
+    ],
+    "varied": "growth temperature (125, 200, 250 C), 125 cycles"
+   },
+   "same_run": {
+    "value": false,
+    "note": "Table I lists A-E as separate samples with different temperature or DEZ pulse; not stated in words"
+   },
+   "predictor_prior_knowledge": "predictor has read the text and one sample's depth and fitted c; predictor has read this paper's text",
+   "notes": "Predictor has read this paper's text. Film density used by the authors: 5400 (125 C) and 5600 (200 C) kg/m3 (Table III). Cavity width 1 cm in the authors' simulation."
+  },
+  {
+   "id": "haimi2026_fig6_ZnO_sampleD_125C_56cyc_DEZ1s",
+   "source": "E. Haimi, A. Philip, J. A. Velasco, F. Gao, M. Karppinen, R. L. Puurunen, J. Vac. Sci. Technol. A 44, 022410 (2026), doi:10.1116/6.0004982 (accepted manuscript)",
+   "figure_label": "Fig. 6, sample D",
+   "material": "ZnO",
+   "precursors": "Zn(C2H5)2 (DEZ) / H2O",
+   "limiting_reactant": {
+    "value": "DEZ",
+    "note": "assumed in the simulations (Sec. II.C); Sec. IV states DEZ exposure is the limiting factor at 125 C"
+   },
+   "temperature_C": 125,
+   "reactor": "Picosun SUNALE R-100",
+   "pressure_Pa": {
+    "value": 1400,
+    "note": "\"pressure in the reactor was ca. 14 hPa\" (Sec. II.A). Table III (simulation inputs): pN2 1208 / 1237 Pa and initial DEZ partial pressure 192 / 163 Pa for samples A / B; DEZ exposure estimated ~160 Pa s"
+   },
+   "carrier_gas": {
+    "value": "N2",
+    "note": "150 sccm carrier flow for DEZ and water; precursors at 21 C (Sec. II.A)"
+   },
+   "gap_nm": {
+    "nominal": 500,
+    "measured": null,
+    "note": "PillarHall LHAR5 (Sec. II.A)"
+   },
+   "channel_length_um": 5000,
+   "cycles": 56,
+   "plateau_thickness_nm": {
+    "value": 8.4,
+    "error": 0.35,
+    "definition": "custodian reading: mean thickness over 20-60 um inside the cavity",
+    "open_area_thickness_nm": 9.4,
+    "open_area_definition": "mean over -80 to -10 um (open area in front of the cavity, planar-equivalent)"
+   },
+   "growth_per_cycle_nm": {
+    "value": null,
+    "note": "not tabulated for this sample; open-area thickness / cycles = 0.168"
+   },
+   "pulse_purge_s": {
+    "value": "DEZ 1 / purge 15 / H2O 1 / purge 15",
+    "note": "Table I"
+   },
+   "measurement": {
+    "method": "ED-EPMA Zn-L X-ray line scan (Tescan Mira3, 5 keV) converted to thickness with a linear XRR calibration (Fig. 4)",
+    "spot_um": null,
+    "point_spacing_um": 1,
+    "note": "spot/interaction size not stated; points at 1 um intervals; outliers from pillars rejected by the authors (Sec. II.B)"
+   },
+   "x50_um": {
+    "value": 371.0,
+    "error": 6.0,
+    "definition": "depth inside the cavity where thickness = 0.5 x plateau_thickness_nm (the 20-60 um mean), on a 5-column running median"
+   },
+   "digitisation_error": {
+    "x_um": 2.0,
+    "y_fraction_of_plateau": 0.018,
+    "method": "raster hue selection on the embedded image (668 px wide, 1.54 um and 0.095 nm per pixel), column medians"
+   },
+   "series": {
+    "name": "haimi2026_fig6_DEZ_pulse_series",
+    "members": [
+     "haimi2026_fig6_ZnO_sampleD_125C_56cyc_DEZ1s",
+     "haimi2026_fig6_ZnO_sampleE_125C_56cyc_DEZ0.5s"
+    ],
+    "varied": "DEZ pulse length (1 s, 0.5 s) at 125 C, 56 cycles"
+   },
+   "same_run": {
+    "value": false,
+    "note": "Table I lists A-E as separate samples with different temperature or DEZ pulse; not stated in words"
+   },
+   "predictor_prior_knowledge": "predictor has read the text and one sample's depth and fitted c; predictor has read this paper's text",
+   "notes": "Predictor has read this paper's text. Film density used by the authors: 5400 (125 C) and 5600 (200 C) kg/m3 (Table III). Cavity width 1 cm in the authors' simulation."
+  },
+  {
+   "id": "haimi2026_fig6_ZnO_sampleE_125C_56cyc_DEZ0.5s",
+   "source": "E. Haimi, A. Philip, J. A. Velasco, F. Gao, M. Karppinen, R. L. Puurunen, J. Vac. Sci. Technol. A 44, 022410 (2026), doi:10.1116/6.0004982 (accepted manuscript)",
+   "figure_label": "Fig. 6, sample E",
+   "material": "ZnO",
+   "precursors": "Zn(C2H5)2 (DEZ) / H2O",
+   "limiting_reactant": {
+    "value": "DEZ",
+    "note": "assumed in the simulations (Sec. II.C); Sec. IV states DEZ exposure is the limiting factor at 125 C"
+   },
+   "temperature_C": 125,
+   "reactor": "Picosun SUNALE R-100",
+   "pressure_Pa": {
+    "value": 1400,
+    "note": "\"pressure in the reactor was ca. 14 hPa\" (Sec. II.A). Table III (simulation inputs): pN2 1208 / 1237 Pa and initial DEZ partial pressure 192 / 163 Pa for samples A / B; DEZ exposure estimated ~160 Pa s"
+   },
+   "carrier_gas": {
+    "value": "N2",
+    "note": "150 sccm carrier flow for DEZ and water; precursors at 21 C (Sec. II.A)"
+   },
+   "gap_nm": {
+    "nominal": 500,
+    "measured": null,
+    "note": "PillarHall LHAR5 (Sec. II.A)"
+   },
+   "channel_length_um": 5000,
+   "cycles": 56,
+   "plateau_thickness_nm": {
+    "value": 7.7,
+    "error": 0.41,
+    "definition": "custodian reading: mean thickness over 20-60 um inside the cavity",
+    "open_area_thickness_nm": 8.6,
+    "open_area_definition": "mean over -80 to -10 um (open area in front of the cavity, planar-equivalent)"
+   },
+   "growth_per_cycle_nm": {
+    "value": null,
+    "note": "not tabulated for this sample; open-area thickness / cycles = 0.154"
+   },
+   "pulse_purge_s": {
+    "value": "DEZ 0.5 / purge 15 / H2O 1 / purge 15",
+    "note": "Table I"
+   },
+   "measurement": {
+    "method": "ED-EPMA Zn-L X-ray line scan (Tescan Mira3, 5 keV) converted to thickness with a linear XRR calibration (Fig. 4)",
+    "spot_um": null,
+    "point_spacing_um": 1,
+    "note": "spot/interaction size not stated; points at 1 um intervals; outliers from pillars rejected by the authors (Sec. II.B)"
+   },
+   "x50_um": {
+    "value": 283.0,
+    "error": 6.0,
+    "definition": "depth inside the cavity where thickness = 0.5 x plateau_thickness_nm (the 20-60 um mean), on a 5-column running median"
+   },
+   "digitisation_error": {
+    "x_um": 2.0,
+    "y_fraction_of_plateau": 0.019,
+    "method": "raster hue selection on the embedded image (668 px wide, 1.54 um and 0.095 nm per pixel), column medians"
+   },
+   "series": {
+    "name": "haimi2026_fig6_DEZ_pulse_series",
+    "members": [
+     "haimi2026_fig6_ZnO_sampleD_125C_56cyc_DEZ1s",
+     "haimi2026_fig6_ZnO_sampleE_125C_56cyc_DEZ0.5s"
+    ],
+    "varied": "DEZ pulse length (1 s, 0.5 s) at 125 C, 56 cycles"
+   },
+   "same_run": {
+    "value": false,
+    "note": "Table I lists A-E as separate samples with different temperature or DEZ pulse; not stated in words"
+   },
+   "predictor_prior_knowledge": "predictor has read the text and one sample's depth and fitted c; predictor has read this paper's text",
+   "notes": "Predictor has read this paper's text. Film density used by the authors: 5400 (125 C) and 5600 (200 C) kg/m3 (Table III). Cavity width 1 cm in the authors' simulation."
+  },
+  {
+   "id": "rose2009_fig3_TiO2_TDMAT_O3_180C",
+   "source": "M. Rose, J. W. Bartha, Appl. Surf. Sci. 255, 6620 (2009), doi:10.1016/j.apsusc.2009.02.055",
+   "figure_label": "Fig. 3",
+   "material": "TiO2",
+   "precursors": "Ti(N(CH3)2)4 (TDMAT) / O3",
+   "limiting_reactant": {
+    "value": "metal precursor",
+    "note": "ozone pulse long enough to saturate; profile caused by the metal precursor only (Sec. 3 of each paper)"
+   },
+   "temperature_C": 180,
+   "reactor": "custom 300 mm shower-head reactor (FHR Anlagenbau)",
+   "pressure_Pa": {
+    "value": 100,
+    "note": "process pressure 1 mbar (Sec. 3); TDMAT vapour pressure ~1 mbar at 40 C, concentration about 1-3 at.%"
+   },
+   "carrier_gas": {
+    "value": "Ar",
+    "note": "500 sccm Ar carrier; O3 250 g/m3 at 1000 sccm (Sec. 3)"
+   },
+   "gap_nm": {
+    "nominal": 130,
+    "measured": null,
+    "note": "GEOMETRY IS A CYLINDRICAL HOLE, not a slit: diameter 130 nm, depth 2 um (AR 20)"
+   },
+   "channel_length_um": 2.0,
+   "cycles": {
+    "value": 500,
+    "note": "Sec. 3: 500 cycles, ~20 nm on a planar substrate"
+   },
+   "plateau_thickness_nm": {
+    "value": 19.58,
+    "error": 0.03,
+    "definition": "custodian reading: thickness at the shallowest TEM point (depth 740 nm); only four points exist"
+   },
+   "growth_per_cycle_nm": {
+    "value": 0.04,
+    "note": "~20 nm / 500 cycles (Sec. 3)"
+   },
+   "pulse_purge_s": {
+    "value": "TDMAT pulse < 3 s (not stated for this sample; varied 0.5-3 s) / O3 2 s; purge not stated",
+    "note": "Sec. 3-4"
+   },
+   "measurement": {
+    "method": "TEM cross-sections (200 kV) of FIB lamellae at four depths; film thickness on the hole wall",
+    "spot_um": null,
+    "note": "depth known to +/-10 nm (authors)"
+   },
+   "x50_um": {
+    "value": null,
+    "error": null,
+    "definition": "depth where thickness = 0.5 x plateau, linear interpolation between the four TEM points; the half level is not reached within the measured depths"
+   },
+   "digitisation_error": {
+    "x_um": 0.005,
+    "y_fraction_of_plateau": 0.0015,
+    "method": "raster filled-marker centroids on the embedded image"
+   },
+   "series": {
+    "name": "rose2009_fig3",
+    "members": [
+     "rose2009_fig3_TiO2_TDMAT_O3_180C"
+    ],
+    "varied": "single profile"
+   },
+   "same_run": {
+    "value": "not applicable (single profile)",
+    "note": "one sample"
+   },
+   "predictor_prior_knowledge": "predictor has summaries of the text only",
+   "notes": "Holes, not slits. Four measured points per profile. Density of reactive sites used by the authors: 1e14 cm-2 (2009), 1e18 m-2 (2010)."
+  },
+  {
+   "id": "rose2010_fig1a_HfO2_TEMAHf_O3_180C",
+   "source": "M. Rose, J. W. Bartha, I. Endler, Appl. Surf. Sci. 256, 3778 (2010), doi:10.1016/j.apsusc.2010.01.025",
+   "figure_label": "Fig. 1(a)",
+   "material": "HfO2",
+   "precursors": "Hf(N(C2H5)(CH3))4 (TEMAHf) / O3",
+   "limiting_reactant": {
+    "value": "metal precursor",
+    "note": "ozone pulse long enough to saturate; profile caused by the metal precursor only (Sec. 3 of each paper)"
+   },
+   "temperature_C": 180,
+   "reactor": "custom 300 mm shower-head reactor (FHR Anlagenbau)",
+   "pressure_Pa": {
+    "value": 100,
+    "note": "process pressure 1 mbar (Sec. 3); precursors evaporated at 90 C"
+   },
+   "carrier_gas": {
+    "value": "Ar",
+    "note": "500 sccm Ar carrier; O3 250 g/m3 at 1000 sccm (Sec. 3)"
+   },
+   "gap_nm": {
+    "nominal": 130,
+    "measured": null,
+    "note": "GEOMETRY IS A CYLINDRICAL HOLE, not a slit: diameter 130 nm, depth 2 um (AR 20)"
+   },
+   "channel_length_um": 2.0,
+   "cycles": {
+    "value": null,
+    "note": "not stated"
+   },
+   "plateau_thickness_nm": {
+    "value": 18.89,
+    "error": 0.07,
+    "definition": "custodian reading: thickness at the shallowest TEM point (depth 387 nm); only four points exist"
+   },
+   "growth_per_cycle_nm": {
+    "value": null,
+    "note": "not stated"
+   },
+   "pulse_purge_s": {
+    "value": "metal precursor 1 s / purge 20 / O3 3 / purge 20",
+    "note": "Sec. 3-4"
+   },
+   "measurement": {
+    "method": "TEM cross-sections (200 kV) of FIB lamellae at four depths; film thickness on the hole wall",
+    "spot_um": null,
+    "note": "depth known to +/-10 nm (authors)"
+   },
+   "x50_um": {
+    "value": null,
+    "error": null,
+    "definition": "depth where thickness = 0.5 x plateau, linear interpolation between the four TEM points; the half level is not reached within the measured depths"
+   },
+   "digitisation_error": {
+    "x_um": 0.005,
+    "y_fraction_of_plateau": 0.0037,
+    "method": "raster filled-marker centroids on the embedded image"
+   },
+   "series": {
+    "name": "rose2010_fig1_temperature_series",
+    "members": [
+     "rose2010_fig1a_HfO2_TEMAHf_O3_180C",
+     "rose2010_fig1b_HfO2_TEMAHf_O3_230C",
+     "rose2010_fig1c_HfO2_TEMAHf_O3_270C"
+    ],
+    "varied": "substrate temperature (180, 230, 270 C), TEMAHf/O3"
+   },
+   "same_run": {
+    "value": false,
+    "note": "different substrate temperatures (Sec. 3)"
+   },
+   "predictor_prior_knowledge": "predictor has summaries of the text only",
+   "notes": "Holes, not slits. Four measured points per profile. Density of reactive sites used by the authors: 1e14 cm-2 (2009), 1e18 m-2 (2010)."
+  },
+  {
+   "id": "rose2010_fig1b_HfO2_TEMAHf_O3_230C",
+   "source": "M. Rose, J. W. Bartha, I. Endler, Appl. Surf. Sci. 256, 3778 (2010), doi:10.1016/j.apsusc.2010.01.025",
+   "figure_label": "Fig. 1(b)",
+   "material": "HfO2",
+   "precursors": "Hf(N(C2H5)(CH3))4 (TEMAHf) / O3",
+   "limiting_reactant": {
+    "value": "metal precursor",
+    "note": "ozone pulse long enough to saturate; profile caused by the metal precursor only (Sec. 3 of each paper)"
+   },
+   "temperature_C": 230,
+   "reactor": "custom 300 mm shower-head reactor (FHR Anlagenbau)",
+   "pressure_Pa": {
+    "value": 100,
+    "note": "process pressure 1 mbar (Sec. 3); precursors evaporated at 90 C"
+   },
+   "carrier_gas": {
+    "value": "Ar",
+    "note": "500 sccm Ar carrier; O3 250 g/m3 at 1000 sccm (Sec. 3)"
+   },
+   "gap_nm": {
+    "nominal": 130,
+    "measured": null,
+    "note": "GEOMETRY IS A CYLINDRICAL HOLE, not a slit: diameter 130 nm, depth 2 um (AR 20)"
+   },
+   "channel_length_um": 2.0,
+   "cycles": {
+    "value": null,
+    "note": "not stated"
+   },
+   "plateau_thickness_nm": {
+    "value": 18.53,
+    "error": 0.07,
+    "definition": "custodian reading: thickness at the shallowest TEM point (depth 405 nm); only four points exist"
+   },
+   "growth_per_cycle_nm": {
+    "value": null,
+    "note": "not stated"
+   },
+   "pulse_purge_s": {
+    "value": "metal precursor 1 s / purge 20 / O3 3 / purge 20",
+    "note": "Sec. 3-4"
+   },
+   "measurement": {
+    "method": "TEM cross-sections (200 kV) of FIB lamellae at four depths; film thickness on the hole wall",
+    "spot_um": null,
+    "note": "depth known to +/-10 nm (authors)"
+   },
+   "x50_um": {
+    "value": 0.916,
+    "error": 0.05,
+    "definition": "depth where thickness = 0.5 x plateau, linear interpolation between the four TEM points"
+   },
+   "digitisation_error": {
+    "x_um": 0.005,
+    "y_fraction_of_plateau": 0.0038,
+    "method": "raster filled-marker centroids on the embedded image"
+   },
+   "series": {
+    "name": "rose2010_fig1_temperature_series",
+    "members": [
+     "rose2010_fig1a_HfO2_TEMAHf_O3_180C",
+     "rose2010_fig1b_HfO2_TEMAHf_O3_230C",
+     "rose2010_fig1c_HfO2_TEMAHf_O3_270C"
+    ],
+    "varied": "substrate temperature (180, 230, 270 C), TEMAHf/O3"
+   },
+   "same_run": {
+    "value": false,
+    "note": "different substrate temperatures (Sec. 3)"
+   },
+   "predictor_prior_knowledge": "predictor has summaries of the text only",
+   "notes": "Holes, not slits. Four measured points per profile. Density of reactive sites used by the authors: 1e14 cm-2 (2009), 1e18 m-2 (2010)."
+  },
+  {
+   "id": "rose2010_fig1c_HfO2_TEMAHf_O3_270C",
+   "source": "M. Rose, J. W. Bartha, I. Endler, Appl. Surf. Sci. 256, 3778 (2010), doi:10.1016/j.apsusc.2010.01.025",
+   "figure_label": "Fig. 1(c)",
+   "material": "HfO2",
+   "precursors": "Hf(N(C2H5)(CH3))4 (TEMAHf) / O3",
+   "limiting_reactant": {
+    "value": "metal precursor",
+    "note": "ozone pulse long enough to saturate; profile caused by the metal precursor only (Sec. 3 of each paper)"
+   },
+   "temperature_C": 270,
+   "reactor": "custom 300 mm shower-head reactor (FHR Anlagenbau)",
+   "pressure_Pa": {
+    "value": 100,
+    "note": "process pressure 1 mbar (Sec. 3); precursors evaporated at 90 C"
+   },
+   "carrier_gas": {
+    "value": "Ar",
+    "note": "500 sccm Ar carrier; O3 250 g/m3 at 1000 sccm (Sec. 3)"
+   },
+   "gap_nm": {
+    "nominal": 130,
+    "measured": null,
+    "note": "GEOMETRY IS A CYLINDRICAL HOLE, not a slit: diameter 130 nm, depth 2 um (AR 20)"
+   },
+   "channel_length_um": 2.0,
+   "cycles": {
+    "value": null,
+    "note": "not stated"
+   },
+   "plateau_thickness_nm": {
+    "value": 17.89,
+    "error": 0.07,
+    "definition": "custodian reading: thickness at the shallowest TEM point (depth 389 nm); only four points exist"
+   },
+   "growth_per_cycle_nm": {
+    "value": null,
+    "note": "not stated"
+   },
+   "pulse_purge_s": {
+    "value": "metal precursor 1 s / purge 20 / O3 3 / purge 20",
+    "note": "Sec. 3-4"
+   },
+   "measurement": {
+    "method": "TEM cross-sections (200 kV) of FIB lamellae at four depths; film thickness on the hole wall",
+    "spot_um": null,
+    "note": "depth known to +/-10 nm (authors)"
+   },
+   "x50_um": {
+    "value": 0.729,
+    "error": 0.05,
+    "definition": "depth where thickness = 0.5 x plateau, linear interpolation between the four TEM points"
+   },
+   "digitisation_error": {
+    "x_um": 0.005,
+    "y_fraction_of_plateau": 0.0039,
+    "method": "raster filled-marker centroids on the embedded image"
+   },
+   "series": {
+    "name": "rose2010_fig1_temperature_series",
+    "members": [
+     "rose2010_fig1a_HfO2_TEMAHf_O3_180C",
+     "rose2010_fig1b_HfO2_TEMAHf_O3_230C",
+     "rose2010_fig1c_HfO2_TEMAHf_O3_270C"
+    ],
+    "varied": "substrate temperature (180, 230, 270 C), TEMAHf/O3"
+   },
+   "same_run": {
+    "value": false,
+    "note": "different substrate temperatures (Sec. 3)"
+   },
+   "predictor_prior_knowledge": "predictor has summaries of the text only",
+   "notes": "Holes, not slits. Four measured points per profile. Density of reactive sites used by the authors: 1e14 cm-2 (2009), 1e18 m-2 (2010)."
+  },
+  {
+   "id": "rose2010_fig3_TiO2_CpTiOMe3_O3_270C",
+   "source": "M. Rose, J. W. Bartha, I. Endler, Appl. Surf. Sci. 256, 3778 (2010), doi:10.1016/j.apsusc.2010.01.025",
+   "figure_label": "Fig. 3",
+   "material": "TiO2",
+   "precursors": "Cp*Ti(OMe)3 / O3",
+   "limiting_reactant": {
+    "value": "metal precursor",
+    "note": "ozone pulse long enough to saturate; profile caused by the metal precursor only (Sec. 3 of each paper)"
+   },
+   "temperature_C": 270,
+   "reactor": "custom 300 mm shower-head reactor (FHR Anlagenbau)",
+   "pressure_Pa": {
+    "value": 100,
+    "note": "process pressure 1 mbar (Sec. 3); precursors evaporated at 90 C"
+   },
+   "carrier_gas": {
+    "value": "Ar",
+    "note": "500 sccm Ar carrier; O3 250 g/m3 at 1000 sccm (Sec. 3)"
+   },
+   "gap_nm": {
+    "nominal": 130,
+    "measured": null,
+    "note": "GEOMETRY IS A CYLINDRICAL HOLE, not a slit: diameter 130 nm, depth 2 um (AR 20)"
+   },
+   "channel_length_um": 2.0,
+   "cycles": {
+    "value": null,
+    "note": "not stated"
+   },
+   "plateau_thickness_nm": {
+    "value": 13.56,
+    "error": 0.02,
+    "definition": "custodian reading: thickness at the shallowest TEM point (depth 470 nm); only four points exist"
+   },
+   "growth_per_cycle_nm": {
+    "value": null,
+    "note": "not stated"
+   },
+   "pulse_purge_s": {
+    "value": "metal precursor 0.6-1 s (not stated which) / purge 20 / O3 3 / purge 20",
+    "note": "Sec. 3-4"
+   },
+   "measurement": {
+    "method": "TEM cross-sections (200 kV) of FIB lamellae at four depths; film thickness on the hole wall",
+    "spot_um": null,
+    "note": "depth known to +/-10 nm (authors)"
+   },
+   "x50_um": {
+    "value": null,
+    "error": null,
+    "definition": "depth where thickness = 0.5 x plateau, linear interpolation between the four TEM points; the half level is not reached within the measured depths"
+   },
+   "digitisation_error": {
+    "x_um": 0.005,
+    "y_fraction_of_plateau": 0.0015,
+    "method": "raster filled-marker centroids on the embedded image"
+   },
+   "series": {
+    "name": "rose2010_fig3",
+    "members": [
+     "rose2010_fig3_TiO2_CpTiOMe3_O3_270C"
+    ],
+    "varied": "single profile"
+   },
+   "same_run": {
+    "value": "not applicable (single profile)",
+    "note": "one sample"
+   },
+   "predictor_prior_knowledge": "predictor has summaries of the text only",
+   "notes": "Holes, not slits. Four measured points per profile. Density of reactive sites used by the authors: 1e14 cm-2 (2009), 1e18 m-2 (2010)."
+  },
+  {
+   "id": "elam2003_fig5a_ZnO_d65nm_exposure1s",
+   "source": "J. W. Elam, D. Routkevitch, P. P. Mardilovich, S. M. George, Chem. Mater. 15, 3507 (2003), doi:10.1021/cm0303080",
+   "figure_label": "Fig. 5(a)",
+   "material": "ZnO",
+   "precursors": "Zn(C2H5)2 (DEZ) / H2O",
+   "limiting_reactant": {
+    "value": "not stated",
+    "note": "not stated; equal exposure times for both reactants, H2O partial pressure ~2-3x the DEZ partial pressure (Sec. II.B)"
+   },
+   "temperature_C": 177,
+   "reactor": "viscous-flow ALD reactor (University of Colorado)",
+   "pressure_Pa": {
+    "value": 133,
+    "note": "N2 carrier at 1 Torr; DEZ partial pressure 0.068 Torr (9.1 Pa); H2O ~2-3x larger (Sec. II.B)",
+    "DEZ_partial_pressure_Pa": 9.1
+   },
+   "carrier_gas": {
+    "value": "N2",
+    "note": "200 sccm (Sec. II.B)"
+   },
+   "gap_nm": {
+    "nominal": 65,
+    "measured": null,
+    "note": "GEOMETRY IS A CYLINDRICAL PORE (anodic alumina), not a slit: pore diameter 65 nm (Table 1); pores open at both faces"
+   },
+   "channel_length_um": {
+    "value": 50,
+    "note": "membrane thickness 50 um, open on both sides; the figure shows 0-25 um from one face"
+   },
+   "cycles": 64,
+   "plateau_thickness_nm": {
+    "value": 12.9,
+    "error": null,
+    "note": "not a measured in-pore value: 64 cycles give 129 A on a flat surface (Sec. III.B), scaled by cycles; the figure is plotted as relative ZnO coverage normalised to the maximum measured Zn concentration",
+    "normalised_plateau": 0.875,
+    "normalised_plateau_error": 0.03,
+    "definition": "custodian reading of the highest level near the pore entrance, beyond the entrance points (rule in the sealed PROVENANCE)"
+   },
+   "growth_per_cycle_nm": {
+    "value": 0.2,
+    "note": "129 A / 64 cycles on a flat surface (Sec. III.B)"
+   },
+   "pulse_purge_s": {
+    "value": "1-5-1-5 (DEZ exposure - purge - H2O exposure - purge)",
+    "note": "Sec. II.B and III.B"
+   },
+   "measurement": {
+    "method": "EPMA Zn line scan (JEOL 8600, 15 keV, 20 nA) on a polished cross-section, along the pore axis",
+    "spot_um": [
+     3,
+     5
+    ],
+    "point_spacing_um": 1,
+    "note": "\"spatial resolution of 3-5 um\" (Sec. II.C); ~1 um increments (Sec. III.B)"
+   },
+   "x50_um": {
+    "value": 5.83,
+    "error": 0.4,
+    "definition": "depth where relative coverage = 0.5 x normalised_plateau, linear interpolation between points 1 um apart"
+   },
+   "digitisation_error": {
+    "x_um": 0.05,
+    "y_fraction_of_plateau": 0.01,
+    "method": "marker detection (filled blobs / enclosed holes) on the bitonal figure rendered from the PDF at 8x; some entrance points (<= 1 um) could not be separated and are missing or flagged in the sealed curve"
+   },
+   "series": {
+    "name": "elam2003_fig5a_exposure_series",
+    "members": [
+     "elam2003_fig5a_ZnO_d65nm_exposure1s",
+     "elam2003_fig5a_ZnO_d65nm_exposure3s",
+     "elam2003_fig5a_ZnO_d65nm_exposure10s",
+     "elam2003_fig5a_ZnO_d65nm_exposure30s"
+    ],
+    "varied": "reactant exposure time (1, 3, 10, 30 s) at d = 65 nm, 64 cycles"
+   },
+   "same_run": {
+    "value": false,
+    "note": "\"coated in separate experiments\" (Sec. III.B)"
+   },
+   "predictor_prior_knowledge": "predictor has summaries of the text only",
+   "notes": "Pores, not slits. 64 cycles should reduce the 65 nm pore to 39 nm per the authors. The x_over_H column in the sealed curve uses the nominal pore diameter."
+  },
+  {
+   "id": "elam2003_fig5a_ZnO_d65nm_exposure3s",
+   "source": "J. W. Elam, D. Routkevitch, P. P. Mardilovich, S. M. George, Chem. Mater. 15, 3507 (2003), doi:10.1021/cm0303080",
+   "figure_label": "Fig. 5(a)",
+   "material": "ZnO",
+   "precursors": "Zn(C2H5)2 (DEZ) / H2O",
+   "limiting_reactant": {
+    "value": "not stated",
+    "note": "not stated; equal exposure times for both reactants, H2O partial pressure ~2-3x the DEZ partial pressure (Sec. II.B)"
+   },
+   "temperature_C": 177,
+   "reactor": "viscous-flow ALD reactor (University of Colorado)",
+   "pressure_Pa": {
+    "value": 133,
+    "note": "N2 carrier at 1 Torr; DEZ partial pressure 0.068 Torr (9.1 Pa); H2O ~2-3x larger (Sec. II.B)",
+    "DEZ_partial_pressure_Pa": 9.1
+   },
+   "carrier_gas": {
+    "value": "N2",
+    "note": "200 sccm (Sec. II.B)"
+   },
+   "gap_nm": {
+    "nominal": 65,
+    "measured": null,
+    "note": "GEOMETRY IS A CYLINDRICAL PORE (anodic alumina), not a slit: pore diameter 65 nm (Table 1); pores open at both faces"
+   },
+   "channel_length_um": {
+    "value": 50,
+    "note": "membrane thickness 50 um, open on both sides; the figure shows 0-25 um from one face"
+   },
+   "cycles": 64,
+   "plateau_thickness_nm": {
+    "value": 12.9,
+    "error": null,
+    "note": "not a measured in-pore value: 64 cycles give 129 A on a flat surface (Sec. III.B), scaled by cycles; the figure is plotted as relative ZnO coverage normalised to the maximum measured Zn concentration",
+    "normalised_plateau": 0.896,
+    "normalised_plateau_error": 0.03,
+    "definition": "custodian reading of the highest level near the pore entrance, beyond the entrance points (rule in the sealed PROVENANCE)"
+   },
+   "growth_per_cycle_nm": {
+    "value": 0.2,
+    "note": "129 A / 64 cycles on a flat surface (Sec. III.B)"
+   },
+   "pulse_purge_s": {
+    "value": "3-6-3-6 (DEZ exposure - purge - H2O exposure - purge)",
+    "note": "Sec. II.B and III.B"
+   },
+   "measurement": {
+    "method": "EPMA Zn line scan (JEOL 8600, 15 keV, 20 nA) on a polished cross-section, along the pore axis",
+    "spot_um": [
+     3,
+     5
+    ],
+    "point_spacing_um": 1,
+    "note": "\"spatial resolution of 3-5 um\" (Sec. II.C); ~1 um increments (Sec. III.B)"
+   },
+   "x50_um": {
+    "value": 9.72,
+    "error": 0.4,
+    "definition": "depth where relative coverage = 0.5 x normalised_plateau, linear interpolation between points 1 um apart"
+   },
+   "digitisation_error": {
+    "x_um": 0.05,
+    "y_fraction_of_plateau": 0.01,
+    "method": "marker detection (filled blobs / enclosed holes) on the bitonal figure rendered from the PDF at 8x; some entrance points (<= 1 um) could not be separated and are missing or flagged in the sealed curve"
+   },
+   "series": {
+    "name": "elam2003_fig5a_exposure_series",
+    "members": [
+     "elam2003_fig5a_ZnO_d65nm_exposure1s",
+     "elam2003_fig5a_ZnO_d65nm_exposure3s",
+     "elam2003_fig5a_ZnO_d65nm_exposure10s",
+     "elam2003_fig5a_ZnO_d65nm_exposure30s"
+    ],
+    "varied": "reactant exposure time (1, 3, 10, 30 s) at d = 65 nm, 64 cycles"
+   },
+   "same_run": {
+    "value": false,
+    "note": "\"coated in separate experiments\" (Sec. III.B)"
+   },
+   "predictor_prior_knowledge": "predictor has summaries of the text only",
+   "notes": "Pores, not slits. 64 cycles should reduce the 65 nm pore to 39 nm per the authors. The x_over_H column in the sealed curve uses the nominal pore diameter."
+  },
+  {
+   "id": "elam2003_fig5a_ZnO_d65nm_exposure10s",
+   "source": "J. W. Elam, D. Routkevitch, P. P. Mardilovich, S. M. George, Chem. Mater. 15, 3507 (2003), doi:10.1021/cm0303080",
+   "figure_label": "Fig. 5(a)",
+   "material": "ZnO",
+   "precursors": "Zn(C2H5)2 (DEZ) / H2O",
+   "limiting_reactant": {
+    "value": "not stated",
+    "note": "not stated; equal exposure times for both reactants, H2O partial pressure ~2-3x the DEZ partial pressure (Sec. II.B)"
+   },
+   "temperature_C": 177,
+   "reactor": "viscous-flow ALD reactor (University of Colorado)",
+   "pressure_Pa": {
+    "value": 133,
+    "note": "N2 carrier at 1 Torr; DEZ partial pressure 0.068 Torr (9.1 Pa); H2O ~2-3x larger (Sec. II.B)",
+    "DEZ_partial_pressure_Pa": 9.1
+   },
+   "carrier_gas": {
+    "value": "N2",
+    "note": "200 sccm (Sec. II.B)"
+   },
+   "gap_nm": {
+    "nominal": 65,
+    "measured": null,
+    "note": "GEOMETRY IS A CYLINDRICAL PORE (anodic alumina), not a slit: pore diameter 65 nm (Table 1); pores open at both faces"
+   },
+   "channel_length_um": {
+    "value": 50,
+    "note": "membrane thickness 50 um, open on both sides; the figure shows 0-25 um from one face"
+   },
+   "cycles": 64,
+   "plateau_thickness_nm": {
+    "value": 12.9,
+    "error": null,
+    "note": "not a measured in-pore value: 64 cycles give 129 A on a flat surface (Sec. III.B), scaled by cycles; the figure is plotted as relative ZnO coverage normalised to the maximum measured Zn concentration",
+    "normalised_plateau": 0.97,
+    "normalised_plateau_error": 0.03,
+    "definition": "custodian reading of the highest level near the pore entrance, beyond the entrance points (rule in the sealed PROVENANCE)"
+   },
+   "growth_per_cycle_nm": {
+    "value": 0.2,
+    "note": "129 A / 64 cycles on a flat surface (Sec. III.B)"
+   },
+   "pulse_purge_s": {
+    "value": "10-30-10-30 (DEZ exposure - purge - H2O exposure - purge)",
+    "note": "Sec. II.B and III.B"
+   },
+   "measurement": {
+    "method": "EPMA Zn line scan (JEOL 8600, 15 keV, 20 nA) on a polished cross-section, along the pore axis",
+    "spot_um": [
+     3,
+     5
+    ],
+    "point_spacing_um": 1,
+    "note": "\"spatial resolution of 3-5 um\" (Sec. II.C); ~1 um increments (Sec. III.B)"
+   },
+   "x50_um": {
+    "value": 18.44,
+    "error": 0.4,
+    "definition": "depth where relative coverage = 0.5 x normalised_plateau, linear interpolation between points 1 um apart"
+   },
+   "digitisation_error": {
+    "x_um": 0.05,
+    "y_fraction_of_plateau": 0.01,
+    "method": "marker detection (filled blobs / enclosed holes) on the bitonal figure rendered from the PDF at 8x; some entrance points (<= 1 um) could not be separated and are missing or flagged in the sealed curve"
+   },
+   "series": {
+    "name": "elam2003_fig5a_exposure_series",
+    "members": [
+     "elam2003_fig5a_ZnO_d65nm_exposure1s",
+     "elam2003_fig5a_ZnO_d65nm_exposure3s",
+     "elam2003_fig5a_ZnO_d65nm_exposure10s",
+     "elam2003_fig5a_ZnO_d65nm_exposure30s"
+    ],
+    "varied": "reactant exposure time (1, 3, 10, 30 s) at d = 65 nm, 64 cycles"
+   },
+   "same_run": {
+    "value": false,
+    "note": "\"coated in separate experiments\" (Sec. III.B)"
+   },
+   "predictor_prior_knowledge": "predictor has summaries of the text only",
+   "notes": "Pores, not slits. 64 cycles should reduce the 65 nm pore to 39 nm per the authors. The x_over_H column in the sealed curve uses the nominal pore diameter."
+  },
+  {
+   "id": "elam2003_fig5a_ZnO_d65nm_exposure30s",
+   "source": "J. W. Elam, D. Routkevitch, P. P. Mardilovich, S. M. George, Chem. Mater. 15, 3507 (2003), doi:10.1021/cm0303080",
+   "figure_label": "Fig. 5(a)",
+   "material": "ZnO",
+   "precursors": "Zn(C2H5)2 (DEZ) / H2O",
+   "limiting_reactant": {
+    "value": "not stated",
+    "note": "not stated; equal exposure times for both reactants, H2O partial pressure ~2-3x the DEZ partial pressure (Sec. II.B)"
+   },
+   "temperature_C": 177,
+   "reactor": "viscous-flow ALD reactor (University of Colorado)",
+   "pressure_Pa": {
+    "value": 133,
+    "note": "N2 carrier at 1 Torr; DEZ partial pressure 0.068 Torr (9.1 Pa); H2O ~2-3x larger (Sec. II.B)",
+    "DEZ_partial_pressure_Pa": 9.1
+   },
+   "carrier_gas": {
+    "value": "N2",
+    "note": "200 sccm (Sec. II.B)"
+   },
+   "gap_nm": {
+    "nominal": 65,
+    "measured": null,
+    "note": "GEOMETRY IS A CYLINDRICAL PORE (anodic alumina), not a slit: pore diameter 65 nm (Table 1); pores open at both faces"
+   },
+   "channel_length_um": {
+    "value": 50,
+    "note": "membrane thickness 50 um, open on both sides; the figure shows 0-25 um from one face"
+   },
+   "cycles": 64,
+   "plateau_thickness_nm": {
+    "value": 12.9,
+    "error": null,
+    "note": "not a measured in-pore value: 64 cycles give 129 A on a flat surface (Sec. III.B), scaled by cycles; the figure is plotted as relative ZnO coverage normalised to the maximum measured Zn concentration",
+    "normalised_plateau": 1.004,
+    "normalised_plateau_error": 0.03,
+    "definition": "custodian reading of the highest level near the pore entrance, beyond the entrance points (rule in the sealed PROVENANCE)"
+   },
+   "growth_per_cycle_nm": {
+    "value": 0.2,
+    "note": "129 A / 64 cycles on a flat surface (Sec. III.B)"
+   },
+   "pulse_purge_s": {
+    "value": "30-30-30-30 (DEZ exposure - purge - H2O exposure - purge)",
+    "note": "Sec. II.B and III.B"
+   },
+   "measurement": {
+    "method": "EPMA Zn line scan (JEOL 8600, 15 keV, 20 nA) on a polished cross-section, along the pore axis",
+    "spot_um": [
+     3,
+     5
+    ],
+    "point_spacing_um": 1,
+    "note": "\"spatial resolution of 3-5 um\" (Sec. II.C); ~1 um increments (Sec. III.B)"
+   },
+   "x50_um": {
+    "value": null,
+    "error": null,
+    "definition": "depth where relative coverage = 0.5 x normalised_plateau, linear interpolation between points 1 um apart; the half level is not reached within the 25 um shown"
+   },
+   "digitisation_error": {
+    "x_um": 0.05,
+    "y_fraction_of_plateau": 0.01,
+    "method": "marker detection (filled blobs / enclosed holes) on the bitonal figure rendered from the PDF at 8x; some entrance points (<= 1 um) could not be separated and are missing or flagged in the sealed curve"
+   },
+   "series": {
+    "name": "elam2003_fig5a_exposure_series",
+    "members": [
+     "elam2003_fig5a_ZnO_d65nm_exposure1s",
+     "elam2003_fig5a_ZnO_d65nm_exposure3s",
+     "elam2003_fig5a_ZnO_d65nm_exposure10s",
+     "elam2003_fig5a_ZnO_d65nm_exposure30s"
+    ],
+    "varied": "reactant exposure time (1, 3, 10, 30 s) at d = 65 nm, 64 cycles"
+   },
+   "same_run": {
+    "value": false,
+    "note": "\"coated in separate experiments\" (Sec. III.B)"
+   },
+   "predictor_prior_knowledge": "predictor has summaries of the text only",
+   "notes": "Pores, not slits. 64 cycles should reduce the 65 nm pore to 39 nm per the authors. The x_over_H column in the sealed curve uses the nominal pore diameter."
+  },
+  {
+   "id": "elam2003_fig6a_ZnO_d19nm_5s",
+   "source": "J. W. Elam, D. Routkevitch, P. P. Mardilovich, S. M. George, Chem. Mater. 15, 3507 (2003), doi:10.1021/cm0303080",
+   "figure_label": "Fig. 6(a)",
+   "material": "ZnO",
+   "precursors": "Zn(C2H5)2 (DEZ) / H2O",
+   "limiting_reactant": {
+    "value": "not stated",
+    "note": "not stated; equal exposure times for both reactants, H2O partial pressure ~2-3x the DEZ partial pressure (Sec. II.B)"
+   },
+   "temperature_C": 177,
+   "reactor": "viscous-flow ALD reactor (University of Colorado)",
+   "pressure_Pa": {
+    "value": 133,
+    "note": "N2 carrier at 1 Torr; DEZ partial pressure 0.068 Torr (9.1 Pa); H2O ~2-3x larger (Sec. II.B)",
+    "DEZ_partial_pressure_Pa": 9.1
+   },
+   "carrier_gas": {
+    "value": "N2",
+    "note": "200 sccm (Sec. II.B)"
+   },
+   "gap_nm": {
+    "nominal": 19,
+    "measured": null,
+    "note": "GEOMETRY IS A CYLINDRICAL PORE (anodic alumina), not a slit: pore diameter 19 nm (Table 1); pores open at both faces"
+   },
+   "channel_length_um": {
+    "value": 50,
+    "note": "membrane thickness 50 um, open on both sides; the figure shows 0-25 um from one face"
+   },
+   "cycles": 19,
+   "plateau_thickness_nm": {
+    "value": 3.8,
+    "error": null,
+    "note": "not a measured in-pore value: 64 cycles give 129 A on a flat surface (Sec. III.B), scaled by cycles; the figure is plotted as relative ZnO coverage normalised to the maximum measured Zn concentration",
+    "normalised_plateau": 0.999,
+    "normalised_plateau_error": 0.03,
+    "definition": "custodian reading of the highest level near the pore entrance, beyond the entrance points (rule in the sealed PROVENANCE)"
+   },
+   "growth_per_cycle_nm": {
+    "value": 0.2,
+    "note": "129 A / 64 cycles on a flat surface (Sec. III.B)"
+   },
+   "pulse_purge_s": {
+    "value": "5-10-5-10 (DEZ exposure - purge - H2O exposure - purge)",
+    "note": "Sec. II.B and III.B"
+   },
+   "measurement": {
+    "method": "EPMA Zn line scan (JEOL 8600, 15 keV, 20 nA) on a polished cross-section, along the pore axis",
+    "spot_um": [
+     3,
+     5
+    ],
+    "point_spacing_um": 1,
+    "note": "\"spatial resolution of 3-5 um\" (Sec. II.C); ~1 um increments (Sec. III.B)"
+   },
+   "x50_um": {
+    "value": 3.98,
+    "error": 0.4,
+    "definition": "depth where relative coverage = 0.5 x normalised_plateau, linear interpolation between points 1 um apart"
+   },
+   "digitisation_error": {
+    "x_um": 0.05,
+    "y_fraction_of_plateau": 0.01,
+    "method": "marker detection (filled blobs / enclosed holes) on the bitonal figure rendered from the PDF at 8x; some entrance points (<= 1 um) could not be separated and are missing or flagged in the sealed curve"
+   },
+   "series": {
+    "name": "elam2003_fig6a_diameter_series",
+    "members": [
+     "elam2003_fig6a_ZnO_d19nm_5s",
+     "elam2003_fig6a_ZnO_d46nm_5s",
+     "elam2003_fig6a_ZnO_d65nm_5s"
+    ],
+    "varied": "pore diameter (19, 46, 65 nm) with cycles (19, 45, 64) chosen to reduce the diameter by ~40 %; 5 s exposures"
+   },
+   "same_run": {
+    "value": false,
+    "note": "\"coated in separate experiments\" (Sec. III.B)"
+   },
+   "predictor_prior_knowledge": "predictor has summaries of the text only",
+   "notes": "Pores, not slits. 64 cycles should reduce the 65 nm pore to 39 nm per the authors. The x_over_H column in the sealed curve uses the nominal pore diameter."
+  },
+  {
+   "id": "elam2003_fig6a_ZnO_d46nm_5s",
+   "source": "J. W. Elam, D. Routkevitch, P. P. Mardilovich, S. M. George, Chem. Mater. 15, 3507 (2003), doi:10.1021/cm0303080",
+   "figure_label": "Fig. 6(a)",
+   "material": "ZnO",
+   "precursors": "Zn(C2H5)2 (DEZ) / H2O",
+   "limiting_reactant": {
+    "value": "not stated",
+    "note": "not stated; equal exposure times for both reactants, H2O partial pressure ~2-3x the DEZ partial pressure (Sec. II.B)"
+   },
+   "temperature_C": 177,
+   "reactor": "viscous-flow ALD reactor (University of Colorado)",
+   "pressure_Pa": {
+    "value": 133,
+    "note": "N2 carrier at 1 Torr; DEZ partial pressure 0.068 Torr (9.1 Pa); H2O ~2-3x larger (Sec. II.B)",
+    "DEZ_partial_pressure_Pa": 9.1
+   },
+   "carrier_gas": {
+    "value": "N2",
+    "note": "200 sccm (Sec. II.B)"
+   },
+   "gap_nm": {
+    "nominal": 46,
+    "measured": null,
+    "note": "GEOMETRY IS A CYLINDRICAL PORE (anodic alumina), not a slit: pore diameter 46 nm (Table 1); pores open at both faces"
+   },
+   "channel_length_um": {
+    "value": 50,
+    "note": "membrane thickness 50 um, open on both sides; the figure shows 0-25 um from one face"
+   },
+   "cycles": 45,
+   "plateau_thickness_nm": {
+    "value": 9.1,
+    "error": null,
+    "note": "not a measured in-pore value: 64 cycles give 129 A on a flat surface (Sec. III.B), scaled by cycles; the figure is plotted as relative ZnO coverage normalised to the maximum measured Zn concentration",
+    "normalised_plateau": 0.988,
+    "normalised_plateau_error": 0.03,
+    "definition": "custodian reading of the highest level near the pore entrance, beyond the entrance points (rule in the sealed PROVENANCE)"
+   },
+   "growth_per_cycle_nm": {
+    "value": 0.2,
+    "note": "129 A / 64 cycles on a flat surface (Sec. III.B)"
+   },
+   "pulse_purge_s": {
+    "value": "5-10-5-10 (DEZ exposure - purge - H2O exposure - purge)",
+    "note": "Sec. II.B and III.B"
+   },
+   "measurement": {
+    "method": "EPMA Zn line scan (JEOL 8600, 15 keV, 20 nA) on a polished cross-section, along the pore axis",
+    "spot_um": [
+     3,
+     5
+    ],
+    "point_spacing_um": 1,
+    "note": "\"spatial resolution of 3-5 um\" (Sec. II.C); ~1 um increments (Sec. III.B)"
+   },
+   "x50_um": {
+    "value": 10.01,
+    "error": 0.4,
+    "definition": "depth where relative coverage = 0.5 x normalised_plateau, linear interpolation between points 1 um apart"
+   },
+   "digitisation_error": {
+    "x_um": 0.05,
+    "y_fraction_of_plateau": 0.01,
+    "method": "marker detection (filled blobs / enclosed holes) on the bitonal figure rendered from the PDF at 8x; some entrance points (<= 1 um) could not be separated and are missing or flagged in the sealed curve"
+   },
+   "series": {
+    "name": "elam2003_fig6a_diameter_series",
+    "members": [
+     "elam2003_fig6a_ZnO_d19nm_5s",
+     "elam2003_fig6a_ZnO_d46nm_5s",
+     "elam2003_fig6a_ZnO_d65nm_5s"
+    ],
+    "varied": "pore diameter (19, 46, 65 nm) with cycles (19, 45, 64) chosen to reduce the diameter by ~40 %; 5 s exposures"
+   },
+   "same_run": {
+    "value": false,
+    "note": "\"coated in separate experiments\" (Sec. III.B)"
+   },
+   "predictor_prior_knowledge": "predictor has summaries of the text only",
+   "notes": "Pores, not slits. 64 cycles should reduce the 65 nm pore to 39 nm per the authors. The x_over_H column in the sealed curve uses the nominal pore diameter."
+  },
+  {
+   "id": "elam2003_fig6a_ZnO_d65nm_5s",
+   "source": "J. W. Elam, D. Routkevitch, P. P. Mardilovich, S. M. George, Chem. Mater. 15, 3507 (2003), doi:10.1021/cm0303080",
+   "figure_label": "Fig. 6(a)",
+   "material": "ZnO",
+   "precursors": "Zn(C2H5)2 (DEZ) / H2O",
+   "limiting_reactant": {
+    "value": "not stated",
+    "note": "not stated; equal exposure times for both reactants, H2O partial pressure ~2-3x the DEZ partial pressure (Sec. II.B)"
+   },
+   "temperature_C": 177,
+   "reactor": "viscous-flow ALD reactor (University of Colorado)",
+   "pressure_Pa": {
+    "value": 133,
+    "note": "N2 carrier at 1 Torr; DEZ partial pressure 0.068 Torr (9.1 Pa); H2O ~2-3x larger (Sec. II.B)",
+    "DEZ_partial_pressure_Pa": 9.1
+   },
+   "carrier_gas": {
+    "value": "N2",
+    "note": "200 sccm (Sec. II.B)"
+   },
+   "gap_nm": {
+    "nominal": 65,
+    "measured": null,
+    "note": "GEOMETRY IS A CYLINDRICAL PORE (anodic alumina), not a slit: pore diameter 65 nm (Table 1); pores open at both faces"
+   },
+   "channel_length_um": {
+    "value": 50,
+    "note": "membrane thickness 50 um, open on both sides; the figure shows 0-25 um from one face"
+   },
+   "cycles": 64,
+   "plateau_thickness_nm": {
+    "value": 12.9,
+    "error": null,
+    "note": "not a measured in-pore value: 64 cycles give 129 A on a flat surface (Sec. III.B), scaled by cycles; the figure is plotted as relative ZnO coverage normalised to the maximum measured Zn concentration",
+    "normalised_plateau": 0.98,
+    "normalised_plateau_error": 0.03,
+    "definition": "custodian reading of the highest level near the pore entrance, beyond the entrance points (rule in the sealed PROVENANCE)"
+   },
+   "growth_per_cycle_nm": {
+    "value": 0.2,
+    "note": "129 A / 64 cycles on a flat surface (Sec. III.B)"
+   },
+   "pulse_purge_s": {
+    "value": "5-10-5-10 (DEZ exposure - purge - H2O exposure - purge)",
+    "note": "Sec. II.B and III.B"
+   },
+   "measurement": {
+    "method": "EPMA Zn line scan (JEOL 8600, 15 keV, 20 nA) on a polished cross-section, along the pore axis",
+    "spot_um": [
+     3,
+     5
+    ],
+    "point_spacing_um": 1,
+    "note": "\"spatial resolution of 3-5 um\" (Sec. II.C); ~1 um increments (Sec. III.B)"
+   },
+   "x50_um": {
+    "value": 16.65,
+    "error": 0.4,
+    "definition": "depth where relative coverage = 0.5 x normalised_plateau, linear interpolation between points 1 um apart"
+   },
+   "digitisation_error": {
+    "x_um": 0.05,
+    "y_fraction_of_plateau": 0.01,
+    "method": "marker detection (filled blobs / enclosed holes) on the bitonal figure rendered from the PDF at 8x; some entrance points (<= 1 um) could not be separated and are missing or flagged in the sealed curve"
+   },
+   "series": {
+    "name": "elam2003_fig6a_diameter_series",
+    "members": [
+     "elam2003_fig6a_ZnO_d19nm_5s",
+     "elam2003_fig6a_ZnO_d46nm_5s",
+     "elam2003_fig6a_ZnO_d65nm_5s"
+    ],
+    "varied": "pore diameter (19, 46, 65 nm) with cycles (19, 45, 64) chosen to reduce the diameter by ~40 %; 5 s exposures"
+   },
+   "same_run": {
+    "value": false,
+    "note": "\"coated in separate experiments\" (Sec. III.B)"
+   },
+   "predictor_prior_knowledge": "predictor has summaries of the text only",
+   "notes": "Pores, not slits. 64 cycles should reduce the 65 nm pore to 39 nm per the authors. The x_over_H column in the sealed curve uses the nominal pore diameter."
+  }
+ ]
+}
