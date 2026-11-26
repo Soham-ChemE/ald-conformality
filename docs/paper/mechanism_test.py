@@ -24,7 +24,7 @@ the Zenodo profile gives 0.019 against 0.0206 for the secant (8 %).
 The test is out of sample but not blind and not pre-registered: the held-out table was known when the models were built.
   PYTHONPATH=src .venv/bin/python docs/paper/mechanism_test.py calibrate|predict|compare
 """
-import sys, json
+import sys, json, os
 from pathlib import Path
 import numpy as np, pandas as pd
 from scipy.optimize import minimize_scalar, brentq
@@ -35,6 +35,9 @@ FAMILY = {"hydraulic": "hyd", "ballistic": "walls90_pillars49", "gas": "gas300"}
 GAP_EXPONENT = {"hydraulic": 1.0, "ballistic": 1.0, "gas": 0.92}
 MODELS = {f + ("+narrowing" if n else "") + ("+spot" if sp else ""): (f, n, sp) for f in FAMILY for n in (False, True) for sp in (False, True)}
 COMPLETE = [f + "+narrowing+spot" for f in FAMILY]
+# MECH_GAPS=measured uses the sacrificial-oxide thicknesses of Yim 2020 ESI Table S5 (wafers M5, M8/M9, M15: 108.6, 519.1, 2034.7 nm)
+# instead of the nominal 100 / 500 / 2000 nm for the Yim 2020 chips and the Zenodo profile; outputs get the suffix _measgap
+MEAS = os.environ.get("MECH_GAPS") == "measured"; SUF = "_measgap" if MEAS else ""; GAP_MEAS = {100: 108.6, 500: 519.1, 2000: 2034.7}
 SPOT_UM = {50: 5.5, 10: 25.0, 5: 50.0, 0: 1.0, 100: 10.0}   # objective -> spot width; 0 = EDS line scan; 100 = Arts 2019 reflectometer
 
 
@@ -104,9 +107,9 @@ def slope_at_depth(run, z50, fill, spot=0.0, n=1.0):
 
 def measured_profile(ds):
     import run_pillar_mc as r
-    x, y = r.measured(ds)
-    fill = 2 * (51.1 if ds == "zenodo" else float(pd.read_csv(ROOT / "data/lhar_profiles/ylilammi2018_fig6_al2o3.csv").query("x_um > 5 and x_um < 60").thickness_nm.mean())) / 500.0
-    return x, y, fill
+    x, y = r.measured(ds); gap = GAP_MEAS[500] if (MEAS and ds == "zenodo") else 500.0        # the Zenodo chip is wafer M08; the Ylilammi 2018 chip is an earlier generation
+    fill = 2 * (51.1 if ds == "zenodo" else float(pd.read_csv(ROOT / "data/lhar_profiles/ylilammi2018_fig6_al2o3.csv").query("x_um > 5 and x_um < 60").thickness_nm.mean())) / gap
+    return x * 500.0 / gap, y, fill
 
 
 def calibrate():
@@ -131,7 +134,7 @@ def calibrate():
                          open_below=bool(ok[0]), open_above=bool(ok[-1]), s_zenodo=zb[0], rms_zenodo=zb[1], s_ylilammi=yb[0], rms_ylilammi=yb[1], n_s=len(tab), s_grid=" ".join(f"{v:g}" for v in tab[:, 0]),
                          rms_zenodo_grid=" ".join(f"{np.sqrt(v):.4f}" for v in tab[:, 1]), rms_ylilammi_grid=" ".join(f"{np.sqrt(v):.4f}" for v in tab[:, 2])))
         print({k: (float(f"{v:.4g}") if isinstance(v, float) else v) for k, v in rows[-1].items() if "grid" not in k and k not in ("kernel", "narrowing", "spot", "n_s")}, flush=True)
-    pd.DataFrame(rows).to_csv(FIG / "mechanism_calibration.csv", index=False)
+    pd.DataFrame(rows).to_csv(FIG / f"mechanism_calibration{SUF}.csv", index=False)
 
 
 def heldout():
@@ -143,9 +146,10 @@ def heldout():
     t = pd.read_csv(ROOT / "data/lhar_profiles/yim2020_table1.csv"); rows = []
     for r in t.itertuples():
         if r.sample in (8, 14): continue
-        rows.append(dict(sample=f"Yim{r.sample}", series=r.series, H_nm=r.H_nm, layout=r.pillar_layout, cycles=r.cycles, magnification=r.magnification, film_nm=r.S_IIb_nm, z50=r.x50_tilde, measured_slope=r.slope_dtheta_dxtilde))
-    rows.append(dict(sample="HaimiA", series="EDS", H_nm=500, layout="v1b", cycles=1080, magnification=0, film_nm=108.0, z50=195.2, measured_slope=0.0108))
-    rows.append(dict(sample="Arts", series="Arts", H_nm=500, layout="arts", cycles=400, magnification=100, film_nm=46.0, z50=486.1, measured_slope=0.00768))
+        g = GAP_MEAS[r.H_nm] / r.H_nm if MEAS else 1.0      # the table's reduced depth and slope use the nominal gap
+        rows.append(dict(sample=f"Yim{r.sample}", series=r.series, H_nm=r.H_nm, layout=r.pillar_layout, cycles=r.cycles, magnification=r.magnification, film_nm=r.S_IIb_nm / g, z50=r.x50_tilde / g, measured_slope=r.slope_dtheta_dxtilde * g, gs=g))
+    rows.append(dict(sample="HaimiA", series="EDS", H_nm=500, layout="v1b", cycles=1080, magnification=0, film_nm=108.0, z50=195.2, measured_slope=0.0108, gs=1.0))
+    rows.append(dict(sample="Arts", series="Arts", H_nm=500, layout="arts", cycles=400, magnification=100, film_nm=46.0, z50=486.1, measured_slope=0.00768, gs=1.0))
     return pd.DataFrame(rows)
 
 
@@ -160,12 +164,12 @@ def kernel_for(fam, r, fill):
 
 
 def predict():
-    cal = pd.read_csv(FIG / "mechanism_calibration.csv").set_index("model"); H = heldout(); rows = []; curves = {}
+    cal = pd.read_csv(FIG / f"mechanism_calibration{SUF}.csv").set_index("model"); H = heldout(); rows = []; curves = {}
     for model, (fam, narrow, spot) in MODELS.items():
         s_star = float(cal.loc[model, "s_joint"])
         for r in H.itertuples():
             fill_true = 2 * r.film_nm / r.H_nm; kn = kernel_for(fam, r, fill_true if narrow else 0.0); K = kernel(kn)
-            fill = fill_true if narrow else 0.0; sp = SPOT_UM[r.magnification] * 1000.0 / r.H_nm if spot else 0.0
+            fill = fill_true if narrow else 0.0; sp = SPOT_UM[r.magnification] * 1000.0 / (r.H_nm * r.gs) if spot else 0.0
             ss = np.array(list(K)); sl = np.array([slope_at_depth(K[s], r.z50, fill, sp, GAP_EXPONENT[fam]) for s in ss]) if len(ss) else np.zeros((0, 2)); ok = np.isfinite(sl[:, 0]) if len(ss) else np.array([], bool)
             if ok.sum() < 2: rows.append(dict(model=model, sample=r.sample, kernel=kn, s=s_star, predicted_slope=np.nan, exposure_Pa_s=np.nan, extrapolated=True)); continue
             curves.setdefault(model, {})[r.sample] = dict(kernel=kn, s=[float(v) for v in ss[ok]], slope=[round(float(v), 5) for v in sl[ok, 0]], exposure=[round(float(v), 3) for v in sl[ok, 1]])
@@ -173,13 +177,13 @@ def predict():
             rows.append(dict(model=model, sample=r.sample, kernel=kn, s=s_star, predicted_slope=float(np.exp(np.interp(np.log(s_star), np.log(ss[ok]), np.log(sl[ok, 0])))),
                              exposure_Pa_s=float(np.interp(np.log(s_star), np.log(ss[ok]), sl[ok, 1])), extrapolated=ex))
         print(model, "done", flush=True)
-    pd.DataFrame(rows).to_csv(FIG / "mechanism_predictions.csv", index=False); (FIG / "mechanism_slope_curves.json").write_text(json.dumps(curves))
+    pd.DataFrame(rows).to_csv(FIG / f"mechanism_predictions{SUF}.csv", index=False); (FIG / f"mechanism_slope_curves{SUF}.json").write_text(json.dumps(curves))
 
 
 def compare():
-    P = pd.read_csv(FIG / "mechanism_predictions.csv"); H = heldout().set_index("sample"); P = P.join(H, on="sample")
+    P = pd.read_csv(FIG / f"mechanism_predictions{SUF}.csv"); H = heldout().set_index("sample"); P = P.join(H, on="sample")
     P.loc[P.extrapolated.astype(bool), "predicted_slope"] = np.nan                         # a prediction outside the simulated s range is not scored
-    P["log_ratio"] = np.log(P.predicted_slope / P.measured_slope); P.to_csv(FIG / "mechanism_comparison.csv", index=False)
+    P["log_ratio"] = np.log(P.predicted_slope / P.measured_slope); P.to_csv(FIG / f"mechanism_comparison{SUF}.csv", index=False)
     scored = P[P["sample"] != "Arts"]; piv = scored.pivot(index="sample", columns="model", values="log_ratio")
     common = list(piv.dropna().index); summ = {"n_heldout": int(len(H) - 1), "common_samples": common, "models": {}}
     # scatter of nominally identical runs (50x objective, layout v1b, 500 nm, 500 cycles, 0.1 s pulse): the slope falls with depth, so the scatter is taken on slope x depth
@@ -192,7 +196,7 @@ def compare():
                                  rms_ln_common_without_Yim9=rms(c9.log_ratio), worst=str(g.log_ratio.abs().idxmax()), missing=sorted(set(H.index) - set(g.index) - {"Arts"}))
         print(m, {k: v for k, v in summ["models"][m].items()})
     # ceiling: the slope of the complete model for s -> large (largest simulated s), how close the measurement is to it, and the sensitivity d ln slope / d ln s at three s
-    curves = json.loads((FIG / "mechanism_slope_curves.json").read_text()); summ["ceiling"] = {}; summ["single_s_scan"] = {}; sig = summ["replicate_sigma_ln_slope_times_depth"]
+    curves = json.loads((FIG / f"mechanism_slope_curves{SUF}.json").read_text()); summ["ceiling"] = {}; summ["single_s_scan"] = {}; sig = summ["replicate_sigma_ln_slope_times_depth"]
     for m in COMPLETE:
         per = curves.get(m, {}); summ["ceiling"][m] = {}
         for smp, c in per.items():
@@ -219,7 +223,7 @@ def compare():
         summ["implied_exposure_cycle_series_Pa_s"][m] = {"250": round(float(g[g.cycles == 250].exposure_Pa_s.iloc[0]), 2), "500 (mean of samples 4, 12)": round(float(g8.exposure_Pa_s.mean()), 2), "1000": round(float(g[g.cycles == 1000].exposure_Pa_s.iloc[0]), 2)}
     for k in ("single_s_scan", "implied_exposure_cycle_series_Pa_s"): print(k, json.dumps(summ[k]))
     print(pd.DataFrame(summ["ceiling"]["gas+narrowing+spot"]).T.to_string())
-    (FIG / "mechanism_summary.json").write_text(json.dumps(summ, indent=1))
+    (FIG / f"mechanism_summary{SUF}.json").write_text(json.dumps(summ, indent=1))
     print(P.pivot(index="sample", columns="model", values="predicted_slope")[["hydraulic", "ballistic", "gas"] + COMPLETE].join(H[["measured_slope", "z50", "H_nm", "cycles"]]).round(4).to_string())
 
 
