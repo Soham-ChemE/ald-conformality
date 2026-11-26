@@ -1,7 +1,7 @@
 """aldconf.lhar: the slope-to-sticking relation of the complete lateral-channel model (table lhar_slope_table.csv)."""
 import numpy as np
 import pytest
-from aldconf.lhar import sticking_from_slope, slope_curve, narrowing_limit, TRANSPORTS
+from aldconf.lhar import sticking_from_slope, slope_curve, narrowing_limit, relative_sensitivity, max_fill_for, TRANSPORTS
 
 
 def test_reduces_to_the_slope_method_without_narrowing_and_spot():
@@ -32,3 +32,12 @@ def test_bad_input():
     with pytest.raises(ValueError): slope_curve(500, 0.1)
     with pytest.raises(ValueError): slope_curve(200, 0.1, "nonsense")
     with pytest.raises(ValueError): narrowing_limit(0)
+
+
+def test_one_number_rule_follows_the_table():
+    for tr in ("hydraulic", "gas300"):
+        s0, sl0 = slope_curve(200, 0.0, tr); k = 6; base = np.log(sl0[k + 1] / sl0[k - 1]) / np.log(s0[k + 1] / s0[k - 1])
+        for f in (0.1, 0.2, 0.3):
+            s, sl = slope_curve(200, f, tr); ratio = np.log(sl[k + 1] / sl[k - 1]) / np.log(s[k + 1] / s[k - 1]) / base
+            assert abs(ratio - relative_sensitivity(f, 200, sl0[k])) < 0.2
+    f = max_fill_for(200, 0.025, 0.8); assert 0.08 < f < 0.14 and abs(relative_sensitivity(f, 200, 0.025) - 0.8) < 1e-6

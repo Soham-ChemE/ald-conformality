@@ -25,6 +25,21 @@ def narrowing_limit(fill: float) -> float:
     return (1 - fill / 2) / fill
 
 
+def relative_sensitivity(fill: float, z50: float, slope_unfilled: float) -> float:
+    """How much of the slope's sensitivity to s survives channel narrowing, relative to an unfilled channel (1 = all of it).
+    One number decides: u = fill x z50 / (1 - fill/2) x slope_unfilled, the width of the narrowing smear over the width of
+    the intrinsic front; the complete model follows 1 / (1 + (u / 0.92)^3) within 0.07 (rms, 567 table points, three
+    transport families). 80 % of the sensitivity is kept for u < 0.58, half at u = 0.92."""
+    if fill <= 0: return 1.0
+    u = fill * z50 / (1 - fill / 2) * slope_unfilled; return float(1.0 / (1.0 + (u / 0.92) ** 3))
+
+
+def max_fill_for(z50: float, slope_unfilled: float, keep: float = 0.8) -> float:
+    """Largest filled fraction 2 t / H that keeps the fraction `keep` of the slope's sensitivity to s."""
+    if not 0 < keep < 1: raise ValueError("keep must be in (0, 1)")
+    u = 0.92 * (1 / keep - 1) ** (1 / 3); a = u / (z50 * slope_unfilled); return float(a / (1 + a / 2))
+
+
 @lru_cache(maxsize=1)
 def _table():
     import csv

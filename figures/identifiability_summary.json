@@ -1,0 +1,198 @@
+{
+ "noise_sigma": 0.03,
+ "z50": 215.0,
+ "rule": {
+  "form": "sensitivity / sensitivity_unfilled = 1 / (1 + (u / a)^p), u = f x z50 / (1 - f/2) x slope_unfilled",
+  "a": 0.922,
+  "p": 2.996,
+  "rms_residual": 0.067,
+  "n_points": 567,
+  "u_for_80_percent": 0.581,
+  "u_for_50_percent": 0.922,
+  "mean_unfilled_sensitivity": {
+   "free": 0.408,
+   "gas100": 0.427,
+   "gas1000": 0.456,
+   "gas300": 0.433,
+   "hydraulic": 0.448
+  }
+ },
+ "designs_500nm_gap": {
+  "gas300": {
+   "50 cycles (2 % filled)": {
+    "sigma_ln_s_profile": 0.1065,
+    "factor_1sigma": 1.11,
+    "sigma_ln_s_slope": 0.288
+   },
+   "125 cycles (5 % filled)": {
+    "sigma_ln_s_profile": 0.1103,
+    "factor_1sigma": 1.12,
+    "sigma_ln_s_slope": 0.29
+   },
+   "250 cycles (10 % filled)": {
+    "sigma_ln_s_profile": 0.1205,
+    "factor_1sigma": 1.13,
+    "sigma_ln_s_slope": 0.342
+   },
+   "375 cycles (15 % filled)": {
+    "sigma_ln_s_profile": 0.1445,
+    "factor_1sigma": 1.16,
+    "sigma_ln_s_slope": 0.48
+   },
+   "500 cycles (20 % filled)": {
+    "sigma_ln_s_profile": 0.178,
+    "factor_1sigma": 1.19,
+    "sigma_ln_s_slope": 0.733
+   },
+   "750 cycles (30 % filled)": {
+    "sigma_ln_s_profile": 0.2889,
+    "factor_1sigma": 1.33,
+    "sigma_ln_s_slope": 3.528
+   },
+   "1000 cycles (40 % filled)": {
+    "sigma_ln_s_profile": 0.4408,
+    "factor_1sigma": 1.55,
+    "sigma_ln_s_slope": 38.633
+   }
+  },
+  "hydraulic": {
+   "50 cycles (2 % filled)": {
+    "sigma_ln_s_profile": 0.084,
+    "factor_1sigma": 1.09,
+    "sigma_ln_s_slope": 0.275
+   },
+   "125 cycles (5 % filled)": {
+    "sigma_ln_s_profile": 0.0868,
+    "factor_1sigma": 1.09,
+    "sigma_ln_s_slope": 0.282
+   },
+   "250 cycles (10 % filled)": {
+    "sigma_ln_s_profile": 0.0967,
+    "factor_1sigma": 1.1,
+    "sigma_ln_s_slope": 0.328
+   },
+   "375 cycles (15 % filled)": {
+    "sigma_ln_s_profile": 0.1146,
+    "factor_1sigma": 1.12,
+    "sigma_ln_s_slope": 0.435
+   },
+   "500 cycles (20 % filled)": {
+    "sigma_ln_s_profile": 0.1428,
+    "factor_1sigma": 1.15,
+    "sigma_ln_s_slope": 0.699
+   },
+   "750 cycles (30 % filled)": {
+    "sigma_ln_s_profile": 0.2298,
+    "factor_1sigma": 1.26,
+    "sigma_ln_s_slope": 3.383
+   },
+   "1000 cycles (40 % filled)": {
+    "sigma_ln_s_profile": 0.3453,
+    "factor_1sigma": 1.41,
+    "sigma_ln_s_slope": 45.27
+   }
+  }
+ },
+ "ambiguity_examples": [
+  {
+   "truth": "gas300",
+   "s_true": 0.0158,
+   "fill": 0.0,
+   "fitted_with": "hydraulic",
+   "s_fitted": 0.00802,
+   "bias_factor": 0.51,
+   "rms_misfit": 0.0054,
+   "at_grid_edge": false
+  },
+  {
+   "truth": "gas300",
+   "s_true": 0.0158,
+   "fill": 0.0,
+   "fitted_with": "free",
+   "s_fitted": 0.032,
+   "bias_factor": 2.03,
+   "rms_misfit": 0.0238,
+   "at_grid_edge": false
+  },
+  {
+   "truth": "gas300",
+   "s_true": 0.0158,
+   "fill": 0.05,
+   "fitted_with": "hydraulic",
+   "s_fitted": 0.00797,
+   "bias_factor": 0.5,
+   "rms_misfit": 0.0051,
+   "at_grid_edge": false
+  },
+  {
+   "truth": "gas300",
+   "s_true": 0.0158,
+   "fill": 0.05,
+   "fitted_with": "free",
+   "s_fitted": 0.0347,
+   "bias_factor": 2.2,
+   "rms_misfit": 0.023,
+   "at_grid_edge": false
+  },
+  {
+   "truth": "gas300",
+   "s_true": 0.0158,
+   "fill": 0.1,
+   "fitted_with": "hydraulic",
+   "s_fitted": 0.00805,
+   "bias_factor": 0.51,
+   "rms_misfit": 0.0045,
+   "at_grid_edge": false
+  },
+  {
+   "truth": "gas300",
+   "s_true": 0.0158,
+   "fill": 0.1,
+   "fitted_with": "free",
+   "s_fitted": 0.0423,
+   "bias_factor": 2.68,
+   "rms_misfit": 0.0214,
+   "at_grid_edge": false
+  },
+  {
+   "truth": "gas300",
+   "s_true": 0.0158,
+   "fill": 0.2,
+   "fitted_with": "hydraulic",
+   "s_fitted": 0.00878,
+   "bias_factor": 0.56,
+   "rms_misfit": 0.0042,
+   "at_grid_edge": false
+  },
+  {
+   "truth": "gas300",
+   "s_true": 0.0158,
+   "fill": 0.2,
+   "fitted_with": "free",
+   "s_fitted": 0.0532,
+   "bias_factor": 3.37,
+   "rms_misfit": 0.0191,
+   "at_grid_edge": true
+  },
+  {
+   "truth": "gas300",
+   "s_true": 0.0158,
+   "fill": 0.4,
+   "fitted_with": "hydraulic",
+   "s_fitted": 0.0136,
+   "bias_factor": 0.86,
+   "rms_misfit": 0.0073,
+   "at_grid_edge": false
+  },
+  {
+   "truth": "gas300",
+   "s_true": 0.0158,
+   "fill": 0.4,
+   "fitted_with": "free",
+   "s_fitted": 0.0549,
+   "bias_factor": 3.48,
+   "rms_misfit": 0.0182,
+   "at_grid_edge": true
+  }
+ ]
+}
