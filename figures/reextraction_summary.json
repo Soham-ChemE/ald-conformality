@@ -1,0 +1,69 @@
+{
+ "n_300C": 17,
+ "slope_method": {
+  "n": 15,
+  "min": 0.00041,
+  "max": 0.0318,
+  "max_over_min": 77.6,
+  "sd_ln": 0.997
+ },
+ "complete": {
+  "hydraulic": {
+   "n_with_value": 13,
+   "n_above_ceiling": 1,
+   "n_no_kernel": 0,
+   "min": 0.00311,
+   "max": 0.0353,
+   "max_over_min": 11.4,
+   "sd_ln": 0.618,
+   "same_samples_slope_method_sd_ln": 0.773,
+   "same_samples_complete_sd_ln": 0.676,
+   "same_samples_n": 11,
+   "largest_lower_bound": 0.0264,
+   "smallest_upper_bound": 0.00404,
+   "one_s_fits_all": false,
+   "samples_setting_the_bounds": {
+    "lower": "Yim9",
+    "upper": "Yim2"
+   }
+  },
+  "gas300": {
+   "n_with_value": 12,
+   "n_above_ceiling": 1,
+   "n_no_kernel": 0,
+   "min": 0.00621,
+   "max": 0.0427,
+   "max_over_min": 6.9,
+   "sd_ln": 0.523,
+   "same_samples_slope_method_sd_ln": 0.709,
+   "same_samples_complete_sd_ln": 0.569,
+   "same_samples_n": 10,
+   "largest_lower_bound": 0.0312,
+   "smallest_upper_bound": 0.00944,
+   "one_s_fits_all": false,
+   "samples_setting_the_bounds": {
+    "lower": "Yim9",
+    "upper": "Yim6"
+   }
+  },
+  "free": {
+   "n_with_value": 12,
+   "n_above_ceiling": 4,
+   "n_no_kernel": 0,
+   "min": 0.00559,
+   "max": 0.06,
+   "max_over_min": 10.7,
+   "sd_ln": 0.768,
+   "same_samples_slope_method_sd_ln": 0.594,
+   "same_samples_complete_sd_ln": 0.764,
+   "same_samples_n": 10,
+   "largest_lower_bound": 0.06,
+   "smallest_upper_bound": 0.021,
+   "one_s_fits_all": false,
+   "samples_setting_the_bounds": {
+    "lower": "zenodo",
+    "upper": "Yim2"
+   }
+  }
+ }
+}
