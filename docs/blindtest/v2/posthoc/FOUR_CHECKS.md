@@ -52,7 +52,7 @@ difference is the collision model (hard spheres against relaxation), not the wal
 1.21 times the reference at all four widths: a 10 % xenon mixture is not a tracer problem, and He-Xe is not a clean test.
 The hydraulic formula is 21 and 48 % below the reference at widths of 0.1 and 0.01.
 TMA in N2 at 300 C, 500 nm (Monte Carlo over hydraulic): 2.34 at 30 Pa, 2.05 at 100 Pa, 1.62 at 300 Pa, 1.38 at 1000 Pa,
-1.13 at 3000 Pa, 1.03 at 30000 Pa.
+1.12 at 3000 Pa, 1.02 at 30000 Pa.
 
 ## 4. One process in two laboratories: ZnO from DEZ and H2O at 200 C
 `docs/blindtest/posthoc/zno_cross_lab.csv`. Same model, sticking coefficient fitted to each profile: 0.004 at 1400 Pa

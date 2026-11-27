@@ -1,0 +1,54 @@
+"""Figures 13 and 14 of draft_v4, drawn from result files only (nothing is recomputed here).
+Figure 13: EDS line scans of the cycle series against the model with and without channel narrowing, from
+docs/blindtest/v2/posthoc/eds_cycle_series_curves.json (written by eds_cycle_series.py; post hoc analysis).
+Figure 14: diffusivity along a slit against kinetic theory, from figures/benchmark_slit_diffusion.csv and
+figures/slit_diffusion_tma_n2.csv (written by benchmark_slit_diffusion.py).
+Writes docs/paper/figures/fig13_eds_cycle_series.png and fig14_slit_benchmark.png.
+  .venv/bin/python docs/paper/final_figures.py
+"""
+import json
+from pathlib import Path
+import numpy as np, pandas as pd
+import matplotlib; matplotlib.use("Agg"); import matplotlib.pyplot as plt
+ROOT = Path(__file__).resolve().parents[2]; FIG = ROOT / "figures"; OUT = ROOT / "docs/paper/figures"
+plt.rcParams.update({"font.size": 9, "axes.titlesize": 9.5, "legend.fontsize": 7.5, "figure.dpi": 150, "savefig.dpi": 200})
+
+# ---- Figure 13: EDS cycle series ----
+C = json.loads((ROOT / "docs/blindtest/v2/posthoc/eds_cycle_series_curves.json").read_text())
+fig, ax = plt.subplots(2, 3, figsize=(11, 5.6), sharey=True)
+for c in C:
+    j = (250, 500, 1000).index(c["cycles"]); i = ("left", "right").index(c["channel"]); a = ax[i, j]
+    a.plot(c["z"], c["y"], ".", color="0.25", ms=3, label="EDS Al signal (Yim et al. 2020, Fig. S8)")
+    a.plot(c["grid"], c["with_narrowing"], "C3-", lw=1.4, label="model with channel narrowing")
+    a.plot(c["grid"], c["without"], "C0--", lw=1.1, label="model without narrowing")
+    a.axvline(1.6 * c["z50"], color="0.7", lw=0.6, ls=":"); a.set_xlim(0, 1.7 * c["z50"]); a.set_ylim(-0.08, 1.25)
+    a.set_title(f"({'abcdef'[3 * i + j]}) {c['cycles']} cycles, {c['channel']} channel, {100 * c['fill']:.0f} % of the gap filled")
+    a.text(0.04, 0.07, f"rms with narrowing {c['rms_with']:.3f}\nrms without {c['rms_without']:.3f}", transform=a.transAxes, fontsize=8, va="bottom")
+    if i == 1: a.set_xlabel("distance from the entrance / gap")
+    if j == 0: a.set_ylabel("relative thickness")
+h, l = ax[0, 0].get_legend_handles_labels(); fig.legend(h, l, loc="upper center", ncol=3, frameon=False, fontsize=8.5)
+fig.tight_layout(rect=(0, 0, 1, 0.95)); fig.savefig(OUT / "fig13_eds_cycle_series.png"); plt.close(fig)
+
+# ---- Figure 14: slit diffusivity against kinetic theory ----
+B = pd.read_csv(FIG / "benchmark_slit_diffusion.csv"); T = pd.read_csv(FIG / "slit_diffusion_tma_n2.csv"); N = B[B.pair == "Ne-Ar"]; X = B[B.pair == "He-Xe"]
+fig, ax = plt.subplots(1, 3, figsize=(11, 3.5))
+a = ax[0]
+a.plot(N.width_2a, N.kinetic_theory, "k-", lw=1.2, label="kinetic theory (McCormack model)")
+a.errorbar(N.width_2a, N.monte_carlo, yerr=N.monte_carlo * N.mc_rel_err, fmt="o", color="C3", ms=4, capsize=2, label="Monte Carlo, hard-sphere collisions")
+R = N.dropna(subset=["monte_carlo_relaxation_collisions"]); a.plot(R.width_2a, R.monte_carlo_relaxation_collisions, "s", mfc="none", color="C2", ms=6, label="Monte Carlo, relaxation collisions")
+a.plot(N.width_2a, N.hydraulic_bosanquet, "C0--", lw=1.1, label="hydraulic Knudsen + gas diffusion")
+a.set_xscale("log"); a.set_yscale("log"); a.set_xlabel("slit width / mean free path"); a.set_ylabel("diffusivity along the slit (reference units)"); a.set_title("(a) Ne-Ar, heavy species"); a.legend(frameon=False)
+a = ax[1]
+a.axhline(1, color="k", lw=0.8); a.axhspan(0.95, 1.05, color="0.92", zorder=0)
+a.errorbar(N.width_2a, N.mc_over_theory, yerr=N.mc_over_theory * N.mc_rel_err, fmt="o-", color="C3", ms=4, lw=0.8, capsize=2, label="Ne-Ar, hard spheres")
+a.plot(R.width_2a, R.monte_carlo_relaxation_collisions / R.kinetic_theory, "s-", mfc="none", color="C2", ms=6, lw=0.8, label="Ne-Ar, relaxation collisions")
+a.plot(N.width_2a, N.hydraulic_over_theory, "C0--", lw=1.1, label="Ne-Ar, hydraulic + gas diffusion")
+a.plot(X.width_2a, X.mc_over_theory, "^:", color="0.5", ms=4, lw=0.8, label="He-Xe, hard spheres (not a tracer case)")
+a.set_xscale("log"); a.set_ylim(0.4, 1.6); a.set_xlabel("slit width / mean free path"); a.set_ylabel("ratio to kinetic theory"); a.set_title("(b) ratio to the reference; band: 5 %"); a.legend(frameon=False, loc="upper left")
+a = ax[2]
+a.axhline(1, color="k", lw=0.8)
+a.errorbar(T.pressure_Pa, T.mc_over_hydraulic, yerr=T.mc_over_hydraulic * T.mc_rel_err, fmt="o-", color="C3", ms=4, lw=0.8, capsize=2)
+for p, r in zip(T.pressure_Pa, T.D_monte_carlo_m2_s / T.D_hydraulic_bosanquet_m2_s): a.annotate(f"{r:.2f}", (p, r), textcoords="offset points", xytext=(4, 5), fontsize=7)
+a.set_xscale("log"); a.set_xlim(18, 90000); a.set_ylim(0.9, 2.6); a.set_xlabel("N$_2$ pressure / Pa"); a.set_ylabel("Monte Carlo / hydraulic + gas diffusion"); a.set_title("(c) TMA in N$_2$, 500 nm gap")
+fig.tight_layout(); fig.savefig(OUT / "fig14_slit_benchmark.png"); plt.close(fig)
+print("wrote fig13_eds_cycle_series.png, fig14_slit_benchmark.png")
