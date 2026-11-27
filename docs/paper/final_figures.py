@@ -52,3 +52,19 @@ for p, r in zip(T.pressure_Pa, T.D_monte_carlo_m2_s / T.D_hydraulic_bosanquet_m2
 a.set_xscale("log"); a.set_xlim(18, 90000); a.set_ylim(0.9, 2.6); a.set_xlabel("N$_2$ pressure / Pa"); a.set_ylabel("Monte Carlo / hydraulic + gas diffusion"); a.set_title("(c) TMA in N$_2$, 500 nm gap")
 fig.tight_layout(); fig.savefig(OUT / "fig14_slit_benchmark.png"); plt.close(fig)
 print("wrote fig13_eds_cycle_series.png, fig14_slit_benchmark.png")
+
+# ---- Figure: sticking coefficient fitted profile by profile, without and with channel narrowing ----
+P = pd.read_csv(FIG / "profile_fits_cut0.3.csv"); fig, ax = plt.subplots(1, 3, figsize=(11.5, 3.7), sharey=True)
+for a, fam, title in zip(ax, ("hydraulic", "gas", "ballistic"), ("(a) hydraulic diffusion", "(b) cavity Monte Carlo, N$_2$ at 300 Pa", "(c) cavity Monte Carlo, no gas")):
+    g = P[P.transport == fam]; top = g.s_grid_max.max()
+    for nar, col, lab in ((False, "C0", "without narrowing"), (True, "C3", "with narrowing")):
+        for meth, mk in (("EDS", "o"), ("reflectometry", "s")):
+            q = g[(g.narrowing == nar) & (g.method == meth)]; x = q.fill + (0.006 if nar else -0.006)
+            lo = np.clip(q.s_fit - q.s_p16, 0, None); hi = np.clip(q.s_p84 - q.s_fit, 0, None); open_top = q.s_p84 >= 0.99 * q.s_grid_max
+            a.errorbar(x, q.s_fit, yerr=[lo, hi], fmt=mk, color=col, ms=4.5, mfc=col if meth == "EDS" else "none", lw=0.8, capsize=2, label=f"{meth}, {lab}")
+            a.plot(x[open_top], np.full(open_top.sum(), 0.2 * 1.25), "^", color=col, ms=4)
+        q = g[g.narrowing == nar]; c = np.polyfit(q.fill, np.log(q.s_fit), 1); ff = np.linspace(0.04, 0.41, 20); a.plot(ff, np.exp(np.polyval(c, ff)), "-" if not nar else "--", color=col, lw=0.9, alpha=0.7)
+    a.set_yscale("log"); a.set_ylim(1e-3, 0.32); a.set_xlabel("fraction of the gap filled, f = 2t/H"); a.set_title(title); a.set_yticks([0.001, 0.003, 0.01, 0.03, 0.1, 0.3]); a.set_yticklabels(["0.001", "0.003", "0.01", "0.03", "0.1", "0.3"]); a.minorticks_off()
+ax[0].set_ylabel("fitted sticking coefficient"); h, l = ax[0].get_legend_handles_labels(); fig.legend(h, l, loc="upper center", ncol=4, frameon=False, fontsize=8)
+fig.tight_layout(rect=(0, 0, 1, 0.93)); fig.savefig(OUT / "fig_profile_fits.png"); plt.close(fig)
+print("wrote fig_profile_fits.png")
