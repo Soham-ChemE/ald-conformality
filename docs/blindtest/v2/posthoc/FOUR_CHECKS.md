@@ -90,3 +90,41 @@ on the slope by up to a factor of 1.9, this is not explained, and the statement 
 it is not shown whether a clean profile can exceed the step-front value no longer holds: these do.
 The comparison "without narrowing" in sections 1 and 5 is the same model with narrowing switched off at the same
 s = 0.04, not a refitted model; s = 0.04 is 4.5 times the hydraulic value calibrated on the single-exposure profiles.
+
+## 8. The slope-definition check (after section 7)
+`slope_definition.py`, `slope_definition.csv`, `slope_definition_heldout.csv`. Section 7 compared the EDS slopes with the
+slopes tabulated in Yim 2020 Table 1 (the authors' own line fits). Here the slope is read from the digitised reflectometry
+profiles themselves with the definition used for the EDS scans (least squares between 25 and 75 % of the plateau, on the
+contiguous front).
+- For 8 of the 10 reflectometry profiles the profile slope is 0.97 to 1.10 times the tabulated one (median 1.08).
+- Sample 2: profile slope 0.0169 against a tabulated 0.011 (1.54 times). Sample 1: 0.0094 against 0.013 (0.72), but its
+  trace lies under the markers of sample 2 in the source figure and several points are missing (custodian's note), so its
+  profile slope is not reliable.
+- EDS against reflectometry for the same sample, same definition: 1.21 for sample 2 (not 1.8 to 1.9) and 1.07 for sample 11
+  (1000 cycles). For the 250-cycle sample the reflectometry trace is hidden below 0.4 of the plateau and gives no slope, so
+  the factor 1.9 against its tabulated slope cannot be checked.
+- So most of the "factor 1.9" of section 7 is the tabulated slope of sample 2, not a disagreement between the two
+  measurements. What remains: EDS fronts 7 to 21 % steeper than the reflectometry fronts, and both steeper than the model
+  with narrowing; the EDS fronts still lie at 1.0 to 1.4 times the step-front value.
+- The held-out slope test rescored on the profile slopes (9 samples at 500 nm with a digitised profile): complete models
+  0.18 to 0.19 (25-75 % slope) and 0.22 to 0.23 (40-60 % secant) against 0.28 to 0.33 without narrowing; without sample 1:
+  0.12 to 0.16 and 0.11 to 0.18 against 0.22 to 0.27. A baseline with no kinetics, k (1 - f/2)/(f z50), does as well on
+  these samples (0.18 and 0.20; without sample 1 0.14 and 0.09): at about 20 % filling the slope is set by the filled
+  fraction and the depth, and carries little information on the sticking coefficient.
+
+## 9. Every front fitted on its own, with and without narrowing
+`docs/paper/profile_fits.py`, `figures/profile_fits.csv`, `figures/profile_fits_summary.csv`. Sixteen digitised fronts (ten
+reflectometry, six EDS channels), sticking coefficient and exposure free, three transport kernels, fit window to the first
+reading below 0.1 of the plateau.
+- Without narrowing the fitted sticking coefficient falls as the channel fills: d ln s / d f = -4.5 to -7.0 over the
+  profiles. On the EDS scans (geometric mean of the two channels) it is 0.0135, 0.0065 and at most 0.0025 at 250, 500 and
+  1000 cycles with the hydraulic kernel; 0.024, 0.008 and at most 0.004 with carrier-gas collisions; 0.037, 0.017 and
+  0.0045 without gas. The values at the largest filling are at the lower end of the simulated range.
+- With narrowing the trend with filling is gone (d ln s / d f between 0.1 and 3.7, sign not consistent), but the fits no
+  longer determine s: 7 to 14 of the 16 are at an end of the simulated range, the EDS fits at the upper end (0.06). Within
+  10 % of the best rms the EDS profiles allow anything above 0.006 to 0.03, depending on the profile and the kernel.
+- The fit quality is the same with and without narrowing (mean rms 0.037 to 0.040 in both). A single profile does not
+  distinguish channel narrowing from a lower sticking coefficient; only the requirement that one process has one sticking
+  coefficient across cycle numbers does.
+- The least-filled sample (2000 nm gap, 5 % filled) gives the same value either way: 0.030 and 0.028 (hydraulic), 0.034
+  and 0.032 (gas).

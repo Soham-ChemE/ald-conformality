@@ -1,0 +1,27 @@
+samples,model,n,rms_ln_vs_table1,rms_ln_vs_ls_25_75,rms_ln_vs_secant_40_60
+"500 nm gap, 9 samples with a digitised profile",ballistic,9,0.328,0.284,0.288
+"500 nm gap, 9 samples with a digitised profile",ballistic+narrowing,9,0.079,0.191,0.228
+"500 nm gap, 9 samples with a digitised profile",ballistic+narrowing+spot,9,0.082,0.193,0.231
+"500 nm gap, 9 samples with a digitised profile",ballistic+spot,9,0.335,0.297,0.302
+"500 nm gap, 9 samples with a digitised profile",gas,9,0.288,0.282,0.308
+"500 nm gap, 9 samples with a digitised profile",gas+narrowing,9,0.132,0.186,0.214
+"500 nm gap, 9 samples with a digitised profile",gas+narrowing+spot,9,0.131,0.187,0.215
+"500 nm gap, 9 samples with a digitised profile",gas+spot,9,0.301,0.305,0.333
+"500 nm gap, 9 samples with a digitised profile",hydraulic,9,0.295,0.301,0.331
+"500 nm gap, 9 samples with a digitised profile",hydraulic+narrowing,9,0.1,0.181,0.215
+"500 nm gap, 9 samples with a digitised profile",hydraulic+narrowing+spot,9,0.1,0.181,0.216
+"500 nm gap, 9 samples with a digitised profile",hydraulic+spot,9,0.295,0.301,0.331
+"500 nm gap, 9 samples with a digitised profile","no kinetics: k (1 - f/2)/(f z50), k fitted",9,0.084,0.179,0.197
+"the same without sample 1 (trace partly hidden), 8 samples",ballistic,8,0.347,0.264,0.243
+"the same without sample 1 (trace partly hidden), 8 samples",ballistic+narrowing,8,0.083,0.161,0.18
+"the same without sample 1 (trace partly hidden), 8 samples",ballistic+narrowing+spot,8,0.087,0.164,0.184
+"the same without sample 1 (trace partly hidden), 8 samples",ballistic+spot,8,0.352,0.268,0.247
+"the same without sample 1 (trace partly hidden), 8 samples",gas,8,0.296,0.228,0.23
+"the same without sample 1 (trace partly hidden), 8 samples",gas+narrowing,8,0.133,0.116,0.11
+"the same without sample 1 (trace partly hidden), 8 samples",gas+narrowing+spot,8,0.131,0.116,0.111
+"the same without sample 1 (trace partly hidden), 8 samples",gas+spot,8,0.298,0.227,0.227
+"the same without sample 1 (trace partly hidden), 8 samples",hydraulic,8,0.291,0.223,0.227
+"the same without sample 1 (trace partly hidden), 8 samples",hydraulic+narrowing,8,0.104,0.133,0.144
+"the same without sample 1 (trace partly hidden), 8 samples",hydraulic+narrowing+spot,8,0.103,0.134,0.145
+"the same without sample 1 (trace partly hidden), 8 samples",hydraulic+spot,8,0.291,0.223,0.227
+"the same without sample 1 (trace partly hidden), 8 samples","no kinetics: k (1 - f/2)/(f z50), k fitted",8,0.088,0.135,0.093
