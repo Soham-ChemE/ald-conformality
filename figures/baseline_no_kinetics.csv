@@ -1,0 +1,4 @@
+set,n,k_fitted,rms_ln_slope_k_fitted,rms_ln_slope_k_1
+15 scored,15,0.76,0.279,0.391
+13 that every model reaches (500 nm gap),13,0.781,0.253,0.353
+"500 nm gap, 50x objective or EDS",11,0.836,0.186,0.259
