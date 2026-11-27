@@ -1,0 +1,19 @@
+transport,narrowing,profiles,n,n_at_grid_edge,s_geomean,s_min,s_max,sd_ln_s,dlns_dfill,dlns_dfill_se,mean_rms
+ballistic,False,all profiles,16,0,0.0108,0.00342,0.0561,0.77,-7.17,0.91,0.0234
+ballistic,False,EDS,6,0,0.0108,0.0037,0.0292,0.856,-6.65,0.39,0.0276
+ballistic,False,"reflectometry, 500 nm gap",9,0,0.00903,0.00342,0.0184,0.527,-6.14,2.22,0.0214
+ballistic,True,all profiles,16,1,0.0554,0.01,0.2,0.861,0.28,2.37,0.0241
+ballistic,True,EDS,6,1,0.087,0.0428,0.2,0.516,2.23,1.68,0.0302
+ballistic,True,"reflectometry, 500 nm gap",9,0,0.0409,0.01,0.178,0.984,-5.42,5.63,0.0209
+gas,False,all profiles,16,0,0.00747,0.0027,0.033,0.711,-6.43,0.94,0.0227
+gas,False,EDS,6,0,0.0076,0.00292,0.0185,0.773,-6.02,0.28,0.027
+gas,False,"reflectometry, 500 nm gap",9,0,0.00626,0.0027,0.0135,0.513,-5.33,2.39,0.0206
+gas,True,all profiles,16,0,0.0159,0.004,0.06,0.767,-4.0,1.82,0.0224
+gas,True,EDS,6,0,0.0233,0.0071,0.06,0.743,-3.47,2.33,0.0272
+gas,True,"reflectometry, 500 nm gap",9,0,0.0113,0.004,0.0282,0.667,-5.58,3.47,0.0201
+hydraulic,False,all profiles,16,0,0.00468,0.0016,0.0274,0.754,-6.77,1.02,0.0223
+hydraulic,False,EDS,6,0,0.0047,0.00186,0.0116,0.767,-5.95,0.37,0.0268
+hydraulic,False,"reflectometry, 500 nm gap",9,0,0.00384,0.0016,0.008,0.513,-5.52,2.32,0.0201
+hydraulic,True,all profiles,16,0,0.0118,0.0025,0.0524,0.773,-2.71,2.0,0.0226
+hydraulic,True,EDS,6,0,0.0187,0.0083,0.0524,0.633,-1.53,2.36,0.0278
+hydraulic,True,"reflectometry, 500 nm gap",9,0,0.00791,0.0025,0.0185,0.657,-4.29,3.66,0.02
