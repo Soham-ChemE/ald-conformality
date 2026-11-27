@@ -48,6 +48,14 @@ zz = np.arange(120, 364, 4.0); sc["transport"] = dict(z=zz.tolist(), s=tr["s"], 
 for case, label, fam in VAR:
     run = mt.kernel(case)[tr["s"]]; e = tr["variants"][case]["exposure_Pa_s"]; Ek, TH, z = run
     sc["transport"]["variants"].append(dict(key=case, label=label, family=fam, tail=tr["variants"][case]["tail_plus_60"], exposure=e, theta=[round(float(v), 3) for v in np.interp(zz, z, mt.at(Ek, TH, e))]))
-out["scenes"] = sc; out["scene_files"] = ["figures/mechanism_comparison.csv", "figures/mechanism_summary.json", "figures/mechanism_slope_curves.json", "figures/mechanism_transport.json"]
+# ---- scenes of section 03e (docs/assets/body5.js): EDS cycle series, slit-diffusion benchmark, blind-test scores ----
+sc["eds"] = [c for c in json.loads((ROOT / "docs/blindtest/v2/posthoc/eds_cycle_series_curves.json").read_text()) if c["channel"] == "left"]
+bn = pd.read_csv(ROOT / "figures/benchmark_slit_diffusion.csv"); bn = bn[bn.pair == "Ne-Ar"]
+sc["bench"] = dict(width=bn.width_2a.tolist(), theory=bn.kinetic_theory.tolist(), mc=bn.monte_carlo.tolist(), hydraulic=bn.hydraulic_bosanquet.tolist(),
+                   relax=[None if not np.isfinite(v) else float(v) for v in bn.monte_carlo_relaxation_collisions], tma=pd.read_csv(ROOT / "figures/slit_diffusion_tma_n2.csv")[["pressure_Pa", "mc_over_hydraulic"]].values.tolist())
+b1 = pd.read_csv(ROOT / "docs/blindtest/results.csv"); b2 = pd.read_csv(ROOT / "docs/blindtest/v2/results_v2.csv"); fo = pd.read_csv(ROOT / "docs/blindtest/v2/posthoc/front_only.csv")
+sc["blind"] = dict(v1_scored=int(b1.result.isin(["pass", "fail"]).sum()), v1_pass=int((b1.result == "pass").sum()), v2_scored=len(b2), v2_pass=int((b2.result == "pass").sum()),
+                   v2_rms_with=round(float(b2.rms_complete.mean()), 3), v2_rms_without=round(float(b2.rms_no_narrowing.mean()), 3), v2_better=int(b2.narrowing_helps.sum()))
+out["scenes"] = sc; out["scene_files"] = ["docs/blindtest/v2/posthoc/eds_cycle_series_curves.json", "figures/benchmark_slit_diffusion.csv", "figures/slit_diffusion_tma_n2.csv", "docs/blindtest/results.csv", "docs/blindtest/v2/results_v2.csv", "figures/mechanism_comparison.csv", "figures/mechanism_summary.json", "figures/mechanism_slope_curves.json", "figures/mechanism_transport.json"]
 js = "window.ALD_MECH=" + json.dumps(out, separators=(",", ":")) + ";\n"
 (ROOT / "docs/assets/data-mech.js").write_text(js); print("wrote docs/assets/data-mech.js", len(js), "bytes")

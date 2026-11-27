@@ -21,9 +21,11 @@ are flagged) and separates the two models weakly (fill 0.10). A first run with a
 250- and 500-cycle traces; the single background level above replaced it.
 
 ## 2. What sits behind the front in reflectometry profiles
-`residual_nm.py`, `residual_nm.csv`. Thickness reported beyond 1.3 half depths: 0 to 12.6 nm (median over samples about 5 nm),
-with no scaling with the number of cycles (1000 cycles: 3.0 nm; 500 cycles: 0 to 12.6 nm) and local bumps at 127 to 129 um and
-172 to 173 um, three and four times the 42.4 um pillar-row spacing. The EDS traces of the same samples fall to the background.
+`residual_nm.py`, `residual_nm.csv`. Thickness reported beyond 1.3 half depths: per-sample median 0 to 12.6 nm (single readings up to 33.7 nm),
+with no scaling with the number of cycles (1000 cycles: 3.0 nm; 1080 cycles: 11.1 nm; 500 cycles: 0 to 12.6 nm) and local bumps at 127 to 129 um and
+172 to 173 um, three and four times the 42.4 um pillar-row spacing. The EDS traces fall to a background that does not scale with
+cycle number; a constant offset is removed with that background, so they do not by themselves exclude one. The three EDS samples
+have little optical residual of their own (no points, no median, 3.0 nm).
 
 ## 3. Transport along the slit: Monte Carlo and hydraulic formula against kinetic theory
 `docs/paper/benchmark_slit_diffusion.py`, `figures/benchmark_slit_diffusion.csv`, `figures/slit_diffusion_tma_n2.csv`;
@@ -48,14 +50,14 @@ kT / (m D12), full Maxwellian redraw: the kind of collision term the reference u
 reference for Ne-Ar at widths 0.01, 0.1, 0.5 and 1 (column `monte_carlo_relaxation_collisions`). So for Ne-Ar the narrow-end
 difference is the collision model (hard spheres against relaxation), not the walk. For He-Xe the relaxation walk is 1.20 to
 1.21 times the reference at all four widths: a 10 % xenon mixture is not a tracer problem, and He-Xe is not a clean test.
-The hydraulic formula is 21 to 52 % below the reference for widths of 0.1 and 0.01.
+The hydraulic formula is 21 and 48 % below the reference at widths of 0.1 and 0.01.
 TMA in N2 at 300 C, 500 nm (Monte Carlo over hydraulic): 2.34 at 30 Pa, 2.05 at 100 Pa, 1.62 at 300 Pa, 1.38 at 1000 Pa,
 1.13 at 3000 Pa, 1.03 at 30000 Pa.
 
 ## 4. One process in two laboratories: ZnO from DEZ and H2O at 200 C
 `docs/blindtest/posthoc/zno_cross_lab.csv`. Same model, sticking coefficient fitted to each profile: 0.004 at 1400 Pa
-(Haimi 2026, sample B) and 0.020 to 0.025 at 86 Pa (Gonsalves 2026, left and right). Replacing the hydraulic kernel by the
-gas-collision kernel raises the low-pressure value more than the high-pressure one, so it widens the difference.
+(Haimi 2026, sample B) and 0.020 to 0.025 at 86 Pa (Gonsalves 2026, left and right). No run with the gas-collision kernel was
+made for these two profiles.
 
 # Three follow-ups (2026-11-27)
 

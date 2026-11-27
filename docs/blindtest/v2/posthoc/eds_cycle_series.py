@@ -19,7 +19,7 @@ def model(z50, fill, spot):
     def prof(e): y = mt.cumulative(run, e, fill, xx, spot, 1.0); return y / y[:4].mean()
     def c50(y): i = int(np.argmax(y < 0.5)); return np.nan if i == 0 else xx[i - 1] + (y[i - 1] - 0.5) / (y[i - 1] - y[i])
     g = lambda le: c50(prof(10 ** le)) - z50; return xx, prof(10 ** brentq(g, np.log10(run[0][3]), np.log10(run[0][-2]), xtol=1e-4))
-rows = []; fig, ax = plt.subplots(2, 3, figsize=(12, 6.4))
+rows = []; curves = []; fig, ax = plt.subplots(2, 3, figsize=(12, 6.4))
 for j, (name, (cyc, film, sample)) in enumerate(TR.items()):
     d = pd.read_csv(ROOT / "data/lhar_eds" / f"{name}.csv")          # flagged points (partly hidden by another trace) are kept: dropping them removes whole stretches
     for i, (side, dep) in enumerate((("left", EL - d.x_um.values), ("right", d.x_um.values - ER))):
@@ -30,6 +30,7 @@ for j, (name, (cyc, film, sample)) in enumerate(TR.items()):
         ra = float(np.sqrt(np.mean((np.interp(z[w], xa, ya, right=0) - ys[w]) ** 2))); rb = float(np.sqrt(np.mean((np.interp(z[w], xb, yb, right=0) - ys[w]) ** 2)))
         b = (y <= 0.75) & (y >= 0.25) & w; sl = float(-np.polyfit(z[b], y[b], 1)[0]) if b.sum() >= 3 else np.nan
         rows.append(dict(trace=name, cycles=cyc, yim_table1_sample=sample, channel=side, fill=round(fill, 3), x50_um=round(float(x50), 1), background_over_plateau=round(float(bg / pl), 3), n_points=int(w.sum()), rms_with_narrowing=round(ra, 4), rms_without=round(rb, 4), slope_measured=round(sl, 5), n_points_25_75=int(b.sum())))
+        g = np.arange(0, 1.7 * z50, 4.0); curves.append(dict(cycles=cyc, channel=side, fill=round(fill, 3), z50=round(float(z50), 1), rms_with=round(ra, 4), rms_without=round(rb, 4), z=[round(float(v), 1) for v in z[z <= 1.7 * z50]], y=[round(float(v), 3) for v in ys[z <= 1.7 * z50]], grid=g.tolist(), with_narrowing=[round(float(v), 3) for v in np.interp(g, xa, ya, right=0)], without=[round(float(v), 3) for v in np.interp(g, xb, yb, right=0)]))
         a = ax[i, j]; a.plot(z, ys, "k.", ms=2.5); a.plot(xa, ya, "C3-", lw=1.3, label="with narrowing"); a.plot(xb, yb, "C0--", lw=1, label="without"); a.set_xlim(0, 1.7 * z50); a.set_ylim(-0.08, 1.25); a.set_title(f"{cyc} cycles, {side} channel: rms {ra:.3f} / {rb:.3f}", fontsize=8); a.legend(fontsize=6, frameon=False)
-fig.tight_layout(); fig.savefig(ROOT / "docs/blindtest/v2/posthoc/eds_cycle_series.png", dpi=100); D = pd.DataFrame(rows); D.to_csv(ROOT / "docs/blindtest/v2/posthoc/eds_cycle_series.csv", index=False); print(D.drop(columns="trace").to_string(index=False))
+fig.tight_layout(); fig.savefig(ROOT / "docs/blindtest/v2/posthoc/eds_cycle_series.png", dpi=100); import json; (ROOT / "docs/blindtest/v2/posthoc/eds_cycle_series_curves.json").write_text(json.dumps(curves, separators=(",", ":"))); D = pd.DataFrame(rows); D.to_csv(ROOT / "docs/blindtest/v2/posthoc/eds_cycle_series.csv", index=False); print(D.drop(columns="trace").to_string(index=False))
 print("mean rms with narrowing", round(D.rms_with_narrowing.mean(), 4), "without", round(D.rms_without.mean(), 4), "| within 0.06:", int((D.rms_with_narrowing <= 0.06).sum()), "of", len(D))

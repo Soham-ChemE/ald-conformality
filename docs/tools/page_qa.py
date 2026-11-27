@@ -24,7 +24,7 @@ DOCS = Path(A.docs).resolve(); PAGES = A.pages.split(",")
 class Quiet(http.server.SimpleHTTPRequestHandler):
     def log_message(self, *a): pass
     def end_headers(self): self.send_header("cache-control", "no-cache"); super().end_headers()
-srv = socketserver.TCPServer(("127.0.0.1", 0), partial(Quiet, directory=str(DOCS))); PORT = srv.server_address[1]
+socketserver.ThreadingTCPServer.daemon_threads = True; srv = socketserver.ThreadingTCPServer(("127.0.0.1", 0), partial(Quiet, directory=str(DOCS))); PORT = srv.server_address[1]
 threading.Thread(target=srv.serve_forever, daemon=True).start(); BASE = f"http://127.0.0.1:{PORT}/"
 
 from playwright.sync_api import sync_playwright
@@ -35,7 +35,7 @@ def open_page(browser, page_name, theme, viewport):
     ctx.add_init_script(f"window.__forceGL = true; try {{ localStorage.setItem('theme', '{theme}'); }} catch (e) {{}}")
     page = ctx.new_page(); errors, failed = [], []
     page.on("console", lambda m: errors.append(m.text) if m.type == "error" else None); page.on("pageerror", lambda e: errors.append(str(e))); page.on("requestfailed", lambda r: failed.append(r.url))
-    page.goto(BASE + page_name, wait_until="networkidle"); page.wait_for_function("() => window.SITE && window.SITE.ready"); time.sleep(1.2)
+    page.goto(BASE + page_name, wait_until="networkidle"); page.wait_for_function("() => window.SITE && window.SITE.ready", timeout=120000); time.sleep(1.2)
     return ctx, page, errors, failed
 
 def scroll_to(page, sel, frac=.5):
