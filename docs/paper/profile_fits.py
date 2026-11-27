@@ -9,10 +9,11 @@ filled fraction; without it the fitted s should fall as the channel fills.
 Fit window: from 5 gap heights to the first reading below 0.1 of the plateau. Several reflectometry curves never fall below
 0.1 (a residual of up to 0.13 of the plateau stays behind the front), so the fits are repeated with the window closed at
 0.3 of the plateau (FIT_CUT=0.3; files *_cut0.3.csv), which keeps the upper part of the front only.
-For every s of the kernel the model is tabulated on a fine exposure grid; s is taken at the minimum of a parabola through the
-per-s minimum rms in ln s. Uncertainty: moving-block bootstrap of the residuals of the best fit (blocks of 5 readings, 300
-replicates, refitted on the same tables), which keeps the correlation of the residuals; the 16th to 84th percentile of the
-refitted s is reported, with the fraction of replicates that end at either end of the simulated range.
+For every simulated s the model is tabulated on a fine exposure ladder; the tables are interpolated in ln s to six steps
+between simulated values (`interp_rms_change` is the largest change of the best rms when a simulated s is replaced by the
+interpolation between its neighbours), and s is the value of smallest rms on that ladder. Uncertainty: moving-block bootstrap of
+the residuals of the best fit (blocks of 5 readings, 300 replicates, refitted on the same ladder), which keeps the correlation
+of the residuals; the 16th to 84th percentile is reported, with flags when that interval reaches an end of the simulated range.
 The kernels include runs added for this test and not used by the earlier analyses: Monte Carlo at s = 0.0016, 0.0025, 0.1 and 0.2
 (files *hi_s*.csv) and the hydraulic model at s = 0.001, 0.0016, 0.1 and 0.2.
 Writes figures/profile_fits.csv, figures/profile_fits_summary.csv and figures/profile_fits_zno.csv.
@@ -45,31 +46,55 @@ def hyd_ext(deep):
 def kern(name):
     K = dict(mt.kernel(name))
     if name in HI: K.update(mt.mc_kernel(HI[name]))
+    elif name not in ("hyd", "hyd_deep"): K.update(mt.mc_kernel(name + "hi"))      # the other layouts: files <case>hi_s*.csv
     if name in ("hyd", "hyd_deep"): K.update(hyd_ext(name == "hyd_deep"))
     return dict(sorted(K.items()))
+ND = 81
 def tables(z, y, fill, spot, K, n, narrow):
-    """Model on the data grid for every s and a fine exposure ladder around the measured half depth."""
-    z50 = z[int(np.argmax(y < 0.5))]; S = sorted(K); out = []
+    """Model on the data grid for every simulated s, tabulated at ND common half-depths around the measured one (0.8 to 1.25
+    times it). For each s the model is computed on a fine exposure ladder and interpolated between neighbouring exposures to
+    each target depth, so that entry k of every s has the same front position and only the shape differs."""
+    k50 = int(np.argmax(y < 0.5)); z50 = z[k50 - 1] + (y[k50 - 1] - 0.5) / (y[k50 - 1] - y[k50]) * (z[k50] - z[k50 - 1]) if k50 > 0 else z[0]; DT = np.linspace(0.8, 1.25, ND) * z50; S = sorted(K); out = []; zz = np.concatenate([[1.0, 2.0, 3.0, 4.0], z]); xd = np.arange(2.0, 1.6 * z50, 2.0)
     for s in S:
         run = K[s]; E = run[0]; f = fill if narrow else 0.0
         d = np.array([mt.front(run, e, f, spot, n)[0] for e in E[1::4]]); Ec = E[1::4]; ok = np.isfinite(d)
-        lo = Ec[ok][np.searchsorted(d[ok], 0.7 * z50).clip(0, ok.sum() - 1)] if ok.any() else E[1]; hi = Ec[ok][np.searchsorted(d[ok], 1.35 * z50).clip(0, ok.sum() - 1)] if ok.any() else E[-1]
+        if ok.sum() < 2 or np.nanmax(d) < 0.7 * z50: out.append(np.full((ND, len(z)), np.nan)); continue
+        lo = Ec[ok][np.searchsorted(d[ok], 0.7 * z50).clip(0, ok.sum() - 1)]; hi = Ec[ok][np.searchsorted(d[ok], 1.4 * z50).clip(0, ok.sum() - 1)]
         lo, hi = min(lo, hi) * 0.8, min(max(lo, hi) * 1.25, E[-1]); G = np.geomspace(max(lo, E[1]), hi, NE)
-        M = np.array([mt.cumulative(run, e, f, np.concatenate([[1.0, 2.0, 3.0, 4.0], z]), spot, n) for e in G]); out.append(M[:, 4:] / M[:, :4].mean(1)[:, None])
-    return np.array(S), np.array(out)                                   # (nS,), (nS, NE, nz)
+        M = np.array([mt.cumulative(run, e, f, np.concatenate([zz, xd]), spot, n) for e in G]); M = M / M[:, :4].mean(1)[:, None]; P = M[:, 4:4 + len(z)]; Q = M[:, 4 + len(z):]
+        d50 = np.array([xd[max(int(np.argmax(q < 0.5)), 1) - 1] + (q[max(int(np.argmax(q < 0.5)), 1) - 1] - 0.5) / max(q[max(int(np.argmax(q < 0.5)), 1) - 1] - q[max(int(np.argmax(q < 0.5)), 1)], 1e-9) * 2.0 if (q < 0.5).any() else np.nan for q in Q])
+        T = np.full((ND, len(z)), np.nan); g = np.isfinite(d50) & (np.concatenate([[True], np.diff(d50) > 0]) if len(d50) > 1 else True); dd, PP = d50[g], P[g]
+        for k, t in enumerate(DT):
+            if len(dd) < 2 or t < dd[0] or t > dd[-1]: continue
+            a = int(np.searchsorted(dd, t)); a = min(max(a, 1), len(dd) - 1); w = (t - dd[a - 1]) / (dd[a] - dd[a - 1]); T[k] = (1 - w) * PP[a - 1] + w * PP[a]
+        out.append(T)
+    return np.array(S), np.array(out)                                   # (nS,), (nS, ND, nz); NaN where a depth is not reached
+NSUB = 6
+def refine(S, T):
+    """Tables on a finer ladder of s: linear interpolation in ln s between neighbouring simulated values, at the same index of
+    the exposure ladder (each ladder spans the same range of front depths around the measured one)."""
+    Sf, Tf = [], []
+    for i in range(len(S) - 1):
+        for w in np.arange(NSUB) / NSUB: Sf.append(float(np.exp((1 - w) * np.log(S[i]) + w * np.log(S[i + 1])))); Tf.append((1 - w) * T[i] + w * T[i + 1])
+    Sf.append(float(S[-1])); Tf.append(T[-1]); return np.array(Sf), np.array(Tf)
 def pick(S, T, y):
-    r = np.sqrt(((T - y) ** 2).mean(2)); per = r.min(1); j = int(np.argmin(per)); s = S[j]; rb = per[j]; edge = j in (0, len(S) - 1)
-    if not edge:
-        a = np.polyfit(np.log(S[j - 1:j + 2]), per[j - 1:j + 2], 2)
-        if a[0] > 0: s = float(np.exp(-a[1] / (2 * a[0])))
-    return s, float(rb), edge, T[j, int(np.argmin(r[j]))]
+    r = np.sqrt(((T - y) ** 2).mean(2)); r = np.where(np.isfinite(r), r, np.inf); per = r.min(1); j = int(np.argmin(per)); return float(S[j]), float(per[j]), j in (0, len(S) - 1), T[j, int(np.argmin(r[j]))]
+def interp_check(S, T, y):
+    """Largest change of the best rms when a simulated s is replaced by the interpolation between its two neighbours."""
+    worst = 0.0
+    for i in range(1, len(S) - 1):
+        w = (np.log(S[i]) - np.log(S[i - 1])) / (np.log(S[i + 1]) - np.log(S[i - 1])); Ti = (1 - w) * T[i - 1] + w * T[i + 1]
+        ra = np.sqrt(((Ti - y) ** 2).mean(1)); rb = np.sqrt(((T[i] - y) ** 2).mean(1)); ra, rb = ra[np.isfinite(ra)], rb[np.isfinite(rb)]
+        if len(ra) and len(rb): worst = max(worst, abs(ra.min() - rb.min()))
+    return worst
 def fit(z, y, fill, spot, K, n, narrow):
     o = np.argsort(z); z, y = z[o], y[o]; m = (y < CUT) & (z > 20); iend = int(np.argmax(m)) if m.any() else len(y) - 1; w = (z >= 5) & (np.arange(len(z)) <= iend); zw, yw = z[w], y[w]
-    S, T = tables(zw, yw, fill, spot, K, n, narrow); s, rms, edge, best = pick(S, T, yw); res = yw - best; nz = len(yw); nb = int(np.ceil(nz / BLOCK)); B, E = [], 0
+    S0, T0 = tables(zw, yw, fill, spot, K, n, narrow); chk = interp_check(S0, T0, yw); S, T = refine(S0, T0); s, rms, edge, best = pick(S, T, yw); res = yw - best; nz = len(yw); nb = int(np.ceil(nz / BLOCK)); B = []
     for _ in range(NB):
-        st = rng.integers(0, nz - BLOCK + 1, nb); rs = np.concatenate([res[i:i + BLOCK] for i in st])[:nz]; sb, _, eb, _ = pick(S, T, best + rs); B.append(sb); E += eb
-    B = np.array(B); return dict(n_points=int(nz), s_fit=float(f"{s:.3g}"), s_p16=float(f"{np.percentile(B, 16):.3g}"), s_p84=float(f"{np.percentile(B, 84):.3g}"), s_p2_5=float(f"{np.percentile(B, 2.5):.3g}"), s_p97_5=float(f"{np.percentile(B, 97.5):.3g}"),
-                         rms=round(rms, 4), at_grid_edge=bool(edge), boot_frac_at_edge=round(E / NB, 2), s_grid_min=float(S.min()), s_grid_max=float(S.max()))
+        st = rng.integers(0, nz - BLOCK + 1, nb); rs = np.concatenate([res[i:i + BLOCK] for i in st])[:nz]; B.append(pick(S, T, best + rs)[0])
+    B = np.array(B); lo, hi = np.percentile(B, [16, 84]); top, bot = S.max(), S.min()
+    return dict(n_points=int(nz), s_fit=float(f"{s:.3g}"), s_p16=float(f"{lo:.3g}"), s_p84=float(f"{hi:.3g}"), s_p2_5=float(f"{np.percentile(B, 2.5):.3g}"), s_p97_5=float(f"{np.percentile(B, 97.5):.3g}"), rms=round(rms, 4), at_grid_edge=bool(edge),
+                no_upper_limit=bool(hi >= 0.999 * top), no_lower_limit=bool(lo <= 1.001 * bot), boot_frac_at_edge=round(float(np.mean((B >= 0.999 * top) | (B <= 1.001 * bot))), 2), s_grid_min=float(bot), s_grid_max=float(top), n_s_simulated=len(S0), interp_rms_change=round(chk, 4))
 if __name__ == "__main__":
     H = mt.heldout().set_index("sample"); profiles = []
     for f in sorted((ROOT / "data/blind_revealed_v2").glob("yim2020_s*.csv")):
@@ -99,4 +124,4 @@ if __name__ == "__main__":
         for narrow in (True, False): zr.append(dict(id=q.id, fill=q.fill, z50=q.z50, transport="hydraulic", narrowing=narrow, **fit(d.x_over_H.values, d.thickness_over_plateau.values, q.fill, spot, K, 1.0, narrow)))
         print(q.id, "done", flush=True)
     Z = pd.DataFrame(zr); Z.to_csv(ROOT / f"figures/profile_fits_zno{SUF}.csv", index=False); pd.set_option("display.width", 250)
-    print(D[["id", "fill", "transport", "narrowing", "s_fit", "s_p16", "s_p84", "rms", "at_grid_edge", "boot_frac_at_edge"]].to_string(index=False)); print(pd.DataFrame(out).to_string(index=False)); print(Z[["id", "fill", "z50", "narrowing", "s_fit", "s_p16", "s_p84", "rms", "at_grid_edge", "boot_frac_at_edge"]].to_string(index=False))
+    print(pd.DataFrame(out).to_string(index=False)); print("largest interpolation check", D.interp_rms_change.max(), Z.interp_rms_change.max())

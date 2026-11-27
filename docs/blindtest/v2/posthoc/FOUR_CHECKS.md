@@ -112,32 +112,31 @@ contiguous front).
   these samples (0.18 and 0.20; without sample 1 0.14 and 0.09): at about 20 % filling the slope is set by the filled
   fraction and the depth, and carries little information on the sticking coefficient.
 
-## 9. Every front fitted on its own, with and without narrowing
-`docs/paper/profile_fits.py`, `figures/profile_fits*.csv`. Sixteen digitised TMA/water fronts (ten reflectometry, six EDS
-channels) and four ZnO fronts, sticking coefficient and exposure free. The simulated range was extended for this test to
-0.0016 to 0.2 (Monte Carlo) and 0.001 to 0.2 (hydraulic). Uncertainties are 16th to 84th percentiles of a moving-block
-bootstrap of the residuals. Two fit windows: down to 0.1 of the plateau, and down to 0.3 (upper part of the front; several
-reflectometry curves keep a residual above 0.1 behind the front, so the first window runs into it).
-- Without narrowing the fitted sticking coefficient falls as the channel fills. On the EDS scans d ln s / d f is
-  -6.2 +/- 0.3 (hydraulic), -6.5 +/- 0.3 (carrier gas), -7.0 +/- 0.4 (gas-free); with the upper-front window -5.9 +/- 0.3,
-  -6.0 +/- 0.4 and -6.3 +/- 0.4. Hydraulic values at 250, 500 and 1000 cycles: 0.015 and 0.012, 0.0064 and 0.0065, 0.0021
-  and 0.0024, a fall by a factor of about 6, with bootstrap intervals of 10 to 25 %. At most 2 of 16 fits are at an end of
-  the range.
-- With narrowing there is no trend with filling within the errors (all 16 profiles, upper-front window: 0.1 +/- 2.1
-  hydraulic, -1.7 +/- 2.3 gas, 0.1 +/- 2.2 gas-free), but the scatter between profiles is not smaller (standard deviation of
-  ln s 0.78 to 0.87 with narrowing against 0.69 to 0.79 without) and the single values are fragile: at 20 % filling and
-  above many EDS fits have no upper limit (84th percentile at the end of the range), and changing the window moves single
-  values by factors of 2 to 15.
-- Hydraulic kernel, upper-front window, with narrowing: EDS 0.017 and 0.013 (250 cycles), 0.044 and 0.042 (500, above
-  0.015), 0.020 and 0.049 (1000, above 0.012); reflectometry at 500 nm 0.003 to 0.026; geometric mean of all 16 0.016.
-  The least-filled sample (2000 nm gap, 5 %) gives 0.032 with and 0.028 without narrowing in both windows.
-- EDS against reflectometry for the same sample, with narrowing: sample 2, 0.043 (above 0.015) against 0.013 (0.007 to
-  0.023); sample 11, 0.020 to 0.049 against 0.0066 (0.0048 to 0.0079). The intervals overlap for sample 2 and not for
-  sample 11.
-- The fit quality is the same with and without narrowing (mean rms 0.023 to 0.026 in the upper-front window, 0.037 to
-  0.039 in the full window). A single profile does not distinguish channel narrowing from a lower sticking coefficient;
-  the cycle series does.
-- ZnO from diethylzinc and water (Gonsalves 2026, about 10 % filled, hydraulic kernel only): narrowing raises the fitted
-  value by a factor 2.2 to 2.4 at 200 C (0.030 to 0.032 against 0.013) and 1.3 at 175 C (0.0060 to 0.0066 against 0.0046 to
-  0.0049); with the upper-front window 1.7 to 1.9 and 1.1 to 1.2. The rms is the same with and without. The shift is larger
-  where the sticking coefficient is larger, as the sensitivity rule u = f z50 slope0 / (1 - f/2) says (u about 1.5 and 0.8).
+## 9. Every front fitted on its own, with and without narrowing (final version, after an independent review)
+`docs/paper/profile_fits.py`, `docs/paper/profile_fits_stats.py`, `figures/profile_fits*.csv`, `figures/profile_fits_stats.csv`.
+Sixteen digitised TMA/water fronts (ten reflectometry, six EDS channels of three scans) and four ZnO fronts, sticking
+coefficient and exposure free. Simulated range 0.0016 to 0.2 for the Monte Carlo kernels of every layout and gap and 0.001
+to 0.2 for the hydraulic kernel. Model tables aligned at common front depths and interpolated in ln s; block-bootstrap
+intervals (16th to 84th percentile). Two fit windows: to 0.1 of the plateau (run first) and to 0.3 (run second, because
+several reflectometry curves keep a residual above 0.1 behind the front). An earlier version of this section quoted the
+0.3 window and the pooled set only, with intervals that were too narrow; the review found this and it is corrected here.
+`figures/profile_fits_stats.csv` holds every statistic for both windows, three kernels and five sets of fronts.
+- Without narrowing the fitted s falls with filling in every kernel, window and set: d ln s / d f between -5.8 and -8.0.
+  All 16 fronts: -6.6 +/- 1.0 (hydraulic), -6.2 +/- 1.0 (gas), -6.9 +/- 0.9 (gas-free) in the 0.3 window; -6.2 +/- 1.6,
+  -6.0 +/- 1.6, -6.8 +/- 1.3 in the 0.1 window. Hydraulic, EDS, 0.3 window: 0.012 and 0.0093 (250 cycles), 0.0054 and
+  0.0048 (22 % filled), 0.0017 and 0.0020 (1000 cycles). No interval reaches an end of the range.
+- With narrowing, all 16 fronts: 0.7 +/- 2.4, -2.2 +/- 2.1, 0.8 +/- 2.3 (0.3 window); 2.5 +/- 3.8, 1.1 +/- 3.6, 2.7 +/- 3.4
+  (0.1 window). Ten reflectometry fronts alone: -4.3 +/- 2.7, -4.8 +/- 2.8, -1.6 +/- 4.1 (0.3); -2.7 +/- 4.7, -3.7 +/- 4.3,
+  3.8 +/- 6.3 (0.1). Three EDS scans (channels averaged): 2.8, -1.5, 1.6 (0.3); 3.5, 1.7, 0.5 (0.1). No cell differs from
+  zero by two standard errors; on reflectometry alone about half of the decline remains.
+- Fits with narrowing whose interval has no upper limit: 3, 2, 10 of 16 (0.3 window); 4, 4, 11 (0.1 window).
+- Scatter (sd of ln s, 16 fronts): 0.82 to 0.91 with narrowing against 0.73 to 0.78 without (0.3); 1.31 to 1.44 against
+  0.85 to 0.88 (0.1). Between the two windows single values with narrowing change by a median factor 1.6 to 2.1 and by up
+  to 12 (hydraulic), 10 (gas), 38 (gas-free).
+- Fit quality: mean rms 0.022 to 0.024 without and 0.023 to 0.026 with narrowing (0.3 window); the fit with narrowing has
+  the lower rms for 5, 10 and 8 of 16 fronts.
+- Least-filled sample (2000 nm gap, 5 %): 0.032 with and 0.027 without narrowing (hydraulic), 0.035 and 0.033 (gas), 0.065
+  and 0.056 (gas-free), in both windows.
+- ZnO (Gonsalves 2026, about 10 % filled, hydraulic kernel): narrowing raises s by 1.9 and 2.1 at 200 C (0.3 window; 2.4
+  and 2.2 in the 0.1 window) and by 1.1 and 1.2 at 175 C with coinciding intervals (1.3 in the 0.1 window).
+- Interpolation check above 0.01 of the plateau for four fits (samples 1 and 13); all others below 0.004.
