@@ -168,7 +168,7 @@ const holeAt = (t, jd) => { if (t <= H.hole.times[0]) return H.hole.theta[0][jd]
     const JX = [], JZ = []; { const rings = phone ? 7 : 10; for (let i = 0; i <= rings && JX.length < NJ; i++) { const rr = i / rings * (WR - .15), n = i === 0 ? 1 : Math.round(6 * i); for (let j = 0; j < n && JX.length < NJ; j++) { const th = j / n * Math.PI * 2; JX.push(Math.cos(th) * rr); JZ.push(Math.sin(th) * rr); } } }
     for (let k = 0; k < NJ; k++) { pv.set(JX[k], GAP * .62, JZ[k]); sv.set(.011, GAP * .72, .011); mm.compose(pv, q0, sv); jets.setMatrixAt(k, mm); } jets.instanceMatrix.needsUpdate = true;
     const SK = Array.from({ length: NSK }, () => ({ life: 0, x: 0, y: 0, z: 0, nx: 0, ny: 1, nz: 0, kind: 0, size: 1 })), EM = Array.from({ length: NEM }, () => ({ life: 0, x: 0, y: 0, z: 0, vx: 0, vy: 0, vz: 0, kind: 0 }));
-    const ST = Array.from({ length: NST }, () => ({ k: 0, y: GAP * (1 + 2 * R()), v: 1, tma: false })), HS = Array.from({ length: NHS }, () => ({ th: 0, rho: 0, y: HH * (1 + R()), v: 1 }));
+    const ST = Array.from({ length: NST }, () => ({ k: Math.floor(R() * NJ), y: GAP * (.1 + 1.8 * R()), v: 1.1 + 1.1 * R(), tma: false, vis: false })), HS = Array.from({ length: NHS }, () => ({ th: Math.PI * (.5 + R()), rho: R(), y: HH * (.4 + .9 * R()), v: 1.4 + 1.2 * R() }));
     let sk = 0, em = 0, activity = 0, lastTime = -9, jetOn = -1;
     const cWarm = new THREE.Color(), cCy = new THREE.Color(), cBlue = new THREE.Color(), cHot = new THREE.Color();
     function paint() {
@@ -193,8 +193,9 @@ const holeAt = (t, jd) => { if (t <= H.hole.times[0]) return H.hole.theta[0][jd]
       for (let i = 0; i < NST; i++) { const o = ST[i];
         if (inSlit) { streak.setMatrixAt(i, zero); continue; }
         o.y -= o.v * dt;
-        if (o.y <= .03) { const x = JX[o.k], z = JZ[o.k], r = Math.hypot(x, z); if (o.tma && pulse && R() < bareAt(time, r)) { emit(x, .016, z, 0, 1, 0, 0, 1); activity = Math.min(1, activity + .06); } o.k = Math.floor(R() * NJ); o.y = GAP * (1 + .9 * R()); o.v = 1.1 + 1.1 * R(); o.tma = pulse && R() < .8; }
+        if (o.y <= .03) { const x = JX[o.k], z = JZ[o.k], r = Math.hypot(x, z); if (o.tma && pulse && R() < bareAt(time, r)) { emit(x, .016, z, 0, 1, 0, 0, 1); activity = Math.min(1, activity + .06); } o.k = Math.floor(R() * NJ); o.y = GAP * (1 + .9 * R()); o.v = 1.1 + 1.1 * R(); o.vis = false; }
         if (o.y > GAP - .08) { streak.setMatrixAt(i, zero); continue; }
+        if (!o.vis) { o.vis = true; o.tma = pulse && R() < .8; }   // carrier gas or TMA is decided as the streak leaves the showerhead
         const x = JX[o.k], z = JZ[o.k], u = o.tma ? uAt(time, Math.hypot(x, z), o.y) : 0; pv.set(x, o.y + .07, z); sv.set(o.tma ? .011 : .007, .15, o.tma ? .011 : .007); mm.compose(pv, q0, sv); streak.setMatrixAt(i, mm);
         streak.setColorAt(i, o.tma ? tint(cHot, .35 + .65 * u, 2.0) : tint(cBlue, .4, .8)); if (!st.dark && o.tma && u < .12) streak.setMatrixAt(i, zero); }
       // the cut-open hole: molecules fall to the coverage front and react on the wall there
