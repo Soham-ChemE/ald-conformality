@@ -29,17 +29,17 @@ for name, label, c, ls in VARIANTS:
     diag[name] = dict(label=label.replace("$", ""), exposure_Pa_s=round(e, 2), A=round(S0 / sl ** 2, 1), slope=round(float(sl), 4), tail_plus_60=round(float(np.interp(Z0 + 60, z, th)), 4), tail_plus_100=round(float(np.interp(Z0 + 100, z, th)), 4))
     curves[name] = (z, th)
 (FIG / "mechanism_transport.json").write_text(json.dumps(dict(s=S0, z50=Z0, variants=diag), indent=1))
-fig, ax = plt.subplots(1, 3, figsize=(11, 3.4))
+fig, ax = plt.subplots(1, 3, figsize=(11.5, 3.5), gridspec_kw=dict(width_ratios=[1, 1, 0.8]))
 for name, label, c, ls in VARIANTS:
     if name not in curves: continue
     z, th = curves[name]; j = 0 if name in ("walls90_pillars49", "spec20", "spec50", "retro20", "retro50", "cos2", "cos4", "cos8", "hyd") else None
     if name in ("walls90_pillars49", "hyd") or j == 0: ax[0].plot(z, th, color=c, ls=ls, lw=1.2, label=label)
     if name in ("walls90_pillars49", "hyd", "gas100", "gas300", "gas1000"): ax[1].plot(z, th, color=c, ls=ls, lw=1.2, label=label)
 for a, t in ((ax[0], "(a) wall-scattering law"), (ax[1], "(b) carrier-gas collisions")):
-    a.set_xlim(120, 360); a.set_ylim(0, 1.02); a.set_xlabel("distance / gap"); a.set_ylabel("coverage"); a.set_title(t); a.legend(frameon=False)
+    a.set_xlim(120, 460); a.set_ylim(0, 1.02); a.set_xlabel("distance / gap"); a.set_ylabel("coverage"); a.set_title(t); a.legend(frameon=False, loc="upper right", fontsize=6.5)
 names = [n for n, *_ in VARIANTS if n in diag]; y = np.arange(len(names))
-ax[2].barh(y, [diag[n]["tail_plus_60"] for n in names], color=[v[2] for v in VARIANTS if v[0] in diag]); ax[2].set_yticks(y); ax[2].set_yticklabels([diag[n]["label"] for n in names], fontsize=7); ax[2].invert_yaxis()
-ax[2].set_xlabel("coverage 60 gaps ahead of the front"); ax[2].set_title(f"(c) the tail, s = {S0}, front at {Z0:.0f} gaps")
+ax[2].barh(y, [diag[n]["tail_plus_60"] for n in names], color=[v[2] for v in VARIANTS if v[0] in diag]); ax[2].set_yticks(y); ax[2].set_yticklabels([v[1] for v in VARIANTS if v[0] in diag], fontsize=7); ax[2].invert_yaxis()
+ax[2].set_xlabel("coverage 60 gaps ahead of the front"); ax[2].set_title("(c) coverage ahead of the front")
 fig.tight_layout(); fig.savefig(OUT / "fig9_transport_candidates.png"); plt.close(fig)
 
 # ---- 2. the narrowing law against the full multi-cycle continuum model, and against the measured series ----
@@ -60,14 +60,14 @@ for (H, cyc), c in zip(((500e-9, 250), (500e-9, 500), (500e-9, 1000), (100e-9, 5
 pd.DataFrame(rows).to_csv(FIG / "mechanism_narrowing_check.csv", index=False)
 ax[0].set_xlim(0, 220); ax[0].set_xlabel("distance / initial gap"); ax[0].set_ylabel("normalised thickness"); ax[0].set_title("(a) full multi-cycle model (lines) and the law (dotted)"); ax[0].legend(frameon=False)
 H = mt.heldout(); H["fill"] = np.minimum(2 * H.film_nm / H.H_nm, 1.0); H["z1"] = H.z50 / (1 - H.fill / 2); H["nn"] = H.measured_slope * H.fill * H.z1
-ff = np.linspace(0.03, 1, 100); ax[1].plot(ff, 1 / (ff * (1 - 0)) * (1 - ff / 2), "k-", lw=1, label="narrowing limit: slope x depth = (1 - f/2)/f")
+ff = np.linspace(0.03, 1, 100); ax[1].plot(ff, 1 / (ff * (1 - 0)) * (1 - ff / 2), "k-", lw=1, label="step-front value: slope x depth = (1 - f/2)/f")
 for mag, mk, lab in ((50, "o", "reflectometry, 5-6 um spot"), (10, "s", "25 um spot"), (5, "D", "50 um spot"), (0, "^", "EDS (Haimi 2021)"), (100, "v", "Arts 2019")):
     g = H[H.magnification == mag]; ax[1].plot(g.fill, g.measured_slope * g.z50, mk, ms=5, label=lab)
-ax[1].set_xscale("log"); ax[1].set_yscale("log"); ax[1].set_xlabel("fraction of the gap filled, f = 2 t / H"); ax[1].set_ylabel("measured slope x half-thickness depth"); ax[1].set_title("(b) measured fronts against the narrowing limit"); ax[1].legend(frameon=False)
+ax[1].set_xscale("log"); ax[1].set_yscale("log"); ax[1].set_xlabel("fraction of the gap filled, f = 2 t / H"); ax[1].set_ylabel("measured slope x half-thickness depth"); ax[1].set_title("(b) measured fronts against the step-front value"); ax[1].legend(frameon=False, loc="upper right", fontsize=6.5)
 d = H[(H.H_nm == 500) & (H.magnification.isin([50, 0]))].sort_values("cycles"); cur = json.loads((FIG / "mechanism_slope_curves.json").read_text()); cmp_ = pd.read_csv(FIG / "mechanism_comparison.csv")
 for model, c in (("gas", "C3"), ("gas+narrowing+spot", "C0")):
     g = cmp_[(cmp_.model == model) & cmp_["sample"].isin(d["sample"])].sort_values("cycles"); ax[2].plot(g.cycles, g.predicted_slope, "x" if "narrowing" in model else "+", color=c, ms=7, label=("with" if "narrowing" in model else "without") + " narrowing (predicted)")
-ax[2].plot(d.cycles, d.measured_slope, "ko", ms=4, label="measured"); ax[2].set_xlabel("ALD cycles (gap 500 nm)"); ax[2].set_ylabel("front slope at half thickness"); ax[2].set_title("(c) cycle series"); ax[2].legend(frameon=False); ax[2].set_ylim(0, 0.03)
+ax[2].plot(d.cycles, d.measured_slope, "ko", ms=4, label="measured"); ax[2].set_xlabel("ALD cycles (gap 500 nm)"); ax[2].set_ylabel("front slope at half thickness"); ax[2].set_title("(c) cycle series, gas model at 300 Pa"); ax[2].legend(frameon=False); ax[2].set_ylim(0, 0.03)
 fig.tight_layout(); fig.savefig(OUT / "fig10_narrowing_law.png"); plt.close(fig)
 
 # ---- 3. held-out slopes ----
@@ -86,13 +86,13 @@ for smp, lab, c in (("Yim9", "2000 nm, 500 cycles (5 % filled)", "C4"), ("Yim10"
     if smp not in per: continue
     ax[0].plot(per[smp]["s"], per[smp]["slope"], "-", color=c, lw=1.3, label=lab); m = Hh.loc[smp, "measured_slope"]; ax[0].axhspan(m * np.exp(-SIG), m * np.exp(SIG), color=c, alpha=0.10, lw=0)
 ss = np.geomspace(0.003, 0.06, 50); ax[0].plot(ss, np.sqrt(ss / 13.9), "k:", lw=1, label="slope method: $\\sqrt{s/13.9}$")
-ax[0].set_xscale("log"); ax[0].set_yscale("log"); ax[0].set_xlabel("sticking coefficient s"); ax[0].set_ylabel("front slope (complete model)"); ax[0].set_title("(a) what the slope still says about s"); ax[0].legend(frameon=False, fontsize=6.5)
-ax[0].set_xticks([0.003, 0.01, 0.03, 0.06]); ax[0].set_xticklabels(["0.003", "0.01", "0.03", "0.06"]); ax[0].minorticks_off()
+ax[0].set_xscale("log"); ax[0].set_yscale("log"); ax[0].set_xlabel("sticking coefficient s"); ax[0].set_ylabel("front slope (complete gas model, 300 Pa)"); ax[0].set_title("(a) what the slope still says about s"); ax[0].legend(frameon=False, fontsize=6.5)
+ax[0].set_xticks([0.003, 0.01, 0.03, 0.06]); ax[0].set_xticklabels(["0.003", "0.01", "0.03", "0.06"]); ax[0].set_yticks([0.005, 0.01, 0.02, 0.05]); ax[0].set_yticklabels(["0.005", "0.01", "0.02", "0.05"]); ax[0].minorticks_off()
 for m, c, mk in zip(mt.COMPLETE, ("k", "C0", "C3"), ("o", "s", "^")):
-    idf = pd.DataFrame(summ["ceiling"][m]).T; ax[1].plot(idf.fill.astype(float), idf.measured_over_ceiling.astype(float), mk, ms=5, color=c, mfc="none", label=m.split("+")[0])
+    idf = pd.DataFrame(summ["ceiling"][m]).T; ax[1].plot(idf.fill.astype(float), idf.measured_over_ceiling.astype(float), mk, ms=5, color=c, mfc="none", label={"ballistic": "gas-free", "gas": "gas, 300 Pa"}.get(m.split("+")[0], m.split("+")[0]))
 idf = pd.DataFrame(summ["ceiling"]["gas+narrowing+spot"]).T
 for smp, r in idf.iterrows():
     if smp in ("Yim9", "Yim10", "Yim11", "Yim7", "Arts", "HaimiA", "Yim6"): ax[1].annotate(smp.replace("Yim", "#"), (float(r.fill), float(r.measured_over_ceiling)), textcoords="offset points", xytext=(4, 3), fontsize=7)
-ax[1].axhline(1.0, color="k", ls=":", lw=1); ax[1].set_xscale("log"); ax[1].set_xlabel("fraction of the gap filled"); ax[1].set_ylabel("measured slope / model slope at the largest simulated s"); ax[1].set_title("(b) how close the measured slopes are to the ceiling"); ax[1].legend(frameon=False)
+ax[1].axhline(1.0, color="k", ls=":", lw=1); ax[1].set_xscale("log"); ax[1].set_xlabel("fraction of the gap filled"); ax[1].set_ylabel("measured slope / largest model slope"); ax[1].set_title("(b) measured slope over the model slope at the largest s"); ax[1].legend(frameon=False)
 fig.tight_layout(); fig.savefig(OUT / "fig12_identifiability.png"); plt.close(fig)
 print(json.dumps(diag, indent=1)); print(pd.DataFrame(rows).round(4).to_string())
