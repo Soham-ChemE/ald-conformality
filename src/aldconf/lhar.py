@@ -25,7 +25,7 @@ GAS_PRESSURES = {30.0: "gas30", 100.0: "gas100", 300.0: "gas300", 1000.0: "gas10
 
 
 def narrowing_limit(fill: float, n: float = 1.0) -> float:
-    """Upper bound of slope x half-thickness depth for a film that fills the fraction `fill` = 2 t / H of the gap. `n` is the
+    """Steepest front of the model (not a bound on measured data): slope x half-thickness depth for a film that fills the fraction `fill` = 2 t / H of the gap. `n` is the
     gap exponent of the penetration (1 without carrier gas; `gap_exponent` gives it for a pressure): a step front smeared over
     the stretch f^n, f uniform on [1 - fill, 1], has slope x depth = (1 - fill/2) / (n fill)."""
     if not 0 < fill <= 1: raise ValueError("fill must be in (0, 1]")

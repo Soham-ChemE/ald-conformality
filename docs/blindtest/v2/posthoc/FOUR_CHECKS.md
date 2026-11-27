@@ -8,7 +8,7 @@ Numbers only; each line names the file that holds them.
 The model is the one registered for the second test (hydraulic kernel, s = 0.04, spot of two gaps), with and without narrowing.
 Background 18 a.u. (the level far from the film in the unobstructed 1000-cycle trace), plateau = median at 10 to 60 um depth.
 
-| cycles | fill | channel | rms with narrowing | rms without | measured slope (1/um) |
+| cycles | fill | channel | rms with narrowing | rms without | measured slope (per gap height) |
 |---|---|---|---|---|---|
 | 250 | 0.10 | left / right | 0.039 / 0.051 | 0.045 / 0.056 | 0.040 / 0.040 |
 | 500 | 0.22 | left / right | 0.038 / 0.038 | 0.060 / 0.061 | 0.020 / 0.021 |
@@ -78,3 +78,15 @@ simulations of the 2000 nm and 100 nm cavities at 300 Pa against the 500 nm tabl
 490 and 24.5 against 98). With a filled fraction of 0.1 or more and the spot: rms 0.014 to 0.035.
 Example, slope 0.019 per gap at depth 208 gaps and filled fraction 0.19 (Yim 2020 sample 4, nominal gap): s = 0.022 at 100 Pa,
 0.015 at 300 Pa, 0.0096 at 1000 Pa, 0.0068 at 3000 Pa; the slope method gives 0.0050.
+
+## 7. Added after an independent review: the EDS front slopes
+`eds_slopes.py`, `eds_slopes.csv`. The rms of section 1 is over the whole profile and does not show the front slope.
+Between 25 and 75 % of the plateau the EDS fronts are steeper than the model with narrowing (EDS over model 1.21, 1.22 at
+250 cycles; 1.41, 1.50 for the trace of sample 2; 1.16, 1.21 at 1000 cycles), steeper than the reflectometry slopes of the
+same samples in Yim 2020 Table 1 (1.91, 1.92; 1.79, 1.93; 1.12, 1.17) and at 1.02 to 1.43 times the step-front value
+(1 - f/2)/(f z50). In the model the spot size (1 um against 5.5 um) changes the slope by 3 % at 250 cycles and not at all
+at 500 and 1000. The slope fits use 7, 14 and 23 digitised points. So the two measurements of the same samples disagree
+on the slope by up to a factor of 1.9, this is not explained, and the statement in the first blind test's diagnosis that
+it is not shown whether a clean profile can exceed the step-front value no longer holds: these do.
+The comparison "without narrowing" in sections 1 and 5 is the same model with narrowing switched off at the same
+s = 0.04, not a refitted model; s = 0.04 is 4.5 times the hydraulic value calibrated on the single-exposure profiles.
