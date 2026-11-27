@@ -36,6 +36,24 @@ monolayers delivered to the patterned area, which reaches 1.2 when the bottoms s
 camera path: overview, low across the wafer, toward the hole, settle with both in frame. Under reduced motion the scene sits at
 16 s.
 
+### Glow and sparks in the hero (27 November 2026)
+
+The hero uses the lighting recipe of the CdTe page's hero: additive blending, colours brighter than white that the bloom pass
+picks up, light shafts, and a flash at every event. In the dark theme:
+
+- **Jets.** One translucent shaft under each showerhead hole, blue for carrier gas before the pulse and warm during it.
+- **Streaks.** Short streaks fall from the holes. A TMA streak's brightness is the local TMA fraction from the exported field,
+  so the streaks dim toward the wafer while the holes drain the gas.
+- **Sparks on the wafer.** A TMA streak that lands on the wafer sparks with probability 1 minus the hole-bottom coverage at
+  that radius and time. The sparks thin out and stop as the hole bottoms saturate (14 s). A spark is a bright core, a ring
+  spreading on the surface and three embers.
+- **The cut-open hole.** Streaks fall to the coverage front and spark on the wall there; none once the hole is saturated.
+- **The channel.** Three in ten of the molecules that stick leave a spark on the wall (warm for TMA, cyan for water).
+
+Rates follow the data; single paths and the number of sparks are an illustration, and both hero captions say so. The light
+theme uses normal blending with plain colours: sparks fade by shrinking and rings are not drawn, because additive light
+does not show on a light stage. Reduced motion keeps the static scene.
+
 ## 3. Body scenes (`assets/body.js`), all from `assets/data.js`
 
 | Placeholder | Scene | Data |

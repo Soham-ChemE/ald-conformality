@@ -6,7 +6,10 @@
    The second half moves to a PillarHall lateral channel (window.ALD_MECH from assets/data-mech.js, the pillar-cavity Monte Carlo):
    one TMA exposure with the coverage front advancing, purge and water, then hundreds of cycles with the film narrowing the gap.
    In the channel the wall coverage, the film profile, the front position and every readout are data; the molecule paths are an
-   illustration (gap drawn 28x taller, flights stretched with it, sticking probability exaggerated). */
+   illustration (gap drawn 28x taller, flights stretched with it, sticking probability exaggerated).
+   Glow and sparks (the `fx` block): jets under the showerhead holes, falling streaks whose brightness is the local TMA fraction,
+   and a spark where a streak lands while the hole bottoms at that radius are still bare (probability = 1 - bottom coverage),
+   at the coverage front of the cut-open hole, and where a channel molecule sticks. Rates follow the data; single paths do not. */
 import { THREE, createStage, cameraPath, makeLabel, redrawLabel } from './three-kit.js';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 const D = window.ALD, H = D.hero, S = window.SITE, reduced = S.reduced, phone = S.phone, M = window.ALD_MECH || null;
@@ -51,7 +54,7 @@ const holeAt = (t, jd) => { if (t <= H.hole.times[0]) return H.hole.theta[0][jd]
   const m4 = new THREE.Matrix4(), col = new THREE.Color(), cLow = new THREE.Color(), cHigh = new THREE.Color();
   function paintGas(t) {
     cLow.set(st.dark ? 0x1e2a44 : 0xb9c4d3); cHigh.set(P().warm);
-    for (let n = 0; n < NP; n++) { const r = PR[n], z = PZ[n]; const ir = clamp(Math.floor(r / CR * H.field_shape[0]), 0, H.field_shape[0] - 1), iz = clamp(Math.floor(z * H.field_shape[1]), 0, H.field_shape[1] - 1); const c = t <= 0 ? 0 : fieldAt(t, ir, iz); const u = clamp(Math.pow(c, .6) * 1.15, 0, 1); const sc = .35 + 1.3 * u; m4.makeScale(sc, sc, sc); m4.setPosition(Math.cos(PTH[n]) * r, .03 + z * (GAP - .06), Math.sin(PTH[n]) * r); parts.setMatrixAt(n, m4); col.copy(cLow).lerp(cHigh, u); parts.setColorAt(n, col); }
+    for (let n = 0; n < NP; n++) { const r = PR[n], z = PZ[n]; const ir = clamp(Math.floor(r / CR * H.field_shape[0]), 0, H.field_shape[0] - 1), iz = clamp(Math.floor(z * H.field_shape[1]), 0, H.field_shape[1] - 1); const c = t <= 0 ? 0 : fieldAt(t, ir, iz); const u = clamp(Math.pow(c, .6) * 1.15, 0, 1); const sc = .35 + 1.3 * u; m4.makeScale(sc, sc, sc); m4.setPosition(Math.cos(PTH[n]) * r, .03 + z * (GAP - .06), Math.sin(PTH[n]) * r); parts.setMatrixAt(n, m4); col.copy(cLow).lerp(cHigh, u); if (st.dark) col.multiplyScalar(.55 + 1.5 * u); parts.setColorAt(n, col); }
     parts.instanceMatrix.needsUpdate = true; parts.instanceColor.needsUpdate = true;
   }
   const cBare = new THREE.Color(), cCov = new THREE.Color();
@@ -78,7 +81,7 @@ const holeAt = (t, jd) => { if (t <= H.hole.times[0]) return H.hole.theta[0][jd]
   const SX0 = HX + 7.5, LX = 9, G0 = .8, DZ = 2.4, ZMAX = 400, SI = 3;                 // 9 units = 400 gap heights; s = M.s[SI] = 0.0158
   const slit = { on: !!M, mode: 'gas300', E: 0, cycles: 1, fill: 0, z50: 0, tail: 0, phase: 'dose', userCyc: 0, userMode: 0 };
   const sg = new THREE.Group(); sg.position.set(SX0, 0, 0); g.add(sg);
-  let paintSlit = () => {}, stepSlit = () => false, slitLabs = [];
+  let paintSlit = () => {}, stepSlit = () => false, slitLabs = [], fx = null, frontS = null;
   if (M) {
     const NZ = M.z.length, th1 = new Float32Array(NZ), thk = new Float32Array(NZ);
     const single = (key, e) => { const K = M.kernels[key].theta[SI], Es = M.E; if (e <= Es[0]) { const f = clamp(e / Es[0], 0, 1); for (let i = 0; i < NZ; i++) th1[i] = K[0][i] * f; return; } let j = 1; while (j < Es.length - 1 && Es[j] < e) j++; const f = clamp((e - Es[j - 1]) / (Es[j] - Es[j - 1]), 0, 1); for (let i = 0; i < NZ; i++) th1[i] = lerp(K[j - 1][i], K[j][i], f); };
@@ -95,7 +98,7 @@ const holeAt = (t, jd) => { if (t <= H.hole.times[0]) return H.hole.theta[0][jd]
     const fb = mk(1), ft = mk(.5);
     const pilM = new THREE.MeshStandardMaterial({ color: 0x8b98a9, roughness: .5, metalness: .3, transparent: true, opacity: .7 });
     [[1.2, .62], [1.2, -.62], [3.32, 0], [5.44, .62], [5.44, -.62], [7.56, 0]].forEach(([x, z]) => { const c = new THREE.Mesh(new THREE.CylinderGeometry(.1, .1, G0, 16), pilM); c.position.set(x, G0 / 2, z); sg.add(c); });
-    const frontS = new THREE.Mesh(new THREE.BoxGeometry(.035, G0 * 1.15, DZ + .1), new THREE.MeshStandardMaterial({ color: 0xfb7185, emissive: 0xfb7185, emissiveIntensity: .9, transparent: true, opacity: .75 })); frontS.position.set(0, G0 / 2, 0); sg.add(frontS);
+    frontS = new THREE.Mesh(new THREE.BoxGeometry(.035, G0 * 1.15, DZ + .1), new THREE.MeshStandardMaterial({ color: 0xfb7185, emissive: 0xfb7185, emissiveIntensity: .9, transparent: true, opacity: .75 })); frontS.position.set(0, G0 / 2, 0); sg.add(frontS);
     const film = x => { const z = clamp(x / LX, 0, 1) * ZMAX; return .004 + slit.fill / 2 * G0 * samp(thk, z); };
     paintSlit = () => {
       const K = M.kernels[slit.mode]; single(slit.mode, slit.E); cumulative(slit.fill, K.gap_exponent);
@@ -117,7 +120,7 @@ const holeAt = (t, jd) => { if (t <= H.hole.times[0]) return H.hole.theta[0][jd]
     for (let i = 0; i < NT; i++) { tma.setMatrixAt(i, zero); tma.setColorAt(i, col.set(0xffffff)); } for (let i = 0; i < NB; i++) { n2.setMatrixAt(i, zero); n2.setColorAt(i, col.set(0xffffff)); }
     stepSlit = (dt) => {
       const flying = slit.phase === 'dose' || slit.phase === 'water' || slit.phase === 'cycles', gas = slit.mode !== 'free', water = slit.phase === 'water';
-      cT.set(P().warm); cW.set(P().cyan); cN.set(P().blue);
+      cT.set(P().warm); cW.set(P().cyan); cN.set(P().blue); if (st.dark) { cT.multiplyScalar(1.35); cW.multiplyScalar(1.3); }
       for (let i = 0; i < NT; i++) {
         if (!flying) { if (ON[i]) { ON[i] = 0; tma.setMatrixAt(i, zero); } continue; }
         if (!ON[i]) { if (r2() < dt * 2.5) spawn(i); else continue; }
@@ -130,7 +133,7 @@ const holeAt = (t, jd) => { if (t <= H.hole.times[0]) return H.hole.theta[0][jd]
           if (X[i] <= 0) { spawn(i); break; } if (X[i] >= LX) { X[i] = LX - 1e-3; UX[i] = -Math.abs(UX[i]); }
           if (left > 1e-5) {                                              // reached a wall
             const cov = samp(thk, X[i] / LX * ZMAX), bare = water ? cov * .25 : (1 - (slit.fill > 0 ? samp(th1, X[i] / LX * ZMAX / Math.pow(Math.max(.02, 1 - slit.fill), M.kernels[slit.mode].gap_exponent)) : cov));
-            if (r2() < .55 * bare) { spawn(i); break; }
+            if (r2() < .55 * bare) { if (fx && r2() < .3) fx.emit(SX0 + X[i], Y[i], Zp[i], 0, Y[i] > G0 / 2 ? -1 : 1, 0, water ? 1 : 0, .55); spawn(i); break; }
             const top = Y[i] > G0 / 2; Y[i] = top ? hi - 1e-3 : lo + 1e-3; cosine(i, top ? -1 : 1);
           }
         }
@@ -151,15 +154,79 @@ const holeAt = (t, jd) => { if (t <= H.hole.times[0]) return H.hole.theta[0][jd]
     sl('PillarHall lateral channel · gap 500 nm, drawn 28× taller', LX * .3, G0 + .6, -DZ / 2, { color: 'ink', weight: 700 }); sl('mouth', -.55, G0 / 2, 0); sl('support pillars, 4 µm at 49 µm', 3.32, -.42, DZ / 2 + .5); sl('closed end', LX + .8, G0 / 2, 0);
     paintSlit();
   }
+  // ---- glow and sparks ----
+  fx = (() => {
+    const zero = new THREE.Matrix4().makeScale(0, 0, 0), R = mulberry(23), q = new THREE.Quaternion(), q0 = new THREE.Quaternion(), up = new THREE.Vector3(0, 1, 0), nv = new THREE.Vector3(), pv = new THREE.Vector3(), sv = new THREE.Vector3(), mm = new THREE.Matrix4(), c = new THREE.Color(), bg = new THREE.Color();
+    const NSK = phone ? 70 : 180, NEM = NSK * 3, NST = phone ? 110 : 280, NHS = phone ? 10 : 24, NJ = dots.count;
+    const mats = [], bm = (o = {}) => { const m = new THREE.MeshBasicMaterial({ transparent: true, depthWrite: false, ...o }); mats.push(m); return m; };
+    const inst = (geo, mat, n, order = 6) => { const im = new THREE.InstancedMesh(geo, mat, n); im.frustumCulled = false; im.renderOrder = order; for (let i = 0; i < n; i++) { im.setMatrixAt(i, zero); im.setColorAt(i, c.set(0xffffff)); } g.add(im); return im; };
+    const sphG = new THREE.SphereGeometry(1, 10, 8), ringG = new THREE.RingGeometry(.62, 1, 28); ringG.rotateX(-Math.PI / 2); const strG = new THREE.CylinderGeometry(1, 1, 1, 6, 1);
+    const core = inst(sphG, bm(), NSK, 8), ring = inst(ringG, bm({ side: THREE.DoubleSide }), NSK, 7), ember = inst(sphG, bm(), NEM, 8), streak = inst(strG, bm(), NST + NHS), jetM = bm({ opacity: .1 }), jets = inst(strG, jetM, NJ, 5);
+    const glowM = bm({ opacity: 0 }), glow = new THREE.Mesh(new THREE.CircleGeometry(WR, 64), glowM); glow.rotation.x = -Math.PI / 2; glow.position.y = .014; glow.renderOrder = 4; g.add(glow);
+    const mouthM = bm({ opacity: 0, side: THREE.DoubleSide }), mouth = new THREE.Mesh(new THREE.PlaneGeometry(2.4, .8), mouthM); mouth.rotation.y = Math.PI / 2; mouth.position.set(HX + 7.5 - .03, .4, 0); mouth.renderOrder = 4; mouth.visible = !!M; g.add(mouth);
+    // showerhead hole positions (the same layout as the dots)
+    const JX = [], JZ = []; { const rings = phone ? 7 : 10; for (let i = 0; i <= rings && JX.length < NJ; i++) { const rr = i / rings * (WR - .15), n = i === 0 ? 1 : Math.round(6 * i); for (let j = 0; j < n && JX.length < NJ; j++) { const th = j / n * Math.PI * 2; JX.push(Math.cos(th) * rr); JZ.push(Math.sin(th) * rr); } } }
+    for (let k = 0; k < NJ; k++) { pv.set(JX[k], GAP * .62, JZ[k]); sv.set(.011, GAP * .72, .011); mm.compose(pv, q0, sv); jets.setMatrixAt(k, mm); } jets.instanceMatrix.needsUpdate = true;
+    const SK = Array.from({ length: NSK }, () => ({ life: 0, x: 0, y: 0, z: 0, nx: 0, ny: 1, nz: 0, kind: 0, size: 1 })), EM = Array.from({ length: NEM }, () => ({ life: 0, x: 0, y: 0, z: 0, vx: 0, vy: 0, vz: 0, kind: 0 }));
+    const ST = Array.from({ length: NST }, () => ({ k: 0, y: GAP * (1 + 2 * R()), v: 1, tma: false })), HS = Array.from({ length: NHS }, () => ({ th: 0, rho: 0, y: HH * (1 + R()), v: 1 }));
+    let sk = 0, em = 0, activity = 0, lastTime = -9, jetOn = -1;
+    const cWarm = new THREE.Color(), cCy = new THREE.Color(), cBlue = new THREE.Color(), cHot = new THREE.Color();
+    function paint() {
+      const dark = st.dark, p = P(); cWarm.set(p.warm); cCy.set(p.cyan); cBlue.set(p.blue); cHot.set(dark ? '#ffc27a' : p.warm); bg.set(dark ? 0x0b1220 : 0xeef2f7);
+      mats.forEach(m => { m.blending = dark ? THREE.AdditiveBlending : THREE.NormalBlending; m.needsUpdate = true; });
+      parts.material.blending = dark ? THREE.AdditiveBlending : THREE.NormalBlending; parts.material.needsUpdate = true;
+      front.material.emissiveIntensity = dark ? 2.2 : .8; if (frontS) frontS.material.emissiveIntensity = dark ? 2.4 : .9; dotM.emissiveIntensity = dark ? 1.8 : .9; outlet.material.emissiveIntensity = dark ? .9 : .45;
+      glowM.color.copy(cWarm); mouthM.color.copy(cWarm); jetOn = -1;
+    }
+    // colour at strength a (0..1): brighter than white in the dark theme so the bloom pass picks it up; plain colour in the light theme, where sparks fade by shrinking and the rings are not drawn
+    const tint = (base, a, hdr) => st.dark ? c.copy(base).multiplyScalar(a * hdr) : c.copy(base).multiplyScalar(1.12);
+    function emit(x, y, z, nx, ny, nz, kind = 0, size = 1) {
+      const s = SK[sk++ % NSK]; s.life = 1; s.x = x; s.y = y; s.z = z; s.nx = nx; s.ny = ny; s.nz = nz; s.kind = kind; s.size = size; activity = Math.min(1, activity + .05);
+      for (let j = 0; j < 3; j++) { const e = EM[em++ % NEM], a = R() * 6.283, t = .5 + .6 * R(); nv.set(nx, ny, nz); pv.set(Math.cos(a), R() - .5, Math.sin(a)).cross(nv); if (pv.lengthSq() < 1e-6) pv.set(1, 0, 0); pv.normalize(); e.life = .7 + .3 * R(); e.x = x; e.y = y; e.z = z; e.vx = (nx * .9 + pv.x * t) * size; e.vy = (ny * .9 + pv.y * t) * size; e.vz = (nz * .9 + pv.z * t) * size; e.kind = kind; }
+    }
+    const bareAt = (t, r) => r >= WR ? 0 : 1 - covAt('thetaBottom', t, clamp(Math.floor(r / WR * NR), 0, NR - 1));
+    const uAt = (t, r, y) => { const ir = clamp(Math.floor(r / CR * H.field_shape[0]), 0, H.field_shape[0] - 1), iz = clamp(Math.floor(clamp(y / GAP, 0, .999) * H.field_shape[1]), 0, H.field_shape[1] - 1); return clamp(Math.pow(fieldAt(t, ir, iz), .6) * 1.15, 0, 1); };
+    function step(dt, time, inSlit, fr, water) {
+      const pulse = time > 0 && !inSlit, base = k => k === 1 ? cCy : cWarm;
+      if (Math.abs(time - lastTime) > 1e-3 || jetOn !== (pulse ? 1 : 0)) { lastTime = time; jetOn = pulse ? 1 : 0; for (let k = 0; k < NJ; k++) jets.setColorAt(k, pulse ? tint(cWarm, .9, 1.25) : tint(cBlue, .45, 1)); jets.instanceColor.needsUpdate = true; jetM.opacity = st.dark ? (pulse ? .16 : .1) : (pulse ? .3 : .16); }
+      // chamber: streaks fall from the showerhead holes; a TMA streak sparks where it lands on a wafer whose hole bottoms are still bare
+      for (let i = 0; i < NST; i++) { const o = ST[i];
+        if (inSlit) { streak.setMatrixAt(i, zero); continue; }
+        o.y -= o.v * dt;
+        if (o.y <= .03) { const x = JX[o.k], z = JZ[o.k], r = Math.hypot(x, z); if (o.tma && pulse && R() < bareAt(time, r)) { emit(x, .016, z, 0, 1, 0, 0, 1); activity = Math.min(1, activity + .06); } o.k = Math.floor(R() * NJ); o.y = GAP * (1 + .9 * R()); o.v = 1.1 + 1.1 * R(); o.tma = pulse && R() < .8; }
+        if (o.y > GAP - .08) { streak.setMatrixAt(i, zero); continue; }
+        const x = JX[o.k], z = JZ[o.k], u = o.tma ? uAt(time, Math.hypot(x, z), o.y) : 0; pv.set(x, o.y + .07, z); sv.set(o.tma ? .011 : .007, .15, o.tma ? .011 : .007); mm.compose(pv, q0, sv); streak.setMatrixAt(i, mm);
+        streak.setColorAt(i, o.tma ? tint(cHot, .35 + .65 * u, 2.0) : tint(cBlue, .4, .8)); if (!st.dark && o.tma && u < .12) streak.setMatrixAt(i, zero); }
+      // the cut-open hole: molecules fall to the coverage front and react on the wall there
+      const yF = front.position.y, live = time > 0 && !inSlit;
+      for (let i = 0; i < NHS; i++) { const o = HS[i], j = NST + i;
+        if (!live) { streak.setMatrixAt(j, zero); continue; }
+        o.y -= o.v * dt; const stop = fr < .995 ? yF + (o.rho - .5) * .16 : .05;
+        if (o.y <= stop) { if (fr < .995) emit(HX + Math.cos(o.th) * HR * .96, clamp(o.y, .03, HH), Math.sin(o.th) * HR * .96, -Math.cos(o.th), 0, -Math.sin(o.th), 0, .8); o.th = Math.PI * (.5 + R()); o.rho = R(); o.y = HH + .1 + .8 * R(); o.v = 1.4 + 1.2 * R(); }
+        if (o.y > HH + .15) { streak.setMatrixAt(j, zero); continue; }
+        pv.set(HX + Math.cos(o.th) * HR * .8 * o.rho, o.y + .06, Math.sin(o.th) * HR * .8 * o.rho); sv.set(.009, .13, .009); mm.compose(pv, q0, sv); streak.setMatrixAt(j, mm); streak.setColorAt(j, tint(cHot, .9, 2.0)); }
+      // sparks: a bright core, a ring spreading on the surface and three embers
+      for (let k = 0; k < NSK; k++) { const s = SK[k]; if (s.life <= 0) { core.setMatrixAt(k, zero); ring.setMatrixAt(k, zero); continue; }
+        s.life -= dt * 2.7; const a = clamp(s.life, 0, 1), r = s.size * (.018 + .055 * Math.sin(Math.PI * a)); pv.set(s.x, s.y, s.z); sv.set(r, r, r); mm.compose(pv, q0, sv); core.setMatrixAt(k, mm); core.setColorAt(k, tint(s.kind ? cCy : cHot, .4 + .6 * a, 2.1));
+        const rr = s.size * (.04 + .26 * (1 - a)); nv.set(s.nx, s.ny, s.nz); q.setFromUnitVectors(up, nv); pv.addScaledVector(nv, .004); sv.set(rr, rr, rr); mm.compose(pv, q, sv); ring.setMatrixAt(k, st.dark ? mm : zero); ring.setColorAt(k, tint(base(s.kind), a * a, 1.5)); }
+      for (let k = 0; k < NEM; k++) { const e = EM[k]; if (e.life <= 0) { ember.setMatrixAt(k, zero); continue; }
+        e.life -= dt * 1.9; const dmp = Math.max(0, 1 - 2.6 * dt); e.x += e.vx * dt; e.y += e.vy * dt; e.z += e.vz * dt; e.vx *= dmp; e.vy *= dmp; e.vz *= dmp; const a = clamp(e.life, 0, 1), r = .006 + .016 * a; pv.set(e.x, e.y, e.z); sv.set(r, r, r); mm.compose(pv, q0, sv); ember.setMatrixAt(k, mm); ember.setColorAt(k, tint(e.kind ? cCy : cHot, a, 2.3)); }
+      activity *= Math.pow(.2, dt); glowM.opacity = inSlit ? 0 : (st.dark ? .1 : .05) * activity; mouth.visible = !!M && inSlit; if (inSlit) { mouthM.color.copy(water ? cCy : cWarm); mouthM.opacity = (st.dark ? .12 : .1) * (slit.phase === 'purge' || slit.phase === 'idle' ? .15 : 1); }
+      [core, ring, ember, streak].forEach(im => { im.instanceMatrix.needsUpdate = true; im.instanceColor.needsUpdate = true; });
+      return true;
+    }
+    paint();
+    return { emit, step, paint };
+  })();
   // ---- labels ----
   const labs = []; const lab = (t, x, y, z, o = {}) => { const s = makeLabel(t, { px: 24, scale: .085, color: 'muted', ...o }); s.position.set(x, y, z); g.add(s); labs.push(s); return s; };
   lab('showerhead, 300 mm · 1 % TMA in N₂, 300 sccm', 0, GAP + .55, 0); lab('wafer: 100 nm holes, AR 100, 56× wall area', 0, -.55, WR + .9); lab('outlet', -CR - .6, GAP / 2, 0); lab('one hole, cut open · 100 nm × 10 µm, drawn 1:200,000', HX, HH + .45, 0, { color: 'ink', weight: 700 }); lab('coverage front', HX + HR + .9, HH, 0, { color: 'rose' }); const frontLab = labs[labs.length - 1];
-  st.onTheme = dark => { hemi.intensity = .9 * st.lights; dl.intensity = 1.3 * st.lights; labs.concat(slitLabs).forEach(l => redrawLabel(l, dark)); paintGas(cur); paintWafer(cur); paintHole(cur); paintSlit(); st.dirty = true; };
+  st.onTheme = dark => { hemi.intensity = .9 * st.lights; dl.intensity = 1.3 * st.lights; labs.concat(slitLabs).forEach(l => redrawLabel(l, dark)); fx.paint(); paintGas(cur); paintWafer(cur); paintHole(cur); paintSlit(); st.dirty = true; };
   // ---- readout ----
   const ro = { t: document.getElementById('roT'), bar: document.getElementById('roBar'), flat: document.getElementById('roFlat'), bot: document.getElementById('roBot'), ml: document.getElementById('roML'), hint: document.getElementById('roHint') };
-  let cur = -1;
+  let cur = -1, frNow = 0;
   function setTime(t) {
-    paintGas(t); paintWafer(t); const fr = paintHole(t); frontLab.position.y = front.position.y;
+    paintGas(t); paintWafer(t); const fr = paintHole(t); frNow = fr; frontLab.position.y = front.position.y;
     if (ro.t) { ro.t.textContent = t.toFixed(2); ro.bar.style.width = (t / T_END * 100) + '%'; ro.flat.textContent = Math.round(100 * (t <= 0 ? 0 : covAt('thetaFlat', t, 0))) + ' %'; ro.bot.textContent = Math.round(100 * (t <= 0 ? 0 : covAt('thetaBottom', t, 0))) + ' %'; ro.ml.textContent = (t / H.t_supply).toFixed(2);
       ro.hint.textContent = t < .02 ? 'scroll to run the pulse' : t < H.blanket.t90_centre ? 'a blanket wafer would be saturated at 0.35 s…' : t < 2 ? 'the flat surface between the holes saturates (1.95 s); the holes are draining the gas' : t < 13.9 ? `front at ${Math.round(fr * 100)} % of the depth · ${(t / H.t_supply).toFixed(2)} monolayers delivered` : t < 14.3 ? 'hole bottoms reach 90 % at 14.05 s: the rule said 14.4 s' : 'saturated · 1.2 monolayers of supply, as the rule says'; }
     cur = t; st.dirty = true;
@@ -191,7 +258,7 @@ const holeAt = (t, jd) => { if (t <= H.hole.times[0]) return H.hole.theta[0][jd]
     return false;
   }
   function setStep(k) { if (k === stepNow) return; stepNow = k; stepEls.forEach((li, i) => li.classList.toggle('on', i === k)); if (roC && roS) { roC.hidden = k >= 2; roS.hidden = k < 2; }
-    if (capEl) capEl.textContent = k < 2 ? 'Gas field, wafer and hole coverage: OpenFOAM chamber run with the feature model on every wafer face (assets/data.js).' : 'Wall coverage, film profile, front and readouts: pillar-cavity Monte Carlo at s = 0.0158 (assets/data-mech.js). Molecule paths are an illustration: gap drawn 28× taller, sticking exaggerated.'; }
+    if (capEl) capEl.textContent = k < 2 ? 'Gas field, wafer and hole coverage: OpenFOAM chamber run with the feature model on every wafer face (assets/data.js). Streaks and sparks are an illustration: a spark appears where TMA lands while the hole bottoms there are still bare.' : 'Wall coverage, film profile, front and readouts: pillar-cavity Monte Carlo at s = 0.0158 (assets/data-mech.js). Molecule paths are an illustration: gap drawn 28× taller, sticking exaggerated; a spark marks a molecule that sticks.'; }
   const slitC = new THREE.Vector3(), off = new THREE.Vector3();
   function slitCam(v, outPos, outTgt) { const w = wide(), a = clamp(v / .7, 0, 1); slitC.set(SX0 + LX * lerp(.36, .5, a), G0 / 2, 0); g.localToWorld(slitC); outTgt.copy(slitC);
     if (w) off.set(lerp(-2.2, .4, a), lerp(2.6, 1.5, a), lerp(8.6, 6.4, a)); else off.set(lerp(-1, 0, a), lerp(5.5, 4.4, a), lerp(23, 20.5, a)); outPos.copy(slitC).addScaledVector(off, g.scale.x); }
@@ -205,12 +272,13 @@ const holeAt = (t, jd) => { if (t <= H.hole.times[0]) return H.hole.theta[0][jd]
     const time = reduced ? T_END : clamp((u - .05) / .9, 0, 1) * T_END;      // a short hold at t = 0, then 16 s over the chamber half
     if (Math.abs(time - cur) > 1e-3) { setTime(time); changed = true; }
     if (inSlit) { if (slitState(reduced ? 1 : v)) changed = true; if (!reduced && stepSlit(Math.min(.05, dtMs / 1000))) changed = true; }
+    if (!reduced && fx.step(Math.min(.05, dtMs / 1000), time, inSlit, frNow, slit.phase === 'water')) changed = true;
     setStep(!inSlit ? (time < 2 ? 0 : 1) : slit.phase === 'cycles' || reduced ? 3 : 2);
     if (inSlit) slitCam(reduced ? 1 : v, pos3, tgt3); else (wide() ? pathWide : pathNarrow).at(u, pos3, tgt3);
     const kf = reduced ? 1 : 1 - Math.exp(-Math.min(200, dtMs) / 170);
     if (!dragging && camera.position.distanceToSquared(pos3) > 1e-6) { camera.position.lerp(pos3, kf); changed = true; }
     ctr.target.lerp(tgt3, kf); ctr.autoRotate = !reduced && T < .02 && !dragging; if (ctr.autoRotate || dragging) changed = true; ctr.update();
-    st.setBloom(.26 + .18 * S.hero.glow); if (st.bokeh) st.bokeh.uniforms.focus.value = camera.position.distanceTo(ctr.target);
+    st.setBloom(.42 + .2 * S.hero.glow); if (st.bokeh) st.bokeh.uniforms.focus.value = camera.position.distanceTo(ctr.target);
     if (Math.abs(T - lastT) > 1e-4) { lastT = T; changed = true; }
     return changed;
   });
