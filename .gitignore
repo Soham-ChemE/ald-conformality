@@ -74,3 +74,6 @@ figures/pillar_mc/
 lib/pillarmc/pillarmc
 figures/mechanism_hydraulic_kernel*.npz
 figures/pillar_mc_multicycle/
+
+# source-figure crops used for digitising (not redistributed)
+data/lhar_eds/*.png

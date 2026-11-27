@@ -169,8 +169,29 @@ static int diffusion_test(int argc, char **argv) {
   double mu = M1 * M2 / (M1 + M2) * AMU, nd = PGAS / (KB * TEMP), ce = 3.0 / (8 * nd * D12 * D12 * 1e-20) * std::sqrt(KB * TEMP / (2 * PI * mu));
   std::printf("D_mc %.6g  D_chapman_enskog_1 %.6g  ratio %.4f  mean_v2_end/(1.5 c1^2) %.4f  mean_free_path_at_vbar_um %.4g\n", r2 / n / (6 * tend), ce, r2 / n / (6 * tend) / ce, v2sum / n / (1.5 * C1 * C1), 1e6 / inv_path(vbar));
   return 0; }
+// tracer diffusion along an infinite slit of height H between diffuse plates, in the carrier gas: D_x from the mean-square
+// displacement along the slit of molecules that start with a Maxwellian velocity (hard-sphere gas collisions, cosine walls with
+// the flux-weighted Maxwell speed). usage: pillarmc slitdiffusion p_Pa H_um [n_mol T m1 m2 d12 t_end_in_collision_times]
+static int slit_diffusion(int argc, char **argv) {
+  PGAS = atof(argv[2]); const double H = atof(argv[3]) * 1e-6; long n = argc > 4 ? atol(argv[4]) : 4000; if (argc > 5) TEMP = atof(argv[5]); if (argc > 6) M1 = atof(argv[6]); if (argc > 7) M2 = atof(argv[7]); if (argc > 8) D12 = atof(argv[8]);
+  const double tmult = argc > 9 ? atof(argv[9]) : 400.0; if (PGAS <= 0 || H <= 0) return 2;
+  C1 = std::sqrt(2 * KB * TEMP / (M1 * AMU)); C2 = std::sqrt(2 * KB * TEMP / (M2 * AMU)); NSIGMA = PGAS / (KB * TEMP) * PI * D12 * D12 * 1e-20;
+  Rng g(2468); const double vbar = 2 * C1 / std::sqrt(PI), lam = 1.0 / inv_path(vbar), tend = tmult * std::max(lam, H) / vbar; double x2 = 0, x4 = 0;
+  static const double nzp[3] = {0, 0, 1}, nzm[3] = {0, 0, -1}, ex[3] = {1, 0, 0}, ey[3] = {0, 1, 0};
+  for (long m = 0; m < n; m++) { double w[3], v = 0; for (int i = 0; i < 3; i++) { w[i] = C1 * gauss(g) * 0.7071067811865476; v += w[i] * w[i]; } v = std::sqrt(v);
+    double u[3] = {w[0] / v, w[1] / v, w[2] / v}, z = H * g.u(), x = 0, t = 0;
+    for (;;) { const double lf = -std::log(1.0 - g.u()) / inv_path(v), lw = u[2] > 0 ? (H - z) / u[2] : (u[2] < 0 ? -z / u[2] : 1e300), l = std::min(lf, lw), dt = l / v;
+      if (t + dt >= tend) { x += u[0] * v * (tend - t); break; }
+      x += u[0] * l; z += u[2] * l; t += dt;
+      if (lf < lw) gas_collide(g, u, v); else { if (u[2] > 0) { z = H; cosdir(g, nzm, ex, ey, u); } else { z = 0; cosdir(g, nzp, ex, ey, u); } v = fluxspeed(g, C1); } }
+    x2 += x * x; x4 += x * x * x * x; }
+  const double D = x2 / n / (2 * tend), err = std::sqrt(std::max(0.0, x4 / n - (x2 / n) * (x2 / n)) / n) / (2 * tend);
+  const double mu = M1 * M2 / (M1 + M2) * AMU, nd = PGAS / (KB * TEMP), Dg = 3.0 / (8 * nd * D12 * D12 * 1e-20) * std::sqrt(KB * TEMP / (2 * PI * mu)), Dk = 2 * H * vbar / 3;
+  std::printf("D_slit %.6g  rel_err %.4f  D_over_H_vbar %.6g  H_over_lambda %.6g  D_bosanquet_hydraulic %.6g  D_gas %.6g  D_knudsen_hydraulic %.6g  lambda_um %.6g  vbar %.6g\n", D, err / D, D / (H * vbar), H / lam, 1.0 / (1.0 / Dg + 1.0 / Dk), Dg, Dk, lam * 1e6, vbar);
+  return 0; }
 int main(int argc, char **argv) {
   if (argc > 2 && std::string(argv[1]) == "diffusion") return diffusion_test(argc, argv);
+  if (argc > 3 && std::string(argv[1]) == "slitdiffusion") return slit_diffusion(argc, argv);
   if (argc < 13) { std::fprintf(stderr, "usage: pillarmc s E_end N M H_um L_um a_um R_um W_um seed threads out.csv\n"); return 2; }
   double s = atof(argv[1]), Eend = atof(argv[2]); int N = atoi(argv[3]); long M = atol(argv[4]);
   Geo G; G.H = atof(argv[5]) * 1e-6; G.L = atof(argv[6]) * 1e-6; G.a = atof(argv[7]) * 1e-6; G.R = atof(argv[8]) * 1e-6; G.W = atof(argv[9]) * 1e-6;

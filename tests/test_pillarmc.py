@@ -101,3 +101,15 @@ def test_film_on_the_plates(exe, tmp_path):
     assert abs(th.mean() / expect - 1) < 0.03 and th.std() / th.mean() < 0.05
     bad = tmp_path / "bad.txt"; np.savetxt(bad, np.zeros(7))
     assert subprocess.run([str(exe), "0.02", "1", "2", "100", "0.5", "50", "0", "2", "0", "1", "1", str(tmp_path / "x.csv"), f"tfile={bad}"], stderr=subprocess.DEVNULL).returncode != 0
+
+
+def test_slit_diffusion_limits(exe):
+    """Tracer diffusion along an open slit (TMA in N2, 500 nm): the gas-diffusion limit at high pressure, and at low pressure
+    a diffusivity well above the hydraulic-diameter value (figures/benchmark_slit_diffusion.csv has the kinetic-theory check)."""
+    def run(p):
+        o = subprocess.check_output([str(exe), "slitdiffusion", str(p), "0.5", "1500"], text=True).split()
+        return {o[i]: float(o[i + 1]) for i in range(0, len(o), 2)}
+    hi, lo = run(100000), run(30)
+    assert abs(hi["D_slit"] / hi["D_bosanquet_hydraulic"] - 1) < 0.12
+    assert lo["D_slit"] / lo["D_bosanquet_hydraulic"] > 1.8
+    assert lo["D_slit"] > hi["D_slit"]

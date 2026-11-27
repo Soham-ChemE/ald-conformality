@@ -1,0 +1,6 @@
+id,pressure_Pa,T,fill,z50,droop,s_hydraulic_fit,rms,at_range_end
+haimi2026_fig5_ZnO_sampleB_200C_125cyc,1400,200,0.088,686,-0.017,0.004,0.0214,False
+haimi2026_fig5_ZnO_sampleC_250C_125cyc,1400,250,0.073,722,-0.066,0.004,0.0663,False
+gonsalves2026_fig2_ZnO_DEZ_H2O_200C_left,86,200,0.102,290,0.006,0.02,0.036,False
+gonsalves2026_fig2_ZnO_DEZ_H2O_200C_right,86,200,0.102,288,0.005,0.025,0.0316,False
+gonsalves2026_fig2_ZnO_DEZ_H2O_175C_left,90,175,0.114,300,0.035,0.008,0.0376,False

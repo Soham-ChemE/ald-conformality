@@ -1,0 +1,7 @@
+trace,cycles,yim_table1_sample,channel,fill,x50_um,background_over_plateau,n_points,rms_with_narrowing,rms_without,slope_measured,n_points_25_75
+figS8_Al_V0057_250cyc,250,10,left,0.104,116.0,0.04,160,0.0394,0.0452,0.04006,7
+figS8_Al_V0057_250cyc,250,10,right,0.104,116.2,0.04,156,0.0508,0.0556,0.04027,7
+figS8_Al_V0069_500cyc_as_labelled,500,2,left,0.218,139.2,0.018,197,0.0378,0.0601,0.01964,14
+figS8_Al_V0069_500cyc_as_labelled,500,2,right,0.218,137.2,0.018,185,0.0381,0.0605,0.02126,14
+figS8_Al_V0031_1000cyc,1000,11,left,0.397,99.5,0.01,175,0.0293,0.1083,0.0112,23
+figS8_Al_V0031_1000cyc,1000,11,right,0.397,99.4,0.01,175,0.0303,0.1049,0.01169,23
