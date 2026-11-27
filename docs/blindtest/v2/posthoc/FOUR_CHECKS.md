@@ -113,18 +113,31 @@ contiguous front).
   fraction and the depth, and carries little information on the sticking coefficient.
 
 ## 9. Every front fitted on its own, with and without narrowing
-`docs/paper/profile_fits.py`, `figures/profile_fits.csv`, `figures/profile_fits_summary.csv`. Sixteen digitised fronts (ten
-reflectometry, six EDS channels), sticking coefficient and exposure free, three transport kernels, fit window to the first
-reading below 0.1 of the plateau.
-- Without narrowing the fitted sticking coefficient falls as the channel fills: d ln s / d f = -4.5 to -7.0 over the
-  profiles. On the EDS scans (geometric mean of the two channels) it is 0.0135, 0.0065 and at most 0.0025 at 250, 500 and
-  1000 cycles with the hydraulic kernel; 0.024, 0.008 and at most 0.004 with carrier-gas collisions; 0.037, 0.017 and
-  0.0045 without gas. The values at the largest filling are at the lower end of the simulated range.
-- With narrowing the trend with filling is gone (d ln s / d f between 0.1 and 3.7, sign not consistent), but the fits no
-  longer determine s: 7 to 14 of the 16 are at an end of the simulated range, the EDS fits at the upper end (0.06). Within
-  10 % of the best rms the EDS profiles allow anything above 0.006 to 0.03, depending on the profile and the kernel.
-- The fit quality is the same with and without narrowing (mean rms 0.037 to 0.040 in both). A single profile does not
-  distinguish channel narrowing from a lower sticking coefficient; only the requirement that one process has one sticking
-  coefficient across cycle numbers does.
-- The least-filled sample (2000 nm gap, 5 % filled) gives the same value either way: 0.030 and 0.028 (hydraulic), 0.034
-  and 0.032 (gas).
+`docs/paper/profile_fits.py`, `figures/profile_fits*.csv`. Sixteen digitised TMA/water fronts (ten reflectometry, six EDS
+channels) and four ZnO fronts, sticking coefficient and exposure free. The simulated range was extended for this test to
+0.0016 to 0.2 (Monte Carlo) and 0.001 to 0.2 (hydraulic). Uncertainties are 16th to 84th percentiles of a moving-block
+bootstrap of the residuals. Two fit windows: down to 0.1 of the plateau, and down to 0.3 (upper part of the front; several
+reflectometry curves keep a residual above 0.1 behind the front, so the first window runs into it).
+- Without narrowing the fitted sticking coefficient falls as the channel fills. On the EDS scans d ln s / d f is
+  -6.2 +/- 0.3 (hydraulic), -6.5 +/- 0.3 (carrier gas), -7.0 +/- 0.4 (gas-free); with the upper-front window -5.9 +/- 0.3,
+  -6.0 +/- 0.4 and -6.3 +/- 0.4. Hydraulic values at 250, 500 and 1000 cycles: 0.015 and 0.012, 0.0064 and 0.0065, 0.0021
+  and 0.0024, a fall by a factor of about 6, with bootstrap intervals of 10 to 25 %. At most 2 of 16 fits are at an end of
+  the range.
+- With narrowing there is no trend with filling within the errors (all 16 profiles, upper-front window: 0.1 +/- 2.1
+  hydraulic, -1.7 +/- 2.3 gas, 0.1 +/- 2.2 gas-free), but the scatter between profiles is not smaller (standard deviation of
+  ln s 0.78 to 0.87 with narrowing against 0.69 to 0.79 without) and the single values are fragile: at 20 % filling and
+  above many EDS fits have no upper limit (84th percentile at the end of the range), and changing the window moves single
+  values by factors of 2 to 15.
+- Hydraulic kernel, upper-front window, with narrowing: EDS 0.017 and 0.013 (250 cycles), 0.044 and 0.042 (500, above
+  0.015), 0.020 and 0.049 (1000, above 0.012); reflectometry at 500 nm 0.003 to 0.026; geometric mean of all 16 0.016.
+  The least-filled sample (2000 nm gap, 5 %) gives 0.032 with and 0.028 without narrowing in both windows.
+- EDS against reflectometry for the same sample, with narrowing: sample 2, 0.043 (above 0.015) against 0.013 (0.007 to
+  0.023); sample 11, 0.020 to 0.049 against 0.0066 (0.0048 to 0.0079). The intervals overlap for sample 2 and not for
+  sample 11.
+- The fit quality is the same with and without narrowing (mean rms 0.023 to 0.026 in the upper-front window, 0.037 to
+  0.039 in the full window). A single profile does not distinguish channel narrowing from a lower sticking coefficient;
+  the cycle series does.
+- ZnO from diethylzinc and water (Gonsalves 2026, about 10 % filled, hydraulic kernel only): narrowing raises the fitted
+  value by a factor 2.2 to 2.4 at 200 C (0.030 to 0.032 against 0.013) and 1.3 at 175 C (0.0060 to 0.0066 against 0.0046 to
+  0.0049); with the upper-front window 1.7 to 1.9 and 1.1 to 1.2. The rms is the same with and without. The shift is larger
+  where the sticking coefficient is larger, as the sensitivity rule u = f z50 slope0 / (1 - f/2) says (u about 1.5 and 0.8).
