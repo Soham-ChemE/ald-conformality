@@ -15,7 +15,8 @@ Wall-scattering variants, all on the nominal real cavity (walls90_pillars49); th
   spec20, spec50      20 % / 50 % of non-sticking collisions specular (Maxwell)
   retro20, retro50    20 % / 50 % reflected straight back along the incoming direction (rough-wall back-scattering)
 Carrier-gas collisions on the nominal real cavity (hard-sphere TMA-N2 collisions at 300 C; lib/pillarmc p=<Pa>):
-  gas100, gas300, gas1000, gas3000    total pressure 100 / 300 / 1000 / 3000 Pa (the Picosun R-150 runs were at about 300 Pa)
+  gas30 ... gas10000    total pressure 30 / 100 / 300 / 1000 / 3000 / 10000 Pa (the Picosun R-150 runs were at about 300 Pa);
+                        in gap units the transport depends on pressure x gap, so these cover 15 to 5000 Pa um
 Other structures of the published series, with carrier gas at the stated reactor pressure (GEO below):
   h2000_gas300, h100_gas300     gap 2000 nm and 100 nm, layout v1b (Yim 2020 series C)
   v1a_gas300, v2a_gas300        gap 500 nm, pillar inter-distance 28 um and 98 um (series A)
@@ -31,7 +32,7 @@ EXE = ROOT / "lib/pillarmc/pillarmc"; OUT = ROOT / "figures/pillar_mc"; OUT.mkdi
 CASES = {"ideal": (0, 2, 0), "pillars49": (49, 2, 0), "walls90": (0, 2, 90), "walls90_pillars49": (49, 2, 90), "pillars28": (28, 2, 0), "pillars10": (10, 2, 0)}
 # name: (n_cos, f_spec, f_retro, end-exposure multiplier); geometry is walls90_pillars49
 SCATTER = {"cos2": (2, 0, 0, 1.6), "cos4": (4, 0, 0, 2.6), "cos8": (8, 0, 0, 4.5), "spec20": (1, 0.2, 0, 1.0), "spec50": (1, 0.5, 0, 1.0), "retro20": (1, 0, 0.2, 1.8), "retro50": (1, 0, 0.5, 4.0)}
-GAS = {"gas100": (100, 1.1), "gas300": (300, 1.3), "gas1000": (1000, 1.7), "gas3000": (3000, 2.4)}   # name: (pressure Pa, end-exposure multiplier)
+GAS = {"gas30": (30, 1.15), "gas100": (100, 1.1), "gas300": (300, 1.3), "gas1000": (1000, 1.7), "gas3000": (3000, 2.4), "gas10000": (10000, 3.6)}   # name: (pressure Pa, end-exposure multiplier)
 for _k in list(SCATTER) + list(GAS): CASES[_k] = CASES["walls90_pillars49"]
 # name: gap um, pillar inter-distance um, pillar radius um, width um, pressure Pa, end-exposure multiplier (cavity depth 400 gaps)
 GEO = {"h2000_gas300": (2.0, 49, 2, 90, 300, 2.6), "h100_gas300": (0.1, 49, 2, 90, 300, 1.1), "v1a_gas300": (0.5, 28, 2, 90, 300, 1.5),

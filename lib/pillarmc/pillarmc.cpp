@@ -171,19 +171,21 @@ static int diffusion_test(int argc, char **argv) {
   return 0; }
 // tracer diffusion along an infinite slit of height H between diffuse plates, in the carrier gas: D_x from the mean-square
 // displacement along the slit of molecules that start with a Maxwellian velocity (hard-sphere gas collisions, cosine walls with
-// the flux-weighted Maxwell speed). usage: pillarmc slitdiffusion p_Pa H_um [n_mol T m1 m2 d12 t_end_in_collision_times]
+// the flux-weighted Maxwell speed). usage: pillarmc slitdiffusion p_Pa H_um [n_mol T m1 m2 d12 t_end_in_collision_times relaxation_model(0|1)]
 static int slit_diffusion(int argc, char **argv) {
   PGAS = atof(argv[2]); const double H = atof(argv[3]) * 1e-6; long n = argc > 4 ? atol(argv[4]) : 4000; if (argc > 5) TEMP = atof(argv[5]); if (argc > 6) M1 = atof(argv[6]); if (argc > 7) M2 = atof(argv[7]); if (argc > 8) D12 = atof(argv[8]);
   const double tmult = argc > 9 ? atof(argv[9]) : 400.0; if (PGAS <= 0 || H <= 0) return 2;
+  const bool relax = argc > 10 && atoi(argv[10]) == 1;   // 1: relaxation-model collisions (constant rate kT / (m1 D_gas), full Maxwellian redraw) instead of hard spheres
   C1 = std::sqrt(2 * KB * TEMP / (M1 * AMU)); C2 = std::sqrt(2 * KB * TEMP / (M2 * AMU)); NSIGMA = PGAS / (KB * TEMP) * PI * D12 * D12 * 1e-20;
   Rng g(2468); const double vbar = 2 * C1 / std::sqrt(PI), lam = 1.0 / inv_path(vbar), tend = tmult * std::max(lam, H) / vbar; double x2 = 0, x4 = 0;
   static const double nzp[3] = {0, 0, 1}, nzm[3] = {0, 0, -1}, ex[3] = {1, 0, 0}, ey[3] = {0, 1, 0};
+  const double nu_relax = KB * TEMP / (M1 * AMU) / (3.0 / (8 * (PGAS / (KB * TEMP)) * D12 * D12 * 1e-20) * std::sqrt(KB * TEMP / (2 * PI * (M1 * M2 / (M1 + M2) * AMU))));
   for (long m = 0; m < n; m++) { double w[3], v = 0; for (int i = 0; i < 3; i++) { w[i] = C1 * gauss(g) * 0.7071067811865476; v += w[i] * w[i]; } v = std::sqrt(v);
     double u[3] = {w[0] / v, w[1] / v, w[2] / v}, z = H * g.u(), x = 0, t = 0;
-    for (;;) { const double lf = -std::log(1.0 - g.u()) / inv_path(v), lw = u[2] > 0 ? (H - z) / u[2] : (u[2] < 0 ? -z / u[2] : 1e300), l = std::min(lf, lw), dt = l / v;
+    for (;;) { const double lf = relax ? -std::log(1.0 - g.u()) * v / nu_relax : -std::log(1.0 - g.u()) / inv_path(v), lw = u[2] > 0 ? (H - z) / u[2] : (u[2] < 0 ? -z / u[2] : 1e300), l = std::min(lf, lw), dt = l / v;
       if (t + dt >= tend) { x += u[0] * v * (tend - t); break; }
       x += u[0] * l; z += u[2] * l; t += dt;
-      if (lf < lw) gas_collide(g, u, v); else { if (u[2] > 0) { z = H; cosdir(g, nzm, ex, ey, u); } else { z = 0; cosdir(g, nzp, ex, ey, u); } v = fluxspeed(g, C1); } }
+      if (lf < lw) { if (relax) { v = 0; for (int i = 0; i < 3; i++) { w[i] = C1 * gauss(g) * 0.7071067811865476; v += w[i] * w[i]; } v = std::sqrt(v); for (int i = 0; i < 3; i++) u[i] = w[i] / v; } else gas_collide(g, u, v); } else { if (u[2] > 0) { z = H; cosdir(g, nzm, ex, ey, u); } else { z = 0; cosdir(g, nzp, ex, ey, u); } v = fluxspeed(g, C1); } }
     x2 += x * x; x4 += x * x * x * x; }
   const double D = x2 / n / (2 * tend), err = std::sqrt(std::max(0.0, x4 / n - (x2 / n) * (x2 / n)) / n) / (2 * tend);
   const double mu = M1 * M2 / (M1 + M2) * AMU, nd = PGAS / (KB * TEMP), Dg = 3.0 / (8 * nd * D12 * D12 * 1e-20) * std::sqrt(KB * TEMP / (2 * PI * mu)), Dk = 2 * H * vbar / 3;

@@ -43,8 +43,11 @@ Reference: Siewert and Valougeorgis, Eur. J. Mech. B/Fluids 23, 645 (2004), heav
 The Monte Carlo follows a dilute tracer; the reference has 10 % heavy species, whose counterflow at diffuse walls (Graham's
 law) lowers the heavy flux in the continuum limit by 1/1.04 (Ne-Ar) and 1/1.47 (He-Xe) (column
 `tracer_over_mixture_continuum`). That accounts for the wide-slit end. At the narrow end the Monte Carlo is 9 % (Ne-Ar) and
-23 % (He-Xe) below the reference; a longer run does not change it (He-Xe, run length 16 and 400: 2.28 and 2.43 in the
-reference's units); the cause is not established (hard spheres against the model collision term is one candidate).
+23 % (He-Xe) below the reference, and a longer run does not change it. The same walk with relaxation collisions (constant rate
+kT / (m D12), full Maxwellian redraw: the kind of collision term the reference uses) gives 1.02, 1.00, 1.03 and 1.00 times the
+reference for Ne-Ar at widths 0.01, 0.1, 0.5 and 1 (column `monte_carlo_relaxation_collisions`). So for Ne-Ar the narrow-end
+difference is the collision model (hard spheres against relaxation), not the walk. For He-Xe the relaxation walk is 1.20 to
+1.21 times the reference at all four widths: a 10 % xenon mixture is not a tracer problem, and He-Xe is not a clean test.
 The hydraulic formula is 21 to 52 % below the reference for widths of 0.1 and 0.01.
 TMA in N2 at 300 C, 500 nm (Monte Carlo over hydraulic): 2.34 at 30 Pa, 2.05 at 100 Pa, 1.62 at 300 Pa, 1.38 at 1000 Pa,
 1.13 at 3000 Pa, 1.03 at 30000 Pa.
@@ -53,3 +56,23 @@ TMA in N2 at 300 C, 500 nm (Monte Carlo over hydraulic): 2.34 at 30 Pa, 2.05 at 
 `docs/blindtest/posthoc/zno_cross_lab.csv`. Same model, sticking coefficient fitted to each profile: 0.004 at 1400 Pa
 (Haimi 2026, sample B) and 0.020 to 0.025 at 86 Pa (Gonsalves 2026, left and right). Replacing the hydraulic kernel by the
 gas-collision kernel raises the low-pressure value more than the high-pressure one, so it widens the difference.
+
+# Three follow-ups (2026-11-27)
+
+## 5. Gap exponent of the narrowing law against pressure
+`docs/paper/narrowing_exponent.py`, `figures/narrowing_exponent.csv`; `aldconf.lhar.gap_exponent`, `narrowing_limit(fill, n)`.
+n = 1 + (1/2) d ln D / d ln p from the slit diffusivity of the Monte Carlo (TMA in N2, 300 C, 500 nm):
+0.926 at 30 Pa, 0.916 at 100 Pa, 0.903 at 300 Pa, 0.881 at 1000 Pa, 0.877 at 1400 Pa, 0.844 at 3000 Pa, 0.775 at 10000 Pa.
+Measured directly from pairs of front simulations at 400 and 500 nm: 0.917 (300 Pa), 0.892 (1400 Pa), 0.859 (3000 Pa).
+A step front smeared over the stretch f^n has slope x depth = (1 - fill/2) / (n fill): the limit is 1/n times the gas-free one.
+
+## 6. Slope tables over pressure, gap and spot size
+`docs/paper/run_pillar_mc.py` (cases gas30, gas3000, gas10000 added), `docs/paper/build_slope_table.py`, `figures/slope_table.csv`
+(8928 rows: hydraulic, gas-free and N2 at 30, 100, 300, 1000, 3000, 10000 Pa; spot 0 to 55 gaps), `aldconf.lhar.slope_curve_at`
+and `sticking_from_slope_at` (interpolation in ln(pressure x gap), 15 to 5000 Pa um).
+Check of the pressure x gap scaling, `docs/paper/slope_table_scaling_check.py`, `figures/slope_table_scaling_check.csv`: direct
+simulations of the 2000 nm and 100 nm cavities at 300 Pa against the 500 nm tables, 198 points: rms difference in ln(slope)
+0.049, largest 0.154; mean +0.03 to +0.07 for 100 nm and -0.01 to -0.03 for 2000 nm (the pillar spacing in gap units differs:
+490 and 24.5 against 98). With a filled fraction of 0.1 or more and the spot: rms 0.014 to 0.035.
+Example, slope 0.019 per gap at depth 208 gaps and filled fraction 0.19 (Yim 2020 sample 4, nominal gap): s = 0.022 at 100 Pa,
+0.015 at 300 Pa, 0.0096 at 1000 Pa, 0.0068 at 3000 Pa; the slope method gives 0.0050.

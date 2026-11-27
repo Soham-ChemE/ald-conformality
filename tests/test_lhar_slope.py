@@ -41,3 +41,23 @@ def test_one_number_rule_follows_the_table():
             s, sl = slope_curve(200, f, tr); ratio = np.log(sl[k + 1] / sl[k - 1]) / np.log(s[k + 1] / s[k - 1]) / base
             assert abs(ratio - relative_sensitivity(f, 200, sl0[k])) < 0.2
     f = max_fill_for(200, 0.025, 0.8); assert 0.08 < f < 0.14 and abs(relative_sensitivity(f, 200, 0.025) - 0.8) < 1e-6
+
+
+def test_pressure_lookup_matches_the_tables_and_interpolates_between_them():
+    from aldconf.lhar import slope_curve_at, sticking_from_slope_at, gap_exponent
+    s, sl = slope_curve_at(200, 0.1, 300, 500, 5.5); s0, sl0 = slope_curve(200, 0.1, "gas300", 11.0)
+    assert np.allclose(sl, sl0[np.isin(s0, s)], rtol=1e-9)                                    # on a node: the table itself
+    a, b, c = (slope_curve_at(200, 0.1, p, 500, 5.5)[1] for p in (300, 550, 1000)); assert np.all((a < b) & (b < c))
+    assert np.allclose(slope_curve_at(200, 0.1, 75, 2000, 5.5)[1], slope_curve(200, 0.1, "gas300", 2.75)[1][np.isin(s0, s)], rtol=1e-9)   # pressure x gap is the variable
+    r = [sticking_from_slope_at(0.019, 208, 0.19, p)["s"] for p in (100, 300, 1000, 3000)]; assert r[0] > r[1] > r[2] > r[3]   # the same slope means a smaller s at higher pressure
+    with pytest.raises(ValueError): slope_curve_at(200, 0.1, 5, 500)
+    assert gap_exponent(0) == 1.0 and 0.89 < gap_exponent(300) < 0.93 and gap_exponent(3000) < gap_exponent(300) and gap_exponent(300, 2000) < gap_exponent(300, 500)
+    assert narrowing_limit(0.2, 0.9) == pytest.approx(narrowing_limit(0.2) / 0.9)
+
+
+def test_table_serves_other_gaps():
+    import csv
+    from pathlib import Path
+    f = Path(__file__).resolve().parents[1] / "figures/slope_table_scaling_check.csv"
+    r = np.array([float(x["ln_ratio"]) for x in csv.DictReader(open(f))])                     # direct 100 nm and 2000 nm simulations against the 500 nm tables
+    assert len(r) > 150 and np.sqrt(np.mean(r ** 2)) < 0.06 and np.abs(r).max() < 0.16

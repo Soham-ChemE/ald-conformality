@@ -5,6 +5,8 @@ Conversion (derived from their Eqs. 1-22, 27a, 39a; checked against the binary d
     D_slit = (H / 2) v2 U_C,2 / C,   v2 = (2 k T / m_heavy)^(1/2),   H = 2a l0,   l0 n d1^2 = 0.2270 (Ne-Ar), 0.1403 (He-Xe) at C = 0.9
 The Monte Carlo (`pillarmc slitdiffusion`) follows a dilute heavy tracer in the pure light gas, so the comparison carries the
 difference between 10 % heavy species and the tracer limit (their mean free path changes by about 10 % between the two).
+A second Monte Carlo column replaces the hard-sphere collisions by relaxation collisions (the kind of collision term the
+reference uses), to separate the effect of the collision model from an error of the walk.
 Also listed: the hydraulic Knudsen diffusivity in series with the gas diffusivity (Bosanquet), the transport of the published
 slope method. Writes figures/benchmark_slit_diffusion.csv.
   PYTHONPATH=src .venv/bin/python docs/paper/benchmark_slit_diffusion.py
@@ -21,8 +23,11 @@ for name, g in PAIRS.items():
     for a2, U in g["U"].items():
         n = a2 * g["l0nd2"] / (H * (g["d1"] * 1e-10) ** 2); p = n * KB * T; nmol = 6000 if a2 <= 1 else 3000
         out = subprocess.check_output([str(EXE), "slitdiffusion", f"{p:.6g}", f"{H * 1e6:g}", str(nmol), str(T), str(g["m_heavy"]), str(g["m_light"]), f"{d12:.5f}"], text=True).split()
-        v = {out[i]: float(out[i + 1]) for i in range(0, len(out), 2)}; v2 = np.sqrt(2 * KB * T / (g["m_heavy"] * 1.66053906660e-27)); unit = H * v2 / 2
-        rows.append(dict(pair=name, width_2a=a2, pressure_Pa=round(p, 2), kinetic_theory=round(U / 0.9, 4), monte_carlo=round(v["D_slit"] / unit, 4), mc_rel_err=v["rel_err"], hydraulic_bosanquet=round(v["D_bosanquet_hydraulic"] / unit, 4),
+        v = {out[i]: float(out[i + 1]) for i in range(0, len(out), 2)}
+        # the same walk with the collision term of the reference's kind: constant rate kT / (m D12), full Maxwellian redraw (widths up to 1; longer run, the relaxation path is longer)
+        rel = float(subprocess.check_output([str(EXE), "slitdiffusion", f"{p:.6g}", f"{H * 1e6:g}", "4000", str(T), str(g["m_heavy"]), str(g["m_light"]), f"{d12:.5f}", "4000", "1"], text=True).split()[1]) if a2 <= 1 else np.nan
+        v2 = np.sqrt(2 * KB * T / (g["m_heavy"] * 1.66053906660e-27)); unit = H * v2 / 2
+        rows.append(dict(pair=name, width_2a=a2, pressure_Pa=round(p, 2), kinetic_theory=round(U / 0.9, 4), monte_carlo=round(v["D_slit"] / unit, 4), mc_rel_err=v["rel_err"], monte_carlo_relaxation_collisions=round(rel / unit, 4), hydraulic_bosanquet=round(v["D_bosanquet_hydraulic"] / unit, 4),
                          mc_over_theory=round(v["D_slit"] / unit / (U / 0.9), 3), hydraulic_over_theory=round(v["D_bosanquet_hydraulic"] / unit / (U / 0.9), 3)))
         print(rows[-1], flush=True)
 d = pd.DataFrame(rows)
