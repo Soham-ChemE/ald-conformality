@@ -36,6 +36,8 @@ Viz.view('[data-viz="stack"]', v => {
   const labels = [[`300 mm wafer on its stage · 150 faces, each with its own hole model`, [0, -.6, WR + .6], .2], [`${G.gap_mm} mm gap (drawn 3×) · N₂ 300 Pa, 573 K`, [CR + 1.0, gap / 2, .4], .4], ['outlet, r = 200 mm', [-CR - 1.2, gap / 2, .8], .35], ['showerhead: total-flux inlet, 300 sccm', [0, gap + .75, .9], .6], ['the pattern: 100 nm holes, AR 100,\n180 nm hexagonal pitch, 14 % open area', [WR * .35, gap + 2.45, WR * .55], .85]];
   const labs = labels.map(([t, p, d]) => { const s = Viz.label(v, t, p, { px: 20, scale: .09 }); s.userData.d = d; return s; });
   v.update = vv => { ex.draw(vv.p); const ps = clamp((vv.p - .66) / .3, 0, 1); patch.scale.setScalar(.001 + ps * (1 - .001)); patch.rotation.y = vv.p * .6; labs.forEach(l => l.material.opacity = clamp((vv.p - l.userData.d - .12) * 4, 0, 1)); return false; };
+  // precursor streaks from the showerhead to the wafer, with a spark where one lands (an illustration; shown once the chamber is assembled)
+  Viz.fx && Viz.fx(v, { n: 44, sparks: 44, speed: 1.6, gap: .5, overlay: true, active: () => v.p > .97, sample: R => { const r = Math.sqrt(R()) * WR * .95, th = R() * 6.283, x = Math.cos(th) * r, z = Math.sin(th) * r; return { path: [[x, gap, z], [x, .05, z]], p: .6, key: 'warm' }; } });
   v.hover = () => null; v.spin = .1; v.tilt = .22;
 }, { camera: [0, 3.8, 11], target: [0, .9, 0], fov: 32 });
 
@@ -114,10 +116,12 @@ const holeView = Viz.view('[data-viz="hole"]', v => {
   v.time = .5; v.shown = -1;
   const paint = t => { cBare.set(v.dark ? 0x5b6676 : 0x8a95a5); cCov.set(v.pal.green); let fr = 0, bot = 0;
     for (let i = 0; i < ND; i++) { const th = thetaAt(t, i); if (th >= .5) fr = i / (ND - 1); if (i === ND - 1) bot = th; c.copy(cBare).lerp(cCov, th); for (let j = 0; j <= NA; j++) { const k = i * (NA + 1) + j; col[3 * k] = c.r; col[3 * k + 1] = c.g; col[3 * k + 2] = c.b; } const q = A.map(th, H.hole.depths[i], 0); rpos[6 * i] = q.x; rpos[6 * i + 1] = q.y; rpos[6 * i + 2] = q.z - .12; rpos[6 * i + 3] = q.x; rpos[6 * i + 4] = q.y; rpos[6 * i + 5] = q.z + .12; }
-    geo.attributes.color.needsUpdate = true; rbGeo.attributes.position.needsUpdate = true; rbGeo.computeVertexNormals(); front.position.y = HH / 2 - fr * HH;
+    geo.attributes.color.needsUpdate = true; rbGeo.attributes.position.needsUpdate = true; rbGeo.computeVertexNormals(); front.position.y = HH / 2 - fr * HH; v.fr = fr;
     tLab.userData.label.text = `t = ${t} s`; redrawLabel(tLab, v.dark);
     const b = document.getElementById('sfBot'), fEl = document.getElementById('sfFront'); if (b) b.textContent = Math.round(bot * 100); if (fEl) fEl.textContent = Math.round(fr * 100); v.shown = t; v.dirty = true; };
   v.update = vv => { if (vv.shown !== vv.time) { paint(vv.time); return true; } return false; };
+  // TMA falls to the coverage front and reacts on the wall there: spark probability = 1 - coverage at that depth and time
+  Viz.fx && Viz.fx(v, { overlay: true, n: 20, sparks: 30, speed: 2.4, gap: .5, active: () => true, sample: R => { const th = Math.PI * (.5 + R()), i = clamp(Math.round(((v.fr || 0) + (R() - .5) * .14) * (ND - 1)), 0, ND - 1), y = HH / 2 - i / (ND - 1) * HH, rho = HR * .55 * R(); return { path: [[-1.2 + Math.cos(th) * rho, HH / 2 + .35, Math.sin(th) * rho], [-1.2 + Math.cos(th) * HR * .93, y, Math.sin(th) * HR * .93]], p: 1 - thetaAt(v.time, i), key: 'warm' }; } });
   v.onTheme = () => paint(v.time); v.hover = () => null; v.rot = .25; v.tilt = .08; paint(.5);
 }, { camera: [0, .6, 6.6], target: [0, 0, 0], fov: 34 });
 document.addEventListener('ald-step', e => { if (holeView) { holeView.time = e.detail; holeView.dirty = true; } });

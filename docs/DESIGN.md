@@ -54,6 +54,20 @@ Rates follow the data; single paths and the number of sparks are an illustration
 theme uses normal blending with plain colours: sparks fade by shrinking and rings are not drawn, because additive light
 does not show on a light stage. Reduced motion keeps the static scene.
 
+### Glow and sparks in the body scenes (27 November 2026)
+
+The body scenes share one renderer without a bloom pass, so glow there is a sprite with a soft radial falloff, drawn
+additively in the dark theme (`Viz.glowTex`, `Viz.halos`, `Viz.fx` in `assets/viz.js`).
+
+- **Halos.** Every emissive data marker (the spheres of the charts) gets a halo of its own colour, dark theme only.
+- **Streaks and sparks** in the six scenes that show an object: `stack` (gas from the showerhead to the wafer), `hole` and
+  `taper` (TMA falling to the coverage front), `recess` (down the slit and into a recess), `gaacell` and `nandcell` (sparks
+  on faces). A scene hands `Viz.fx` a sampler that returns a path and a spark probability; in every scene but `stack` the
+  probability is 1 minus the coverage at the landing point in the data the scene already draws, so a saturated surface
+  does not spark. `stack` has no coverage data and uses a fixed probability. The captions say the effect is an illustration.
+- The scene modules call `Viz.fx && Viz.fx(...)`, so a browser holding an older cached `viz.js` draws the scenes without
+  the effect instead of failing. Reduced motion and the static fallbacks are unchanged.
+
 ## 3. Body scenes (`assets/body.js`), all from `assets/data.js`
 
 | Placeholder | Scene | Data |

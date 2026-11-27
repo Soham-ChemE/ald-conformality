@@ -103,8 +103,9 @@ export const Viz = {
     el.addEventListener('pointerleave', () => { this.tip.hidden = true; });
     this.views.push(v);
     build(v, this);
+    this.halos(v);
     const userUpdate = v.update;
-    v.update = (vv, t, dt) => { let ch = false; if (vv.spin && !drag) { vv.rot += vv.spin * (dt / 1000); ch = true; } rig.rotation.y = vv.rot; rig.rotation.x = vv.tilt; if (userUpdate) ch = userUpdate(vv, t, dt) || ch; return ch; };
+    v.update = (vv, t, dt) => { let ch = false; if (vv.halo) this.syncHalos(vv); if (vv.fx) for (const fx of vv.fx) ch = fx.step(Math.min(.05, dt / 1000)) || ch; if (vv.spin && !drag) { vv.rot += vv.spin * (dt / 1000); ch = true; } rig.rotation.y = vv.rot; rig.rotation.x = vv.tilt; if (userUpdate) ch = userUpdate(vv, t, dt) || ch; return ch; };
     return v;
   },
 
@@ -115,6 +116,54 @@ export const Viz = {
   mat(key, o = {}) { const pal = this.pal; const m = new THREE.MeshStandardMaterial({ color: pal[key] || key, roughness: o.roughness ?? .45, metalness: o.metalness ?? .15, transparent: !!o.opacity && o.opacity < 1, opacity: o.opacity ?? 1, side: o.side || THREE.FrontSide, emissive: o.emissive ? (pal[o.emissive] || o.emissive) : 0x000000, emissiveIntensity: o.emissiveIntensity ?? .25, flatShading: !!o.flat, depthWrite: o.depthWrite ?? true }); m.userData.pal = key; if (o.emissive) m.userData.emissive = o.emissive; return m; },
   label(v, text, pos, o = {}) { const sp = makeLabel(text, { ...o, dark: v.dark }); sp.position.set(...pos); (o.parent || v.rig).add(sp); return sp; },
   line(v, pts, key = 'line', o = {}) { const g = new THREE.BufferGeometry().setFromPoints(pts.map(p => new THREE.Vector3(...p))); const m = new THREE.LineBasicMaterial({ color: this.pal[key] || key, transparent: o.opacity != null, opacity: o.opacity ?? 1 }); m.userData.pal = key; const l = new THREE.Line(g, m); (o.parent || v.rig).add(l); return l; },
+
+  /* ---------- glow and sparks (the body scenes have no bloom pass, so glow is an additive sprite with a soft radial falloff) ---------- */
+  glowTex() {
+    if (this._glow) return this._glow; const c = document.createElement('canvas'); c.width = c.height = 64; const x = c.getContext('2d'), g = x.createRadialGradient(32, 32, 0, 32, 32, 32);
+    g.addColorStop(0, 'rgba(255,255,255,1)'); g.addColorStop(.25, 'rgba(255,255,255,.55)'); g.addColorStop(.6, 'rgba(255,255,255,.12)'); g.addColorStop(1, 'rgba(255,255,255,0)'); x.fillStyle = g; x.fillRect(0, 0, 64, 64);
+    this._glow = new THREE.CanvasTexture(c); return this._glow;
+  },
+  /* A soft halo behind every emissive data marker (sphere) of a view, dark theme only. */
+  halos(v) {
+    const list = []; v.rig.traverse(o => { if (o.isMesh && o.geometry && o.geometry.type === 'SphereGeometry' && o.material && o.material.userData && o.material.userData.emissive) list.push(o); });
+    if (!list.length || list.length > 400) return;
+    v.halo = list.map(m => { const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: this.glowTex(), transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, opacity: 0 })); const r = m.geometry.parameters.radius || .06; sp.scale.setScalar(r * 6.5); sp.raycast = () => {}; sp.renderOrder = 3; m.add(sp); return { m, sp }; });
+    this.syncHalos(v);
+  },
+  syncHalos(v) { for (const { m, sp } of v.halo) { sp.visible = v.dark; if (!v.dark) continue; sp.material.color.copy(m.material.emissive); sp.material.opacity = .5 * (m.material.transparent ? m.material.opacity : 1); } },
+  /* Streaks that travel along a path and spark where they land. o.sample(R) returns null or { path: [[x,y,z], ...] (the last point is where
+     it lands; one point = no streak), p: probability of a spark, key: palette key } in the coordinates of o.parent (default v.rig).
+     o.active() gates the effect; o.overlay draws it over the scene (for gas inside a closed part). A spark is a glow that swells and fades plus two embers. Returns null under reduced motion. */
+  fx(v, o = {}) {
+    const S = this.S; if (!S || S.reduced || this.static) return null;
+    const n = Math.max(4, Math.round((o.n ?? 26) * (S.phone ? .5 : 1))), NS = Math.max(8, Math.round((o.sparks ?? 36) * (S.phone ? .6 : 1))), size = o.size ?? 1, speed = o.speed ?? 2.2, gap = o.gap ?? .9, active = o.active || (() => v.p > .95);
+    const G = new THREE.Group(); (o.parent || v.rig).add(G); const zero = new THREE.Matrix4().makeScale(0, 0, 0), q = new THREE.Quaternion(), up = new THREE.Vector3(0, 1, 0), a = new THREE.Vector3(), b = new THREE.Vector3(), d = new THREE.Vector3(), sc = new THREE.Vector3(), M = new THREE.Matrix4(), col = new THREE.Color();
+    let seed = 97 + this.views.length * 31; const R = () => { seed |= 0; seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; };
+    const dt0 = !o.overlay, sm = new THREE.MeshBasicMaterial({ transparent: true, depthWrite: false, depthTest: dt0 }), streak = new THREE.InstancedMesh(new THREE.CylinderGeometry(1, 1, 1, 5, 1), sm, n); streak.frustumCulled = false; streak.renderOrder = 5; for (let i = 0; i < n; i++) { streak.setMatrixAt(i, zero); streak.setColorAt(i, col.set(0xffffff)); } G.add(streak);
+    const mk = () => { const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: this.glowTex(), transparent: true, depthWrite: false, depthTest: dt0, opacity: 0 })); sp.visible = false; sp.raycast = () => {}; sp.renderOrder = 6; G.add(sp); return sp; };
+    const SK = Array.from({ length: NS }, () => ({ sp: mk(), life: 0 })), EM = Array.from({ length: NS * 2 }, () => ({ sp: mk(), life: 0, v: new THREE.Vector3() })), ST = Array.from({ length: n }, () => ({ live: false, wait: R() * gap * 1.5, path: null, seg: 0, u: 0, p: 0, key: 'warm' }));
+    let sk = 0, em = 0, dark = null, shown = false;
+    const paint = () => { dark = v.dark; const bl = dark ? THREE.AdditiveBlending : THREE.NormalBlending; sm.blending = bl; sm.opacity = dark ? .95 : .8; sm.needsUpdate = true; SK.concat(EM).forEach(e => { e.sp.material.blending = bl; e.sp.material.needsUpdate = true; }); };
+    const emit = (pt, key) => { const s = SK[sk++ % NS]; s.life = 1; s.sp.position.set(pt[0], pt[1], pt[2]); s.sp.material.color.set(v.pal[key] || key); s.sp.visible = true;
+      for (let j = 0; j < 2; j++) { const e = EM[em++ % (NS * 2)]; e.life = .8 + .2 * R(); e.sp.position.copy(s.sp.position); e.v.set(R() - .5, R() - .2, R() - .5).normalize().multiplyScalar(size * (.35 + .4 * R())); e.sp.material.color.copy(s.sp.material.color); e.sp.visible = true; } };
+    const hide = () => { for (let i = 0; i < n; i++) { streak.setMatrixAt(i, zero); ST[i].live = false; } streak.instanceMatrix.needsUpdate = true; SK.concat(EM).forEach(e => { e.life = 0; e.sp.visible = false; }); shown = false; };
+    const step = dt => {
+      if (!active()) { if (shown) { hide(); return true; } return false; }
+      if (dark !== v.dark) paint(); shown = true;
+      for (let i = 0; i < n; i++) { const s = ST[i];
+        if (!s.live) { streak.setMatrixAt(i, zero); s.wait -= dt; if (s.wait > 0) continue; const r = o.sample(R); if (!r || !r.path || !r.path.length) { s.wait = .3 + R() * gap; continue; }
+          if (r.path.length < 2) { if (R() < r.p) emit(r.path[0], r.key || 'warm'); s.wait = .15 + R() * gap; continue; }
+          s.live = true; s.path = r.path; s.seg = 0; s.u = 0; s.p = r.p; s.key = r.key || 'warm'; streak.setColorAt(i, col.set(v.pal[s.key] || s.key)); streak.instanceColor.needsUpdate = true; }
+        a.fromArray(s.path[s.seg]); b.fromArray(s.path[s.seg + 1]); d.subVectors(b, a); const len = d.length() || 1e-6; s.u += speed * size * dt / len;
+        if (s.u >= 1) { s.seg++; s.u = 0; if (s.seg >= s.path.length - 1) { if (R() < s.p) emit(s.path[s.path.length - 1], s.key); s.live = false; s.wait = R() * gap; streak.setMatrixAt(i, zero); } continue; }
+        const L = Math.min(.16 * size, len * s.u + .02); d.multiplyScalar(1 / len); q.setFromUnitVectors(up, d); a.addScaledVector(d, len * s.u - L / 2); sc.set(.011 * size, L, .011 * size); M.compose(a, q, sc); streak.setMatrixAt(i, M); }
+      streak.instanceMatrix.needsUpdate = true;
+      for (const s of SK) { if (s.life <= 0) continue; s.life -= dt * 2.3; if (s.life <= 0) { s.sp.visible = false; continue; } const k = s.life, w = size * (dark ? .24 + .6 * (1 - k) : .1 + .1 * k); s.sp.scale.set(w, w, 1); s.sp.material.opacity = dark ? Math.pow(k, 1.3) : .85 * k; }
+      for (const e of EM) { if (e.life <= 0) continue; e.life -= dt * 1.8; if (e.life <= 0) { e.sp.visible = false; continue; } e.sp.position.addScaledVector(e.v, dt); e.v.multiplyScalar(Math.max(0, 1 - 2.4 * dt)); const w = size * (dark ? .1 : .05) * e.life; e.sp.scale.set(w, w, 1); e.sp.material.opacity = (dark ? .9 : .8) * e.life; }
+      return true;
+    };
+    const fx = { step, emit, group: G }; (v.fx = v.fx || []).push(fx); return fx;
+  },
 
   /* ---------- 3D axes box: maps data ranges to a world box of size [sx,sy,sz] centred on the origin ---------- */
   axes(v, spec) {
