@@ -134,6 +134,11 @@ no interval has zero width, the interpolation check is below 0.01 of the plateau
 - With narrowing, film outside the channel, all 16, 0.3 window: -2.7 +/- 2.0, -4.0 +/- 1.8, 0.3 +/- 2.4; ten reflectometry
   fronts: -5.8 +/- 2.6, -6.0 +/- 2.4, -3.8 +/- 3.9. So the correction accounts for between roughly half and all of the
   decline, depending on the film thickness to within a few per cent and on the set of fronts.
+- The pooled zero with narrowing rests on the 1000-cycle sample (three fronts, the only ones above f = 0.22): without it the
+  slope is -2.4 +/- 4.8, -2.3 +/- 4.3, -0.7 +/- 4.4 (0.3 window) and -6.3 +/- 7.7, -5.8 +/- 7.3, -4.0 +/- 7.1 (0.1 window). The
+  uncorrected decline survives the same omission (-10.1 +/- 1.8, hydraulic, 0.3 window). Share of the uncorrected decline
+  that remains with narrowing on the ten reflectometry fronts (0.3 window): 53 % and 68 % (hydraulic, gas; film in channel),
+  70 % and 82 % (film outside). So the correction accounts for between about a third and all of the decline.
 - Fits with narrowing whose interval has no upper limit: 3, 2, 10 of 16 (0.3 window); 4, 4, 12 (0.1 window).
 - Scatter (sd of ln s, 16 fronts): 0.79 to 0.93 with narrowing against 0.71 to 0.77 without (0.3); 1.25 to 1.45 against
   0.85 to 0.87 (0.1). Window-to-window change of single values with narrowing: median factor 1.6 to 2.1, up to about 5;
