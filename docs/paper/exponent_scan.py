@@ -87,7 +87,7 @@ BD = pd.DataFrame(bd); BD.to_csv(F / "exponent_scan_bounds.csv", index=False); p
 # Gap of a nominal 500 nm chip: 454 nm (smallest), 460 nm (fitted mean), 480 nm (largest), Ikonen et al., Phys. Status Solidi A 223,
 # e202501022 (2026). Offset of the film thickness in the channel: 1.9 nm, the intercept of Fig. S9(a) of Yim et al. (2020).
 E5 = E[E.cycles == 500]; FILM = 54.5; sens = []
-for gap, off in ((500, 0.0), (500, 1.9), (480, 0.0), (460, 0.0), (454, 0.0), (480, 1.9), (460, 1.9)):
+for gap, off in ((500, 0.0), (500, 1.9), (480, 0.0), (460, 0.0), (454, 0.0), (480, 1.9), (460, 1.9), (454, 1.9)):
     f = 2 * (FILM - off) / gap
     for r in E5.itertuples(): sens.append(dict(gap_nm=gap, film_offset_nm=off, fill=round(f, 3), channel=r.channel, n_upper_bound=round((1 - f / 2) / (f * r.slope_eds * r.z50_gaps), 2)))   # slope x depth does not depend on the gap
 pd.DataFrame(sens).to_csv(F / "exponent_scan_bounds_sensitivity.csv", index=False); print(pd.DataFrame(sens).to_string(index=False))

@@ -13,3 +13,5 @@ gap_nm,film_offset_nm,fill,channel,n_upper_bound
 480,1.9,0.219,right,0.7
 460,1.9,0.229,left,0.71
 460,1.9,0.229,right,0.66
+454,1.9,0.232,left,0.7
+454,1.9,0.232,right,0.65
