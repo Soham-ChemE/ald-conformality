@@ -167,3 +167,20 @@ from Utriainen et al., Proc. SPIE 12008, 120080D (2022). Script `docs/paper/bene
   reflectometer objective not stated (5.5 um spot assumed); raster source with 0.56 um pixels.
 - The reaction chamber of the Picosun R-150 was not pressure-monitored; about 3 mbar is the intermediate-space pressure
   (Utriainen et al. 2022, same reactor model and recipe as the main series).
+
+## 11. How strongly narrowing acts: the exponent as an empirical dial (2026-11-27)
+
+Script `docs/paper/exponent_scan.py`; results `figures/exponent_scan_{fits,summary,pair,bounds}.csv`. Made after all other
+analyses.
+
+- Upper bound on n from fronts steeper than (1 - f/2)/(n f): 0.70 and 0.75 (EDS, 22 % filled sample), 0.66 and 0.68
+  (second reactor, 500 cycles); the other line-scan fronts 0.87 or more.
+- Second-reactor pair, 500-cycle scan predicted from the 250-cycle scan (no kinetics, no transport model): floor subtracted,
+  best n 0.65 at a depth scale of 1.02 (rms 0.022), 0.60 to 0.85 within 1.5 times that rms; at n = 1 and equal exposure rms
+  0.15. As read: best n 0.4 (rms 0.066), 0 to 0.85.
+- Main series, 16 fronts, hydraulic and carrier-gas models: mean rms has a shallow minimum at n = 0.7 (6 to 8 % below n = 1,
+  1 to 3 % below n = 0). d ln s/d f at n = 0.7: -5.0 to -6.3 (83 to 96 % of the uncorrected slope); it is within about one
+  standard error of zero only for n of 0.92 or more.
+- So no single strength of narrowing both fits the three steep fronts and removes the decline of the main series. Not
+  explained. A film thinner than the reflectometry value would do it for the second reactor (growth per cycle 20 to 30 %
+  above the usual value) but not for the main series (two thickness measurements within 5 to 9 %).
