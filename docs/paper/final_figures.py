@@ -19,11 +19,10 @@ fig, ax = plt.subplots(2, 3, figsize=(11, 5.6), sharey=True)
 for c in C:
     j = (250, 500, 1000).index(c["cycles"]); i = ("left", "right").index(c["channel"]); a = ax[i, j]
     a.plot(c["z"], c["y"], ".", color="0.25", ms=3, label="EDS Al signal (Yim et al. 2020, Fig. S8)")
-    a.plot(c["grid"], c["with_narrowing"], "C3-", lw=1.4, label="model with channel narrowing")
-    a.plot(c["grid"], c["without"], "C0--", lw=1.1, label="model without narrowing")
+    a.plot(c["grid"], c["with_narrowing"], "C3-", lw=1.4, label="model with channel narrowing, s = 0.04")
+    a.plot(c["grid"], c["without"], "C0--", lw=1.1, label="same s without narrowing (not refitted)")
     a.axvline(1.6 * c["z50"], color="0.7", lw=0.6, ls=":"); a.set_xlim(0, 1.7 * c["z50"]); a.set_ylim(-0.08, 1.25)
     a.set_title(f"({'abcdef'[3 * i + j]}) {c['cycles']} cycles, {c['channel']} channel, {100 * c['fill']:.0f} % of the gap filled")
-    a.text(0.04, 0.07, f"rms with narrowing {c['rms_with']:.3f}\nrms without {c['rms_without']:.3f}", transform=a.transAxes, fontsize=8, va="bottom")
     if i == 1: a.set_xlabel("distance from the entrance / gap")
     if j == 0: a.set_ylabel("relative thickness")
 h, l = ax[0, 0].get_legend_handles_labels(); fig.legend(h, l, loc="upper center", ncol=3, frameon=False, fontsize=8.5)

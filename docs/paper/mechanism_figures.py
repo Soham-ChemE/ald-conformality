@@ -75,7 +75,7 @@ summ = json.loads((FIG / "mechanism_summary.json").read_text()); fig, ax = plt.s
 for a, models, t in ((ax[0], ("hydraulic", "ballistic", "gas"), "(a) transport model alone"), (ax[1], ("hydraulic+narrowing+spot", "ballistic+narrowing+spot", "gas+narrowing+spot"), "(b) with channel narrowing and spot size")):
     for m, c, mk in zip(models, ("k", "C0", "C3"), ("o", "s", "^")):
         g = cmp_[(cmp_.model == m) & cmp_.predicted_slope.notna()]; q = summ["models"][m]
-        a.plot(g.measured_slope, g.predicted_slope, mk, color=c, ms=4.5, mfc="none", label=f"{m.split('+')[0]}: s = {q['s']:.2g}, rms ln error {q['rms_ln']} (n = {q['n']})")
+        a.plot(g.measured_slope, g.predicted_slope, mk, color=c, ms=4.5, mfc="none", label=f"{ {'ballistic': 'gas-free', 'gas': 'gas, 300 Pa'}.get(m.split('+')[0], m.split('+')[0]) }: s = {q['s']:.2g}, rms ln error {q['rms_ln']} (n = {q['n']})")
     a.plot([0.003, 0.07], [0.003, 0.07], "k-", lw=0.7); a.set_xscale("log"); a.set_yscale("log"); a.set_xlabel("measured front slope"); a.set_title(t); a.legend(frameon=False, loc="upper left")
     a.set_xticks([0.005, 0.01, 0.02, 0.05]); a.set_xticklabels(["0.005", "0.01", "0.02", "0.05"]); a.set_yticks([0.005, 0.01, 0.02, 0.05]); a.set_yticklabels(["0.005", "0.01", "0.02", "0.05"]); a.minorticks_off()
 ax[0].set_ylabel("predicted front slope (s frozen from the calibration profiles)"); fig.tight_layout(); fig.savefig(OUT / "fig11_heldout.png"); plt.close(fig)
