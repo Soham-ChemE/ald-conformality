@@ -68,3 +68,28 @@ for a, fam, title in zip(ax, ("hydraulic", "gas", "ballistic"), ("(a) hydraulic 
 ax[0].set_ylabel("fitted sticking coefficient"); h, l = ax[0].get_legend_handles_labels(); fig.legend(h, l, loc="upper center", ncol=4, frameon=False, fontsize=8)
 fig.tight_layout(rect=(0, 0, 1, 0.93)); fig.savefig(OUT / "fig_profile_fits.png"); plt.close(fig)
 print("wrote fig_profile_fits.png")
+
+# ---- Figure: how strongly narrowing acts (the exponent as an empirical dial) ----
+XS = pd.read_csv(FIG / "exponent_scan_summary.csv"); XS = XS[XS.fronts == "all 16 fronts"]; XB = pd.read_csv(FIG / "exponent_scan_bounds.csv"); XP = pd.read_csv(FIG / "exponent_scan_pair.csv")
+fig, ax = plt.subplots(1, 2, figsize=(10.5, 4.0)); a = ax[0]
+for (fam, win), mk, col, dx in ((("hydraulic", 0.3), "o", "C0", -0.006), (("gas", 0.3), "s", "C3", 0.006), (("hydraulic", 0.1), "o", "C0", -0.014), (("gas", 0.1), "s", "C3", 0.014)):
+    g = XS[(XS.transport == fam) & (XS.window == win)].sort_values("n")
+    a.errorbar(g.n + dx, g.dlns_df, yerr=g.se, fmt=mk + ("-" if win == 0.3 else ":"), color=col, ms=4.5, mfc=col if win == 0.3 else "none", lw=0.9, capsize=2, label=f"{'hydraulic' if fam == 'hydraulic' else 'carrier-gas'} model, window to {win}")
+a.axhline(0, color="k", lw=0.8); steep = XB[XB.n_upper_bound < 0.8].n_upper_bound; a.axvspan(-0.05, steep.max(), color="0.9", zorder=0)
+for b in steep: a.plot([b, b], [-10.6, -9.6], color="k", lw=1.2)
+pr = XP[XP.reading == "floor subtracted"]; ok = pr[pr.rms <= 1.5 * pr.rms.min()]; best = pr.loc[pr.rms.idxmin()]
+a.plot([ok.n.min(), ok.n.max()], [-8.8, -8.8], color="C2", lw=2.5); a.plot(best.n, -8.8, "D", color="C2", ms=5)
+a.text(0.02, -10.1, "upper bounds from the three steep fronts", fontsize=7.5, va="center"); a.text(0.02, -8.8, "second-reactor pair: best n and range", fontsize=7.5, va="center", color="C2")
+for v, lab in ((0.92, "0.92"), (1.0, "1")): a.axvline(v, color="0.5", lw=0.7, ls="--")
+a.text(0.96, 5.6, "theory", fontsize=7.5, ha="center", color="0.4")
+a.set_xlim(-0.05, 1.06); a.set_ylim(-11, 6.5); a.set_xlabel("narrowing exponent n (0 = no narrowing)"); a.set_ylabel("slope of ln s against filled fraction, 16 fronts"); a.set_title("(a) main series refitted for each n"); a.legend(frameon=False, fontsize=7, loc="upper left")
+a = ax[1]; ff = np.linspace(0.03, 0.5, 100)
+for n_, ls, lab in ((1.0, "-", "steepest front, n = 1"), (0.92, "--", "n = 0.92"), (0.7, ":", "n = 0.7")): a.plot(ff, (1 - ff / 2) / (n_ * ff), "k" + ls, lw=1, label=lab)
+T1 = pd.read_csv(ROOT / "data/lhar_profiles/yim2020_table1.csv"); T1 = T1[(T1.H_nm == 500) & (T1.magnification == 50)]; a.plot(2 * T1.S_IIb_nm / T1.H_nm, T1.slope_dtheta_dxtilde * T1.x50_tilde, "o", color="0.55", ms=4, mfc="none", label="reflectometry, tabulated slopes")
+E_ = pd.read_csv(ROOT / "docs/blindtest/v2/posthoc/eds_slopes.csv"); a.plot(E_.fill, E_.slope_eds * E_.z50_gaps, "*", color="C0", ms=8, label="EDS line scans")
+BQ = pd.read_csv(FIG / "profile_fits_beneq_slopes.csv"); BQ = BQ[BQ.n == 1.0]
+for rd, mfc in (("floor subtracted", "C3"), ("as read", "none")):
+    g = BQ[BQ.reading == rd]; a.plot(g.fill, g.slope_x_z50, "^", color="C3", ms=6, mfc=mfc, label=f"second reactor, {rd}")
+a.set_xscale("log"); a.set_yscale("log"); a.set_xlim(0.04, 0.5); a.set_ylim(1.5, 25); a.set_xticks([0.05, 0.1, 0.2, 0.4]); a.set_xticklabels(["0.05", "0.1", "0.2", "0.4"]); a.set_yticks([2, 5, 10, 20]); a.set_yticklabels(["2", "5", "10", "20"]); a.minorticks_off()
+a.set_xlabel("fraction of the gap filled, f"); a.set_ylabel("front slope x half-thickness depth"); a.set_title("(b) measured fronts against the steepest front"); a.legend(frameon=False, fontsize=7, loc="upper right")
+fig.tight_layout(); fig.savefig(OUT / "fig_exponent_scan.png"); plt.close(fig); print("wrote fig_exponent_scan.png")
