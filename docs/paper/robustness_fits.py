@@ -9,6 +9,7 @@
 For each variant: the slope of ln s against the filled fraction over the 16 fronts, without and with channel narrowing.
   .venv/bin/python docs/paper/robustness_fits.py gap        -> figures/robustness_gap_fits.csv, figures/robustness_gap.csv
   .venv/bin/python docs/paper/robustness_fits.py reading    -> figures/robustness_reading_fits.csv, figures/robustness_reading.csv
+  .venv/bin/python docs/paper/robustness_fits.py censored   -> figures/robustness_censored.csv (from the two fit files)
 """
 import sys, json
 from pathlib import Path
@@ -17,6 +18,17 @@ ROOT = Path(__file__).resolve().parents[2]; sys.path.insert(0, str(Path(__file__
 import profile_fits as pf
 import mechanism_test as mt
 F = ROOT / "figures"; mode = sys.argv[1]
+if mode == "censored":       # censored (Tobit) slopes of the fits with narrowing, a fit without an upper limit entering as a lower bound at its 16th percentile
+    import io, contextlib
+    with contextlib.redirect_stdout(io.StringIO()): import profile_fits_stats as st
+    out = []
+    for f in ("gap", "reading"):
+        D = pd.read_csv(F / f"robustness_{f}_fits.csv")
+        for (v, win, fam, nar), g in D.groupby(["variant", "window", "transport", "narrowing"], sort=False):
+            if not nar: continue
+            o = st.ols(g.fill.values, np.log(g.s_fit.values)); c = st.tobit(g.fill.values, np.log(g.s_fit.values), np.log(g.s_p16.values), np.log(g.s_p84.values), g.no_upper_limit.values.astype(bool), np.zeros(len(g), bool))
+            out.append(dict(check=f, variant=v, window=win, transport=fam, count=len(g), no_upper_limit=int(g.no_upper_limit.sum()), dlns_df=round(o[0], 2), se=round(o[1], 2), dlns_df_censored=round(c[0], 2), se_censored=round(c[1], 2)))
+    C = pd.DataFrame(out); C.to_csv(F / "robustness_censored.csv", index=False); pd.set_option("display.width", 200); print(C.to_string(index=False)); sys.exit(0)
 H = mt.heldout().set_index("sample"); profiles = []
 for f in sorted((ROOT / "data/blind_revealed_v2").glob("yim2020_s*.csv")):
     k = int(f.stem.split("_s")[1]); d = pd.read_csv(f); name = f"Yim{k}"

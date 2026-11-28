@@ -1,0 +1,14 @@
+check,variant,window,transport,count,no_upper_limit,dlns_df,se,dlns_df_censored,se_censored
+gap,nominal gap 500 nm,0.3,hydraulic,16,3,0.89,2.47,-0.23,1.96
+gap,nominal gap 500 nm,0.3,gas,16,2,-2.2,2.04,-2.19,1.68
+gap,measured gap 460 nm,0.3,hydraulic,16,7,3.98,2.21,1.49,2.53
+gap,measured gap 460 nm,0.3,gas,16,6,2.42,2.19,0.64,1.86
+gap,nominal gap 500 nm,0.1,hydraulic,16,4,2.5,3.78,1.76,3.54
+gap,nominal gap 500 nm,0.1,gas,16,4,1.07,3.61,0.17,3.35
+gap,measured gap 460 nm,0.1,hydraulic,16,5,6.11,3.76,2.82,4.2
+gap,measured gap 460 nm,0.1,gas,16,4,2.79,3.19,1.56,3.24
+reading,as read,0.3,hydraulic,16,2,0.89,2.47,-0.13,1.96
+reading,plateau 3 % higher,0.3,hydraulic,16,0,-3.76,1.59,-3.76,1.59
+reading,plateau 3 % lower,0.3,hydraulic,16,7,4.9,2.83,2.16,3.22
+reading,entrance 5 gap heights deeper,0.3,hydraulic,16,2,-0.79,2.26,-1.29,1.82
+reading,entrance 5 gap heights shallower,0.3,hydraulic,16,4,1.98,2.3,0.01,2.01
