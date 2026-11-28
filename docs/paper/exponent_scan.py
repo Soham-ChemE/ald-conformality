@@ -10,7 +10,8 @@ narrowing) and 1, with everything else as in profile_fits.py, and three independ
  3. the upper bound on n from the fronts that are steeper than the steepest front (1 - f/2)/(n f).
 Made after all other analyses, with all data known.
   .venv/bin/python docs/paper/exponent_scan.py   -> figures/exponent_scan_fits.csv, figures/exponent_scan_summary.csv,
-                                                    figures/exponent_scan_pair.csv, figures/exponent_scan_bounds.csv
+                                                    figures/exponent_scan_pair.csv, figures/exponent_scan_pair_bias.csv, figures/exponent_scan_bounds.csv,
+                                                    figures/profile_fits_beneq_slopes.csv
 """
 import sys, json
 from pathlib import Path
@@ -59,7 +60,24 @@ for name, g in PR.groupby("reading"):
     b = g.loc[g.rms.idxmin()]; ok = g[g.rms <= 1.5 * b.rms]; one = g[g.depth_scale == 1.0]; b1 = one.loc[one.rms.idxmin()]
     print(f"pair, {name}: best n {b.n} at depth scale {b.depth_scale} (rms {b.rms}); n from {ok.n.min()} to {ok.n.max()} within 1.5 times that rms (depth scale {ok.depth_scale.min()} to {ok.depth_scale.max()}); same exposure: n {b1.n} (rms {b1.rms}); rms at n = 1, same exposure: {float(one[one.n == 1.0].rms.iloc[0])}")
 
+# the estimator reuses the 250-cycle scan for the second half of the cycles; exactly, that half starts from a gap already
+# narrowed, so its own smear is wider by 1/(1 - f_250). Test on synthetic fronts built from Eq. (1) with a logistic single-exposure front.
+def synth(x, f, n, L=190.0, w=2.0): return np.mean([1 / (1 + np.exp((x / xi ** n - L) / w)) for xi in np.linspace(1 - f, 1, 201)], 0)
+xs = np.arange(100.0, 230.0, 0.5); bias = []
+for fa in (0.101, 0.126):
+    for ntrue in (0.5, 0.65, 0.8, 1.0):
+        ya, yb = synth(xs, fa, ntrue), synth(xs, 2 * fa, ntrue); best = min(((float(np.sqrt(np.mean((0.5 * (np.interp(xs / a, xs, ya) + np.interp(xs / (a * (1 - fa) ** n), xs, ya)) - yb) ** 2))), n, a) for a in np.arange(0.97, 1.031, 0.005) for n in np.arange(0.3, 1.31, 0.01)))
+        bias.append(dict(filling_250=fa, n_true=ntrue, n_recovered=round(best[1], 2), depth_scale=round(best[2], 3), rms=round(best[0], 4)))
+BI = pd.DataFrame(bias); BI.to_csv(F / "exponent_scan_pair_bias.csv", index=False); print(BI.to_string(index=False))
+
 # ---- 3. bound from the fronts steeper than the steepest front ----
+sl = []
+for cyc, (x, t, pl, fl) in ((250, (x1, t1, p1, f1)), (500, (x2, t2, p2, f2))):
+    z = x * 2                                                      # gap heights, gap 500 nm
+    for name, y, film in (("as read", t / pl, pl), ("floor subtracted", (t - fl) / (pl - fl), pl - fl)):
+        f = 2 * film / 500; m = (z > 280) & (z < 420) & (y > 0.25) & (y < 0.75); c = np.polyfit(z[m], y[m], 1); z50 = (0.5 - c[1]) / c[0]
+        for n in (1.0, 0.92): sl.append(dict(cycles=cyc, reading=name, fill=round(f, 3), points=int(m.sum()), z50=round(z50, 1), slope=round(-c[0], 4), slope_x_z50=round(-c[0] * z50, 2), n=n, limit=round((1 - f / 2) / (n * f), 2), over_limit=round(-c[0] * z50 / ((1 - f / 2) / (n * f)), 2)))
+pd.DataFrame(sl).to_csv(F / "profile_fits_beneq_slopes.csv", index=False)
 E = pd.read_csv(ROOT / "docs/blindtest/v2/posthoc/eds_slopes.csv"); B = pd.read_csv(F / "profile_fits_beneq_slopes.csv"); B = B[B.n == 1.0]
 bd = [dict(front=f"EDS {int(r.cycles)} cycles, {r.channel}", fill=r.fill, slope_x_depth=round(r.slope_eds * r.z50_gaps, 2), n_upper_bound=round((1 - r.fill / 2) / (r.fill * r.slope_eds * r.z50_gaps), 2)) for r in E.itertuples()]
 bd += [dict(front=f"second reactor {int(r.cycles)} cycles, {r.reading}", fill=r.fill, slope_x_depth=r.slope_x_z50, n_upper_bound=round(r.limit / r.slope_x_z50, 2)) for r in B.itertuples()]

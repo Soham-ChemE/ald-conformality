@@ -184,3 +184,10 @@ analyses.
 - So no single strength of narrowing both fits the three steep fronts and removes the decline of the main series. Not
   explained. A film thinner than the reflectometry value would do it for the second reactor (growth per cycle 20 to 30 %
   above the usual value) but not for the main series (two thickness measurements within 5 to 9 %).
+- After an independent read (same day): the guide names neither reactor nor conditions; the link to the Beneq runs of
+  Utriainen et al. is the identical table of thicknesses and penetration depths, so the conditions are inferred. Three steep
+  fronts come from two samples. Without narrowing there are nine distinct combinations, not twelve. With narrowing 18 of the
+  24 fits are open on one side, so they do not show whether the fall is removed. Pair prediction, like for like: n = 1 gives
+  rms 0.050 with the depth scale free and 0.15 at equal exposure; equal exposure, best n 0.30 (rms 0.061). The prediction is
+  approximate and returns n too high by 0.03 to 0.07 on synthetic fronts (`figures/exponent_scan_pair_bias.csv`). In the 0.1
+  window the pooled slope cannot exclude n of 0.7 to 0.8.

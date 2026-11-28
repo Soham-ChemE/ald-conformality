@@ -7,5 +7,5 @@ front,fill,slope_x_depth,n_upper_bound
 "EDS 1000 cycles, right",0.397,2.32,0.87
 "second reactor 250 cycles, as read",0.126,6.15,1.21
 "second reactor 250 cycles, floor subtracted",0.101,10.74,0.88
-"second reactor 500 cycles, as read",0.236,5.71,0.66
+"second reactor 500 cycles, as read",0.235,5.71,0.66
 "second reactor 500 cycles, floor subtracted",0.222,5.84,0.68
