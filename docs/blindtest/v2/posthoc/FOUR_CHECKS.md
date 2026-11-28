@@ -191,3 +191,15 @@ analyses.
   rms 0.050 with the depth scale free and 0.15 at equal exposure; equal exposure, best n 0.30 (rms 0.061). The prediction is
   approximate and returns n too high by 0.03 to 0.07 on synthetic fronts (`figures/exponent_scan_pair_bias.csv`). In the 0.1
   window the pooled slope cannot exclude n of 0.7 to 0.8.
+
+## 12. Robustness of the profile fits to the gap and to reading errors (2026-11-27)
+
+Script `docs/paper/robustness_fits.py`; results `figures/robustness_{gap,reading}.csv` and `_fits.csv`.
+
+- Measured gap 460 nm in place of 500 nm (hydraulic and carrier-gas models, both windows): uncorrected d ln s/d f -5.7 to
+  -6.3 (nominal -6.0 to -6.5); with narrowing 2.4 to 6.1 over 16 fronts (4 to 7 fits without an upper limit) and -1.6 to 2.3
+  on the ten reflectometry fronts. Narrowing at its theoretical strength then tends to over-correct.
+- Plateau 3 % higher or lower (hydraulic, 0.3 window): uncorrected -6.3 and -6.9; with narrowing -3.8 +/- 1.6 and
+  4.9 +/- 2.8. Entrance shifted by 5 gap heights: uncorrected -6.6; with narrowing -0.8 and 2.0.
+- So the uncorrected fall is insensitive to both; the corrected slope is not.
+- Reference audit the same day: all registered references match Crossref/DataCite; Zenodo 3974438 is dated 2021.

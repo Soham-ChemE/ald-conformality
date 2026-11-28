@@ -1,0 +1,161 @@
+variant,window,id,sample,method,fill,transport,narrowing,s_fit,s_p16,s_p84,rms,no_upper_limit
+as read,0.3,opt_s01,Yim1,reflectometry,0.213,hydraulic,False,0.002,0.00184,0.00232,0.0394,False
+as read,0.3,opt_s01,Yim1,reflectometry,0.213,hydraulic,True,0.00292,0.00232,0.004,0.0394,False
+plateau 3 % higher,0.3,opt_s01,Yim1,reflectometry,0.213,hydraulic,False,0.00186,0.0016,0.00215,0.0427,False
+plateau 3 % higher,0.3,opt_s01,Yim1,reflectometry,0.213,hydraulic,True,0.0025,0.002,0.00316,0.0432,False
+plateau 3 % lower,0.3,opt_s01,Yim1,reflectometry,0.213,hydraulic,False,0.00215,0.00186,0.0025,0.0492,False
+plateau 3 % lower,0.3,opt_s01,Yim1,reflectometry,0.213,hydraulic,True,0.00415,0.0027,0.0063,0.0491,False
+entrance 5 gap heights deeper,0.3,opt_s01,Yim1,reflectometry,0.213,hydraulic,False,0.002,0.00172,0.00215,0.0399,False
+entrance 5 gap heights deeper,0.3,opt_s01,Yim1,reflectometry,0.213,hydraulic,True,0.00292,0.00232,0.0037,0.0399,False
+entrance 5 gap heights shallower,0.3,opt_s01,Yim1,reflectometry,0.213,hydraulic,False,0.002,0.00172,0.00232,0.0385,False
+entrance 5 gap heights shallower,0.3,opt_s01,Yim1,reflectometry,0.213,hydraulic,True,0.00316,0.00247,0.004,0.0386,False
+as read,0.3,opt_s02,Yim2,reflectometry,0.218,hydraulic,False,0.00342,0.00316,0.0037,0.0221,False
+as read,0.3,opt_s02,Yim2,reflectometry,0.218,hydraulic,True,0.0116,0.00795,0.02,0.0246,False
+plateau 3 % higher,0.3,opt_s02,Yim2,reflectometry,0.218,hydraulic,False,0.00292,0.0025,0.00342,0.0373,False
+plateau 3 % higher,0.3,opt_s02,Yim2,reflectometry,0.218,hydraulic,True,0.00482,0.00342,0.00739,0.0387,False
+plateau 3 % lower,0.3,opt_s02,Yim2,reflectometry,0.218,hydraulic,False,0.00415,0.0037,0.00464,0.0308,False
+plateau 3 % lower,0.3,opt_s02,Yim2,reflectometry,0.218,hydraulic,True,0.0458,0.0163,0.2,0.0327,True
+entrance 5 gap heights deeper,0.3,opt_s02,Yim2,reflectometry,0.218,hydraulic,False,0.00342,0.00316,0.0037,0.0156,False
+entrance 5 gap heights deeper,0.3,opt_s02,Yim2,reflectometry,0.218,hydraulic,True,0.0104,0.00739,0.0178,0.0187,False
+entrance 5 gap heights shallower,0.3,opt_s02,Yim2,reflectometry,0.218,hydraulic,False,0.00342,0.00316,0.0037,0.0353,False
+entrance 5 gap heights shallower,0.3,opt_s02,Yim2,reflectometry,0.218,hydraulic,True,0.0125,0.0071,0.0224,0.0371,False
+as read,0.3,opt_s03,Yim3,reflectometry,0.214,hydraulic,False,0.0054,0.0052,0.00583,0.0146,False
+as read,0.3,opt_s03,Yim3,reflectometry,0.214,hydraulic,True,0.0274,0.0185,0.049,0.0159,False
+plateau 3 % higher,0.3,opt_s03,Yim3,reflectometry,0.214,hydraulic,False,0.00447,0.00415,0.005,0.0347,False
+plateau 3 % higher,0.3,opt_s03,Yim3,reflectometry,0.214,hydraulic,True,0.0108,0.008,0.0159,0.0355,False
+plateau 3 % lower,0.3,opt_s03,Yim3,reflectometry,0.214,hydraulic,False,0.0063,0.00561,0.00682,0.0238,False
+plateau 3 % lower,0.3,opt_s03,Yim3,reflectometry,0.214,hydraulic,True,0.112,0.0361,0.2,0.0245,True
+entrance 5 gap heights deeper,0.3,opt_s03,Yim3,reflectometry,0.214,hydraulic,False,0.0054,0.0052,0.00561,0.0117,False
+entrance 5 gap heights deeper,0.3,opt_s03,Yim3,reflectometry,0.214,hydraulic,True,0.0241,0.0171,0.0366,0.0128,False
+entrance 5 gap heights shallower,0.3,opt_s03,Yim3,reflectometry,0.214,hydraulic,False,0.0054,0.005,0.00583,0.02,False
+entrance 5 gap heights shallower,0.3,opt_s03,Yim3,reflectometry,0.214,hydraulic,True,0.033,0.0199,0.0775,0.0212,False
+as read,0.3,opt_s04,Yim4,reflectometry,0.191,hydraulic,False,0.0052,0.00464,0.00561,0.0306,False
+as read,0.3,opt_s04,Yim4,reflectometry,0.191,hydraulic,True,0.01,0.0071,0.0135,0.0308,False
+plateau 3 % higher,0.3,opt_s04,Yim4,reflectometry,0.191,hydraulic,False,0.00431,0.00342,0.005,0.0393,False
+plateau 3 % higher,0.3,opt_s04,Yim4,reflectometry,0.191,hydraulic,True,0.00583,0.00447,0.00774,0.0396,False
+plateau 3 % lower,0.3,opt_s04,Yim4,reflectometry,0.191,hydraulic,False,0.0063,0.00583,0.00656,0.0411,False
+plateau 3 % lower,0.3,opt_s04,Yim4,reflectometry,0.191,hydraulic,True,0.0192,0.0125,0.0233,0.041,False
+entrance 5 gap heights deeper,0.3,opt_s04,Yim4,reflectometry,0.191,hydraulic,False,0.0054,0.00464,0.00606,0.0226,False
+entrance 5 gap heights deeper,0.3,opt_s04,Yim4,reflectometry,0.191,hydraulic,True,0.00928,0.00739,0.012,0.0227,False
+entrance 5 gap heights shallower,0.3,opt_s04,Yim4,reflectometry,0.191,hydraulic,False,0.0054,0.00447,0.00583,0.0414,False
+entrance 5 gap heights shallower,0.3,opt_s04,Yim4,reflectometry,0.191,hydraulic,True,0.0108,0.00682,0.013,0.0416,False
+as read,0.3,opt_s09,Yim9,reflectometry,0.049,hydraulic,False,0.0274,0.025,0.03,0.0152,False
+as read,0.3,opt_s09,Yim9,reflectometry,0.049,hydraulic,True,0.0315,0.0274,0.0346,0.0152,False
+plateau 3 % higher,0.3,opt_s09,Yim9,reflectometry,0.049,hydraulic,False,0.0215,0.0185,0.0224,0.038,False
+plateau 3 % higher,0.3,opt_s09,Yim9,reflectometry,0.049,hydraulic,True,0.0224,0.02,0.025,0.038,False
+plateau 3 % lower,0.3,opt_s09,Yim9,reflectometry,0.049,hydraulic,False,0.0346,0.033,0.0381,0.0233,False
+plateau 3 % lower,0.3,opt_s09,Yim9,reflectometry,0.049,hydraulic,True,0.04,0.0381,0.0458,0.0233,False
+entrance 5 gap heights deeper,0.3,opt_s09,Yim9,reflectometry,0.049,hydraulic,False,0.0274,0.0258,0.03,0.0154,False
+entrance 5 gap heights deeper,0.3,opt_s09,Yim9,reflectometry,0.049,hydraulic,True,0.0315,0.0282,0.0346,0.0154,False
+entrance 5 gap heights shallower,0.3,opt_s09,Yim9,reflectometry,0.049,hydraulic,False,0.0274,0.025,0.03,0.0156,False
+entrance 5 gap heights shallower,0.3,opt_s09,Yim9,reflectometry,0.049,hydraulic,True,0.0315,0.0266,0.0346,0.0156,False
+as read,0.3,opt_s11,Yim11,reflectometry,0.397,hydraulic,False,0.0016,0.00148,0.00172,0.0114,False
+as read,0.3,opt_s11,Yim11,reflectometry,0.397,hydraulic,True,0.00682,0.00561,0.01,0.0102,False
+plateau 3 % higher,0.3,opt_s11,Yim11,reflectometry,0.397,hydraulic,False,0.00137,0.00126,0.0016,0.0259,False
+plateau 3 % higher,0.3,opt_s11,Yim11,reflectometry,0.397,hydraulic,True,0.00292,0.00215,0.00656,0.0271,False
+plateau 3 % lower,0.3,opt_s11,Yim11,reflectometry,0.397,hydraulic,False,0.00186,0.0016,0.00215,0.0251,False
+plateau 3 % lower,0.3,opt_s11,Yim11,reflectometry,0.397,hydraulic,True,0.04,0.0108,0.2,0.0231,True
+entrance 5 gap heights deeper,0.3,opt_s11,Yim11,reflectometry,0.397,hydraulic,False,0.0016,0.0016,0.00172,0.0101,False
+entrance 5 gap heights deeper,0.3,opt_s11,Yim11,reflectometry,0.397,hydraulic,True,0.0052,0.00464,0.0063,0.0082,False
+entrance 5 gap heights shallower,0.3,opt_s11,Yim11,reflectometry,0.397,hydraulic,False,0.0016,0.0016,0.00172,0.0133,False
+entrance 5 gap heights shallower,0.3,opt_s11,Yim11,reflectometry,0.397,hydraulic,True,0.00963,0.00678,0.0192,0.0129,False
+as read,0.3,opt_s12,Yim12,reflectometry,0.201,hydraulic,False,0.008,0.00739,0.00862,0.0209,False
+as read,0.3,opt_s12,Yim12,reflectometry,0.201,hydraulic,True,0.0232,0.0157,0.0363,0.0219,False
+plateau 3 % higher,0.3,opt_s12,Yim12,reflectometry,0.201,hydraulic,False,0.0071,0.0063,0.008,0.0248,False
+plateau 3 % higher,0.3,opt_s12,Yim12,reflectometry,0.201,hydraulic,True,0.02,0.013,0.0428,0.0251,False
+plateau 3 % lower,0.3,opt_s12,Yim12,reflectometry,0.201,hydraulic,False,0.0083,0.00682,0.00963,0.0363,False
+plateau 3 % lower,0.3,opt_s12,Yim12,reflectometry,0.201,hydraulic,True,0.04,0.0192,0.178,0.0376,False
+entrance 5 gap heights deeper,0.3,opt_s12,Yim12,reflectometry,0.201,hydraulic,False,0.00769,0.0071,0.00862,0.0212,False
+entrance 5 gap heights deeper,0.3,opt_s12,Yim12,reflectometry,0.201,hydraulic,True,0.02,0.0146,0.0315,0.0221,False
+entrance 5 gap heights shallower,0.3,opt_s12,Yim12,reflectometry,0.201,hydraulic,False,0.008,0.00739,0.00862,0.0207,False
+entrance 5 gap heights shallower,0.3,opt_s12,Yim12,reflectometry,0.201,hydraulic,True,0.0274,0.0185,0.0458,0.0218,False
+as read,0.3,opt_s13,Yim13,reflectometry,0.199,hydraulic,False,0.00316,0.00292,0.00342,0.0135,False
+as read,0.3,opt_s13,Yim13,reflectometry,0.199,hydraulic,True,0.00656,0.00561,0.00769,0.0122,False
+plateau 3 % higher,0.3,opt_s13,Yim13,reflectometry,0.199,hydraulic,False,0.00292,0.0025,0.00342,0.0231,False
+plateau 3 % higher,0.3,opt_s13,Yim13,reflectometry,0.199,hydraulic,True,0.0037,0.00316,0.00431,0.0237,False
+plateau 3 % lower,0.3,opt_s13,Yim13,reflectometry,0.199,hydraulic,False,0.0037,0.00342,0.00431,0.029,False
+plateau 3 % lower,0.3,opt_s13,Yim13,reflectometry,0.199,hydraulic,True,0.0125,0.0071,0.0315,0.0272,False
+entrance 5 gap heights deeper,0.3,opt_s13,Yim13,reflectometry,0.199,hydraulic,False,0.00316,0.00292,0.00342,0.0133,False
+entrance 5 gap heights deeper,0.3,opt_s13,Yim13,reflectometry,0.199,hydraulic,True,0.00583,0.0052,0.00682,0.012,False
+entrance 5 gap heights shallower,0.3,opt_s13,Yim13,reflectometry,0.199,hydraulic,False,0.00316,0.00292,0.00342,0.0137,False
+entrance 5 gap heights shallower,0.3,opt_s13,Yim13,reflectometry,0.199,hydraulic,True,0.0071,0.00626,0.0083,0.0124,False
+as read,0.3,opt_s15,Yim15,reflectometry,0.208,hydraulic,False,0.00447,0.00415,0.00482,0.0174,False
+as read,0.3,opt_s15,Yim15,reflectometry,0.208,hydraulic,True,0.00682,0.00583,0.00769,0.0176,False
+plateau 3 % higher,0.3,opt_s15,Yim15,reflectometry,0.208,hydraulic,False,0.00342,0.00316,0.00375,0.0284,False
+plateau 3 % higher,0.3,opt_s15,Yim15,reflectometry,0.208,hydraulic,True,0.00464,0.004,0.00561,0.0287,False
+plateau 3 % lower,0.3,opt_s15,Yim15,reflectometry,0.208,hydraulic,False,0.0052,0.00447,0.0054,0.034,False
+plateau 3 % lower,0.3,opt_s15,Yim15,reflectometry,0.208,hydraulic,True,0.0108,0.00682,0.0116,0.0339,False
+entrance 5 gap heights deeper,0.3,opt_s15,Yim15,reflectometry,0.208,hydraulic,False,0.00447,0.00415,0.00464,0.0153,False
+entrance 5 gap heights deeper,0.3,opt_s15,Yim15,reflectometry,0.208,hydraulic,True,0.00682,0.00583,0.008,0.0155,False
+entrance 5 gap heights shallower,0.3,opt_s15,Yim15,reflectometry,0.208,hydraulic,False,0.00447,0.00415,0.00482,0.0174,False
+entrance 5 gap heights shallower,0.3,opt_s15,Yim15,reflectometry,0.208,hydraulic,True,0.0071,0.00603,0.008,0.0176,False
+as read,0.3,opt_s16,Yim16,reflectometry,0.196,hydraulic,False,0.0052,0.005,0.0054,0.011,False
+as read,0.3,opt_s16,Yim16,reflectometry,0.196,hydraulic,True,0.0135,0.0116,0.0147,0.0105,False
+plateau 3 % higher,0.3,opt_s16,Yim16,reflectometry,0.196,hydraulic,False,0.00447,0.00415,0.00482,0.0264,False
+plateau 3 % higher,0.3,opt_s16,Yim16,reflectometry,0.196,hydraulic,True,0.00862,0.0071,0.0108,0.0267,False
+plateau 3 % lower,0.3,opt_s16,Yim16,reflectometry,0.196,hydraulic,False,0.00583,0.00558,0.0063,0.0303,False
+plateau 3 % lower,0.3,opt_s16,Yim16,reflectometry,0.196,hydraulic,True,0.03,0.017,0.06,0.0293,False
+entrance 5 gap heights deeper,0.3,opt_s16,Yim16,reflectometry,0.196,hydraulic,False,0.0052,0.005,0.0054,0.0109,False
+entrance 5 gap heights deeper,0.3,opt_s16,Yim16,reflectometry,0.196,hydraulic,True,0.012,0.0108,0.013,0.0105,False
+entrance 5 gap heights shallower,0.3,opt_s16,Yim16,reflectometry,0.196,hydraulic,False,0.0052,0.005,0.0054,0.011,False
+entrance 5 gap heights shallower,0.3,opt_s16,Yim16,reflectometry,0.196,hydraulic,True,0.0164,0.0135,0.0178,0.0104,False
+as read,0.3,eds_250_left,Yim10,EDS,0.104,hydraulic,False,0.0116,0.00963,0.0141,0.0424,False
+as read,0.3,eds_250_left,Yim10,EDS,0.104,hydraulic,True,0.0208,0.0146,0.0282,0.0425,False
+plateau 3 % higher,0.3,eds_250_left,Yim10,EDS,0.104,hydraulic,False,0.00862,0.0071,0.0104,0.0523,False
+plateau 3 % higher,0.3,eds_250_left,Yim10,EDS,0.104,hydraulic,True,0.0108,0.0083,0.0146,0.0523,False
+plateau 3 % lower,0.3,eds_250_left,Yim10,EDS,0.104,hydraulic,False,0.0171,0.0135,0.0215,0.0488,False
+plateau 3 % lower,0.3,eds_250_left,Yim10,EDS,0.104,hydraulic,True,0.0346,0.0208,0.0561,0.0488,False
+entrance 5 gap heights deeper,0.3,eds_250_left,Yim10,EDS,0.104,hydraulic,False,0.0112,0.00928,0.0135,0.0385,False
+entrance 5 gap heights deeper,0.3,eds_250_left,Yim10,EDS,0.104,hydraulic,True,0.0192,0.013,0.0242,0.0385,False
+entrance 5 gap heights shallower,0.3,eds_250_left,Yim10,EDS,0.104,hydraulic,False,0.012,0.01,0.0152,0.0423,False
+entrance 5 gap heights shallower,0.3,eds_250_left,Yim10,EDS,0.104,hydraulic,True,0.0215,0.0146,0.03,0.0423,False
+as read,0.3,eds_250_right,Yim10,EDS,0.104,hydraulic,False,0.00963,0.00739,0.0116,0.0504,False
+as read,0.3,eds_250_right,Yim10,EDS,0.104,hydraulic,True,0.0135,0.00963,0.0192,0.0503,False
+plateau 3 % higher,0.3,eds_250_right,Yim10,EDS,0.104,hydraulic,False,0.00739,0.00561,0.00928,0.061,False
+plateau 3 % higher,0.3,eds_250_right,Yim10,EDS,0.104,hydraulic,True,0.00928,0.00656,0.0125,0.0609,False
+plateau 3 % lower,0.3,eds_250_right,Yim10,EDS,0.104,hydraulic,False,0.0112,0.00894,0.0141,0.0531,False
+plateau 3 % lower,0.3,eds_250_right,Yim10,EDS,0.104,hydraulic,True,0.0185,0.012,0.0274,0.0529,False
+entrance 5 gap heights deeper,0.3,eds_250_right,Yim10,EDS,0.104,hydraulic,False,0.00928,0.00769,0.0112,0.0474,False
+entrance 5 gap heights deeper,0.3,eds_250_right,Yim10,EDS,0.104,hydraulic,True,0.0135,0.00963,0.0192,0.0473,False
+entrance 5 gap heights shallower,0.3,eds_250_right,Yim10,EDS,0.104,hydraulic,False,0.0104,0.008,0.013,0.0537,False
+entrance 5 gap heights shallower,0.3,eds_250_right,Yim10,EDS,0.104,hydraulic,True,0.0141,0.00963,0.02,0.0536,False
+as read,0.3,eds_500_left,Yim2,EDS,0.218,hydraulic,False,0.0054,0.005,0.00583,0.0175,False
+as read,0.3,eds_500_left,Yim2,EDS,0.218,hydraulic,True,0.1,0.0232,0.2,0.0257,True
+plateau 3 % higher,0.3,eds_500_left,Yim2,EDS,0.218,hydraulic,False,0.00447,0.0037,0.005,0.0341,False
+plateau 3 % higher,0.3,eds_500_left,Yim2,EDS,0.218,hydraulic,True,0.025,0.0104,0.1,0.0378,False
+plateau 3 % lower,0.3,eds_500_left,Yim2,EDS,0.218,hydraulic,False,0.0063,0.00561,0.00682,0.0301,False
+plateau 3 % lower,0.3,eds_500_left,Yim2,EDS,0.218,hydraulic,True,0.2,0.0344,0.2,0.0366,True
+entrance 5 gap heights deeper,0.3,eds_500_left,Yim2,EDS,0.218,hydraulic,False,0.0054,0.005,0.00583,0.0174,False
+entrance 5 gap heights deeper,0.3,eds_500_left,Yim2,EDS,0.218,hydraulic,True,0.0843,0.02,0.2,0.025,True
+entrance 5 gap heights shallower,0.3,eds_500_left,Yim2,EDS,0.218,hydraulic,False,0.0054,0.005,0.00583,0.0182,False
+entrance 5 gap heights shallower,0.3,eds_500_left,Yim2,EDS,0.218,hydraulic,True,0.06,0.0215,0.2,0.0267,True
+as read,0.3,eds_500_right,Yim2,EDS,0.218,hydraulic,False,0.00482,0.00445,0.0052,0.0237,False
+as read,0.3,eds_500_right,Yim2,EDS,0.218,hydraulic,True,0.0346,0.0158,0.159,0.0297,False
+plateau 3 % higher,0.3,eds_500_right,Yim2,EDS,0.218,hydraulic,False,0.0037,0.00316,0.00415,0.0359,False
+plateau 3 % higher,0.3,eds_500_right,Yim2,EDS,0.218,hydraulic,True,0.00928,0.00561,0.025,0.0387,False
+plateau 3 % lower,0.3,eds_500_right,Yim2,EDS,0.218,hydraulic,False,0.00656,0.00606,0.0071,0.0352,False
+plateau 3 % lower,0.3,eds_500_right,Yim2,EDS,0.218,hydraulic,True,0.2,0.03,0.2,0.0406,True
+entrance 5 gap heights deeper,0.3,eds_500_right,Yim2,EDS,0.218,hydraulic,False,0.00464,0.00431,0.005,0.0233,False
+entrance 5 gap heights deeper,0.3,eds_500_right,Yim2,EDS,0.218,hydraulic,True,0.0291,0.0141,0.114,0.0289,False
+entrance 5 gap heights shallower,0.3,eds_500_right,Yim2,EDS,0.218,hydraulic,False,0.00482,0.00431,0.0052,0.0238,False
+entrance 5 gap heights shallower,0.3,eds_500_right,Yim2,EDS,0.218,hydraulic,True,0.04,0.0146,0.2,0.0301,True
+as read,0.3,eds_1000_left,Yim11,EDS,0.397,hydraulic,False,0.00186,0.00172,0.002,0.0137,False
+as read,0.3,eds_1000_left,Yim11,EDS,0.397,hydraulic,True,0.0266,0.0124,0.0918,0.0133,False
+plateau 3 % higher,0.3,eds_1000_left,Yim11,EDS,0.397,hydraulic,False,0.00148,0.00137,0.0016,0.0216,False
+plateau 3 % higher,0.3,eds_1000_left,Yim11,EDS,0.397,hydraulic,True,0.004,0.00292,0.0071,0.0237,False
+plateau 3 % lower,0.3,eds_1000_left,Yim11,EDS,0.397,hydraulic,False,0.002,0.00172,0.00215,0.0323,False
+plateau 3 % lower,0.3,eds_1000_left,Yim11,EDS,0.397,hydraulic,True,0.2,0.0146,0.2,0.0313,True
+entrance 5 gap heights deeper,0.3,eds_1000_left,Yim11,EDS,0.397,hydraulic,False,0.00172,0.0016,0.00186,0.0133,False
+entrance 5 gap heights deeper,0.3,eds_1000_left,Yim11,EDS,0.397,hydraulic,True,0.0141,0.00963,0.0233,0.012,False
+entrance 5 gap heights shallower,0.3,eds_1000_left,Yim11,EDS,0.397,hydraulic,False,0.00186,0.00172,0.002,0.0136,False
+entrance 5 gap heights shallower,0.3,eds_1000_left,Yim11,EDS,0.397,hydraulic,True,0.0653,0.0171,0.2,0.0145,True
+as read,0.3,eds_1000_right,Yim11,EDS,0.397,hydraulic,False,0.002,0.00186,0.00215,0.0134,False
+as read,0.3,eds_1000_right,Yim11,EDS,0.397,hydraulic,True,0.0775,0.0191,0.2,0.0165,True
+plateau 3 % higher,0.3,eds_1000_right,Yim11,EDS,0.397,hydraulic,False,0.00172,0.0016,0.00186,0.0215,False
+plateau 3 % higher,0.3,eds_1000_right,Yim11,EDS,0.397,hydraulic,True,0.00561,0.00342,0.0186,0.0245,False
+plateau 3 % lower,0.3,eds_1000_right,Yim11,EDS,0.397,hydraulic,False,0.00232,0.002,0.0025,0.0326,False
+plateau 3 % lower,0.3,eds_1000_right,Yim11,EDS,0.397,hydraulic,True,0.2,0.0221,0.2,0.0341,True
+entrance 5 gap heights deeper,0.3,eds_1000_right,Yim11,EDS,0.397,hydraulic,False,0.002,0.00186,0.00215,0.0132,False
+entrance 5 gap heights deeper,0.3,eds_1000_right,Yim11,EDS,0.397,hydraulic,True,0.04,0.017,0.2,0.0147,True
+entrance 5 gap heights shallower,0.3,eds_1000_right,Yim11,EDS,0.397,hydraulic,False,0.002,0.00186,0.00215,0.0137,False
+entrance 5 gap heights shallower,0.3,eds_1000_right,Yim11,EDS,0.397,hydraulic,True,0.0653,0.0141,0.2,0.0182,True

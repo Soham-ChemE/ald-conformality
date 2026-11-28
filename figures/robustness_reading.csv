@@ -1,0 +1,21 @@
+variant,window,transport,narrowing,fronts,count,dlns_df,se,sd_ln_s,s_geomean,mean_rms,no_upper_limit
+as read,0.3,hydraulic,False,all 16 fronts,16,-6.53,0.97,0.754,0.00468,0.0223,0
+as read,0.3,hydraulic,False,10 reflectometry fronts,10,-8.0,1.82,0.788,0.00467,0.0196,0
+as read,0.3,hydraulic,True,all 16 fronts,16,0.89,2.47,0.935,0.0171,0.0235,2
+as read,0.3,hydraulic,True,10 reflectometry fronts,10,-4.21,2.82,0.748,0.0111,0.0198,0
+plateau 3 % higher,0.3,hydraulic,False,all 16 fronts,16,-6.32,0.9,0.722,0.00388,0.0342,0
+plateau 3 % higher,0.3,hydraulic,False,10 reflectometry fronts,10,-7.78,1.69,0.756,0.00397,0.0321,0
+plateau 3 % higher,0.3,hydraulic,True,all 16 fronts,16,-3.76,1.59,0.709,0.00738,0.0353,0
+plateau 3 % higher,0.3,hydraulic,True,10 reflectometry fronts,10,-5.79,2.53,0.761,0.00656,0.0326,0
+plateau 3 % lower,0.3,hydraulic,False,all 16 fronts,16,-6.89,1.03,0.796,0.00554,0.0347,0
+plateau 3 % lower,0.3,hydraulic,False,10 reflectometry fronts,10,-8.2,1.87,0.809,0.0054,0.0323,0
+plateau 3 % lower,0.3,hydraulic,True,all 16 fronts,16,4.9,2.83,1.178,0.0424,0.0354,7
+plateau 3 % lower,0.3,hydraulic,True,10 reflectometry fronts,10,0.41,3.97,0.93,0.0253,0.0322,3
+entrance 5 gap heights deeper,0.3,hydraulic,False,all 16 fronts,16,-6.57,0.95,0.754,0.00463,0.0206,0
+entrance 5 gap heights deeper,0.3,hydraulic,False,10 reflectometry fronts,10,-8.0,1.8,0.785,0.00467,0.0176,0
+entrance 5 gap heights deeper,0.3,hydraulic,True,all 16 fronts,16,-0.79,2.26,0.857,0.0145,0.0215,2
+entrance 5 gap heights deeper,0.3,hydraulic,True,10 reflectometry fronts,10,-4.98,2.65,0.745,0.0101,0.0178,0
+entrance 5 gap heights shallower,0.3,hydraulic,False,all 16 fronts,16,-6.62,0.97,0.762,0.00473,0.0245,0
+entrance 5 gap heights shallower,0.3,hydraulic,False,10 reflectometry fronts,10,-8.01,1.82,0.788,0.00469,0.0227,0
+entrance 5 gap heights shallower,0.3,hydraulic,True,all 16 fronts,16,1.98,2.3,0.889,0.019,0.0259,4
+entrance 5 gap heights shallower,0.3,hydraulic,True,10 reflectometry fronts,10,-3.22,3.01,0.753,0.0125,0.0229,0
