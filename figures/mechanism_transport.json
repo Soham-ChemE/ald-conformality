@@ -91,7 +91,7 @@
    "tail_plus_100": 0.0002
   },
   "hyd": {
-   "label": "hydraulic diffusion model",
+   "label": "hydraulic model",
    "exposure_Pa_s": 6.23,
    "A": 14.0,
    "slope": 0.0336,

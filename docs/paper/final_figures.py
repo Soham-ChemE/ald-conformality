@@ -54,10 +54,11 @@ print("wrote fig13_eds_cycle_series.png, fig14_slit_benchmark.png")
 
 # ---- Figure: sticking coefficient fitted profile by profile, without and with channel narrowing ----
 P = pd.read_csv(FIG / "profile_fits_cut0.3.csv"); fig, ax = plt.subplots(1, 3, figsize=(11.5, 3.7), sharey=True)
-for a, fam, title in zip(ax, ("hydraulic", "gas", "ballistic"), ("(a) hydraulic diffusion", "(b) cavity Monte Carlo, N$_2$ at 300 Pa", "(c) cavity Monte Carlo, no gas")):
+for a, fam, title in zip(ax, ("hydraulic", "gas", "ballistic"), ("(a) hydraulic model", "(b) carrier-gas model, N$_2$ at 300 Pa", "(c) gas-free model")):
     g = P[P.transport == fam]; top = g.s_grid_max.max()
     for nar, col, lab in ((False, "C0", "without narrowing"), (True, "C3", "with narrowing")):
-        for meth, mk in (("EDS", "o"), ("reflectometry", "s")):
+        mk = "s" if nar else "o"
+        for meth in ("EDS", "reflectometry"):
             q = g[(g.narrowing == nar) & (g.method == meth)]; x = q.fill + (0.006 if nar else -0.006)
             lo = np.clip(q.s_fit - q.s_p16, 0, None); hi = np.clip(q.s_p84 - q.s_fit, 0, None); open_top = q.s_p84 >= 0.99 * q.s_grid_max
             a.errorbar(x, q.s_fit, yerr=[lo, hi], fmt=mk, color=col, ms=4.5, mfc=col if meth == "EDS" else "none", lw=0.8, capsize=2, label=f"{meth}, {lab}")
