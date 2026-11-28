@@ -150,3 +150,20 @@ no interval has zero width, the interpolation check is below 0.01 of the plateau
   (hydraulic), 0.035 and 0.033 (gas), 0.065 and 0.056 (gas-free).
 - ZnO (Gonsalves 2026, about 10 % filled, hydraulic kernel): narrowing raises s by 1.9 and 2.1 at 200 C (0.3 window; 2.4
   and 2.2 in the 0.1 window) and by 1.1 and 1.2 at 175 C with overlapping intervals (1.3 in the 0.1 window).
+
+## 10. A pair of line scans from a second reactor (2026-11-27)
+
+Al2O3 from TMA and water at 300 C in a Beneq TFS-200 (2.1 to 2.2 mbar, 0.15 s pulses, 1.0 s purges), 250 and 500 cycles in a
+500 nm gap: two reflectometry line scans digitised from Fig. 20 of the Chipmetrics LHAR4 analysis guide (V3, 2022), conditions
+from Utriainen et al., Proc. SPIE 12008, 120080D (2022). Script `docs/paper/beneq_pair.py`; results
+`figures/profile_fits_beneq.csv` and `figures/profile_fits_beneq_slopes.csv`. Made with all other data known.
+
+- Without narrowing the fitted s falls from 250 to 500 cycles by a factor of 2.3 to 4.9 in all 12 combinations of model,
+  window and reading (hydraulic, as read: 7.4e-3 and 3.2e-3); d ln s/d f = -7 to -13.
+- With narrowing none of the 24 fits has the lower rms (500 cycles, 0.3 window: 0.032 to 0.104 against 0.017 to 0.025), 12
+  of 24 have no upper limit, and the best values still fall in 10 of 12 combinations.
+- Front slope times depth over the steepest front (1 - f/2)/(n f): 1.3 to 1.5 at 500 cycles, 0.8 to 1.1 at 250 cycles.
+- Weight: lower than the main series. Growth per cycle 0.12 to 0.13 nm and 1.0 s purges; 3 to 6 nm behind the front;
+  reflectometer objective not stated (5.5 um spot assumed); raster source with 0.56 um pixels.
+- The reaction chamber of the Picosun R-150 was not pressure-monitored; about 3 mbar is the intermediate-space pressure
+  (Utriainen et al. 2022, same reactor model and recipe as the main series).
